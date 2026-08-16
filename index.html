@@ -472,7 +472,6 @@ const PLAYERS = [
 {n:"Pierre Littbarski",c:["Geboren in Berlijn, West-Duitsland","Stond bekend om zijn dribbels als buitenspeler","Werd wereldkampioen met West-Duitsland in 1990","Speelde zijn hele Duitse carrière bij 1. FC Köln","Sloot zijn carrière af in de Japanse competitie"]},
 {n:"Uwe Seeler",c:["Geboren in Hamburg, Duitsland","Speelde zijn hele carrière bij Hamburger SV","Speelde vier WK-toernooien voor West-Duitsland","Scoorde in een WK-duel een opmerkelijk doelpunt met zijn achterhoofd","Wordt gezien als een van de eerste grote Duitse voetbalhelden"]},
 {n:"Sepp Maier",c:["Geboren in Metten, West-Duitsland","Stond bekend om zijn opvallende, extra lange keepersbroeken","Was doelman tijdens de wereldtitel van West-Duitsland in 1974","Speelde zijn hele carrière bij Bayern München","Hield een lang record aantal wedstrijden op rij zonder gemist duel"]},
-{n:"Paul Breitner",c:["Geboren in Kolbermoor, West-Duitsland","Scoorde in twee verschillende WK-finales (1974 en 1982)","Stond bekend om zijn opvallende afro-kapsel en linkse politieke uitspraken","Speelde onder meer voor Bayern München en Real Madrid","Werd wereldkampioen met West-Duitsland in 1974"]},
 {n:"Stefan Effenberg",c:["Geboren in Hamburg, West-Duitsland","Stond bekend om zijn talent, maar ook om zijn opvliegende karakter","Werd na een obscene armgebaar naar fans uit de WK-selectie van 1994 gezet","Speelde zijn beste jaren bij Bayern München","Was jarenlang aanvoerder van Bayern München"]},
 {n:"Mehmet Scholl",c:["Geboren in Karlsruhe, West-Duitsland","Speelde zijn hele carrière bij Bayern München","Stond bekend om zijn techniek en creativiteit als aanvallende middenvelder","Kampte regelmatig met blessures die zijn carrière beperkten","Werd na zijn carrière een bekende televisieanalist"]},
 {n:"Oliver Bierhoff",c:["Geboren in Karlsruhe, West-Duitsland","Scoorde de eerste 'gouden goal' ooit in een EK-finale, in 1996","Speelde zijn beste jaren als spits in de Italiaanse competitie bij Udinese","Werd na zijn carrière lange tijd manager van het Duitse nationale elftal","Stond bekend om zijn kopkracht"]},
@@ -735,8 +734,11 @@ formEl.addEventListener('submit', (e)=>{
   const guessNorm = normalize(raw);
   const nameNorm = normalize(current.n);
   const nameParts = nameNorm.split(/\s+/);
-  const lastName = nameParts[nameParts.length-1];
-  const correct = guessNorm === nameNorm || (guessNorm.length>2 && guessNorm === lastName);
+  const surnameCandidates = new Set([nameNorm]);
+  for(let i=1;i<=Math.min(3, nameParts.length-1);i++){
+    surnameCandidates.add(nameParts.slice(-i).join(' '));
+  }
+  const correct = guessNorm.length > 2 && surnameCandidates.has(guessNorm);
 
   if(correct){
     streak += 1;
