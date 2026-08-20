@@ -5,56 +5,79 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Player Dossier</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Rajdhani:wght@500;600;700&family=Orbitron:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
+
   :root{
-    --paper:#EDE7D6;
-    --paper-dark:#DFD5B8;
-    --ink:#20242B;
-    --ink-soft:#4A4E58;
-    --red:#A8342A;
-    --green:#2F6B4F;
-    --gold:#9C7F3F;
-    --line:#B9AD8C;
+    /* Matchday scoreboard palette */
+    --bg-1:#123a24;
+    --bg-2:#0b1c12;
+    --bg-3:#050c08;
+    --board:#0e161c;
+    --board-2:#152029;
+    --board-3:#1f2d38;
+    --line:#2a3a46;
+    --line-soft:#213039;
+    --led:#F5C518;
+    --led-glow:rgba(245,197,24,0.55);
+    --green:#37d07a;
+    --green-glow:rgba(55,208,122,0.45);
+    --red:#ef4d52;
+    --red-glow:rgba(239,77,82,0.4);
+    --yellow-card:#F6C915;
+    --red-card:#E23B3B;
+    --text:#EAF1F5;
+    --text-soft:#93A3AF;
+    --text-dim:#61717d;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;height:100%;}
   body{
     background:
-      radial-gradient(ellipse at top, #F2ECDC 0%, var(--paper) 45%, #DED2AE 130%);
+      radial-gradient(120% 75% at 50% -18%, rgba(120,210,150,0.12) 0%, transparent 55%),
+      radial-gradient(ellipse at 50% -10%, var(--bg-1) 0%, var(--bg-2) 42%, var(--bg-3) 100%);
     min-height:100vh;
-    font-family:'IBM Plex Mono', monospace;
-    color:var(--ink);
+    font-family:'Rajdhani','Segoe UI',sans-serif;
+    color:var(--text);
     display:flex;
     align-items:center;
     justify-content:center;
     padding:20px 14px;
+    -webkit-font-smoothing:antialiased;
   }
   .wrap{width:100%;max-width:600px;}
 
   .tab{
     display:inline-block;
-    background:var(--ink);
-    color:var(--paper);
-    font-family:'Special Elite', monospace;
+    background:var(--led);
+    color:#191200;
+    font-family:'Oswald',sans-serif;
+    font-weight:600;
     font-size:11px;
-    letter-spacing:2px;
-    padding:5px 12px;
-    transform:rotate(-1deg);
-    margin-bottom:-10px;
+    letter-spacing:3px;
+    text-transform:uppercase;
+    padding:5px 14px;
+    margin-bottom:-9px;
     margin-left:18px;
     position:relative;
     z-index:2;
+    border-radius:3px 3px 0 0;
+    box-shadow:0 0 20px var(--led-glow);
   }
 
   .file{
-    background:var(--paper);
+    background:linear-gradient(180deg,var(--board-2) 0%,var(--board) 100%);
     border:1px solid var(--line);
-    box-shadow:0 2px 0 var(--line), 0 18px 40px -20px rgba(0,0,0,0.45);
-    padding:22px 24px 20px;
+    border-radius:10px;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.03),
+      0 22px 60px -26px rgba(0,0,0,0.85),
+      0 0 46px -12px rgba(55,208,122,0.10);
+    padding:20px 22px 18px;
     position:relative;
     display:flex;
     flex-direction:column;
+    overflow:hidden;
   }
   .file::before{
     content:"";
@@ -62,73 +85,122 @@
     top:0;left:0;right:0;bottom:0;
     pointer-events:none;
     background-image:
-      repeating-linear-gradient(0deg, rgba(0,0,0,0.015) 0px, rgba(0,0,0,0.015) 1px, transparent 1px, transparent 3px);
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.022) 0px, rgba(255,255,255,0.022) 1px, transparent 1px, transparent 3px);
+    mix-blend-mode:overlay;
   }
 
   header.top{
     display:flex;
     justify-content:space-between;
     align-items:center;
-    border-bottom:2px solid var(--ink);
-    padding-bottom:10px;
+    border-bottom:1px solid var(--line);
+    padding-bottom:12px;
     margin-bottom:14px;
   }
   h1{
-    font-family:'Special Elite', monospace;
-    font-size:19px;
+    font-family:'Oswald',sans-serif;
+    font-weight:600;
+    font-size:24px;
     margin:0;
-    letter-spacing:0.5px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    color:var(--text);
   }
+
   .lives{
     display:flex;
-    gap:4px;
-    font-size:19px;
-    line-height:1;
+    gap:6px;
+    align-items:center;
   }
-  .lives .heart{opacity:1; filter:none; transition:opacity .2s;}
-  .lives .heart.lost{opacity:0.22; filter:grayscale(1);}
+  .lives .card{
+    width:15px;
+    height:21px;
+    border-radius:3px;
+    background:var(--yellow-card);
+    box-shadow:0 0 10px rgba(246,201,21,0.5), inset 0 0 0 1px rgba(0,0,0,0.18);
+    transform:rotate(-6deg);
+    transition:all .25s;
+  }
+  .lives .card.lost{
+    background:var(--red-card);
+    box-shadow:inset 0 0 0 1px rgba(0,0,0,0.2);
+    opacity:0.4;
+    transform:rotate(6deg);
+  }
 
   .streakbar{
     display:flex;
     gap:8px;
-    font-size:11px;
-    color:var(--ink-soft);
-    margin-bottom:14px;
+    align-items:stretch;
+    margin-bottom:16px;
     flex-wrap:wrap;
   }
   .streakbar span{
-    background:var(--paper-dark);
-    border:1px solid var(--line);
-    padding:3px 9px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    gap:1px;
+    background:var(--board);
+    border:1px solid var(--line-soft);
+    border-radius:6px;
+    padding:5px 12px;
     white-space:nowrap;
   }
-  .streakbar b{color:var(--ink);}
+  .streakbar label{
+    font-family:'Oswald',sans-serif;
+    font-size:9px;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    color:var(--text-dim);
+  }
+  .streakbar b{
+    font-family:'Orbitron',monospace;
+    font-weight:700;
+    font-size:16px;
+    line-height:1;
+    color:var(--led);
+    text-shadow:0 0 10px var(--led-glow);
+    letter-spacing:1px;
+  }
+  #modeDisplay{
+    font-family:'Oswald',sans-serif;
+    font-size:14px;
+    color:var(--green);
+    text-shadow:none;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+  }
 
   .clues{
-    margin-bottom:14px;
+    margin-bottom:16px;
     min-height:225px;
   }
   .clue-row{
     display:flex;
-    gap:10px;
+    gap:12px;
     align-items:flex-start;
-    padding:9px 0;
-    border-bottom:1px dashed var(--line);
+    padding:10px 0;
+    border-bottom:1px solid var(--line-soft);
     min-height:20px;
   }
   .clue-row:last-child{border-bottom:none;}
   .clue-idx{
-    font-family:'Special Elite', monospace;
+    font-family:'Orbitron',monospace;
+    font-weight:700;
     font-size:12px;
-    color:var(--gold);
-    width:16px;
+    color:var(--green);
+    text-shadow:0 0 8px var(--green-glow);
+    width:22px;
     flex-shrink:0;
-    padding-top:1px;
+    padding-top:3px;
   }
   .clue-text{
-    font-size:13.5px;
-    line-height:1.55;
+    font-family:'Rajdhani',sans-serif;
+    font-weight:500;
+    font-size:16px;
+    line-height:1.4;
     flex:1;
+    color:var(--text);
   }
   .clue-text.locked{
     position:relative;
@@ -137,12 +209,14 @@
   }
   .clue-text.locked .redaction{
     position:absolute;
-    inset:2px 0;
-    background:var(--ink);
-    border-radius:1px;
+    inset:3px 0;
+    background:
+      repeating-linear-gradient(45deg, rgba(255,255,255,0.05) 0 9px, rgba(255,255,255,0.015) 9px 18px),
+      var(--board-3);
+    border-radius:3px;
   }
   .clue-text.reveal{
-    animation:typeIn 0.35s ease;
+    animation:typeIn 0.3s ease;
   }
   @keyframes typeIn{
     from{opacity:0; transform:translateY(-3px);}
@@ -156,37 +230,44 @@
   }
   input[type=text]{
     flex:1;
-    font-family:'IBM Plex Mono', monospace;
-    font-size:14px;
-    padding:11px 12px;
-    border:1.5px solid var(--ink);
-    background:#FBF8EF;
-    color:var(--ink);
+    font-family:'Rajdhani',sans-serif;
+    font-weight:600;
+    font-size:16px;
+    padding:12px 14px;
+    border:1px solid var(--line);
+    border-radius:6px;
+    background:var(--board);
+    color:var(--text);
     outline:none;
     min-width:0;
   }
-  input[type=text]:focus{border-color:var(--red);}
+  input[type=text]::placeholder{color:var(--text-dim);}
+  input[type=text]:focus{border-color:var(--green); box-shadow:0 0 0 2px rgba(55,208,122,0.22);}
   input[type=text]:disabled{opacity:0.5;}
   button{
-    font-family:'IBM Plex Mono', monospace;
+    font-family:'Oswald',sans-serif;
     font-weight:600;
     font-size:13px;
-    letter-spacing:0.5px;
-    padding:11px 16px;
-    background:var(--ink);
-    color:var(--paper);
-    border:1.5px solid var(--ink);
+    letter-spacing:1.5px;
+    padding:12px 18px;
+    background:var(--green);
+    color:#04180d;
+    border:1px solid var(--green);
+    border-radius:6px;
     cursor:pointer;
     text-transform:uppercase;
     flex-shrink:0;
   }
-  button:hover:not(:disabled){background:var(--red); border-color:var(--red);}
+  button:hover:not(:disabled){background:#48e28c; border-color:#48e28c; box-shadow:0 0 18px var(--green-glow);}
   button:disabled{opacity:0.4; cursor:not-allowed;}
 
   .feedback{
     min-height:22px;
-    font-size:12.5px;
-    margin-bottom:8px;
+    font-family:'Rajdhani',sans-serif;
+    font-weight:600;
+    font-size:14.5px;
+    letter-spacing:0.3px;
+    margin-bottom:10px;
   }
   .feedback.wrong{color:var(--red);}
   .feedback.win{color:var(--green);}
@@ -202,11 +283,12 @@
   .log-item{
     display:flex;
     justify-content:space-between;
-    font-size:11.5px;
+    font-family:'Rajdhani',sans-serif;
+    font-size:13px;
     padding:5px 9px;
-    background:var(--paper-dark);
+    background:var(--board);
     border-left:3px solid var(--red);
-    color:var(--ink-soft);
+    color:var(--text-soft);
   }
 
   .gameover{
@@ -214,25 +296,33 @@
     padding:10px 0 4px;
   }
   .gameover .title{
-    font-family:'Special Elite', monospace;
-    font-size:18px;
+    font-family:'Oswald',sans-serif;
+    font-weight:600;
+    font-size:23px;
+    text-transform:uppercase;
+    letter-spacing:1px;
     color:var(--red);
-    margin-bottom:6px;
+    text-shadow:0 0 18px var(--red-glow);
+    margin-bottom:8px;
   }
-  .gameover .name{font-size:14px; margin-bottom:14px;}
-  .gameover .name b{font-size:16px;}
+  .gameover .name{font-size:16px; margin-bottom:16px; color:var(--text);}
+  .gameover .name b{font-size:18px; color:var(--led);}
   .gameover button{width:100%;}
 
   footer.note{
     text-align:center;
-    font-size:10.5px;
-    color:var(--ink-soft);
-    margin-top:4px;
-    letter-spacing:0.5px;
+    font-family:'Oswald',sans-serif;
+    font-size:10px;
+    text-transform:uppercase;
+    color:var(--text-dim);
+    margin-top:8px;
+    letter-spacing:1px;
+    line-height:1.7;
   }
+  footer.note b{color:var(--text-soft);}
 
   @media (max-width:480px){
-    h1{font-size:16px;}
+    h1{font-size:20px;}
     .file{padding:16px 14px 14px;}
     .clues{min-height:255px;}
   }
@@ -240,7 +330,9 @@
   .name-overlay{
     position:fixed;
     inset:0;
-    background:rgba(32,36,43,0.72);
+    background:rgba(4,10,7,0.82);
+    -webkit-backdrop-filter:blur(3px);
+    backdrop-filter:blur(3px);
     display:flex;
     align-items:center;
     justify-content:center;
@@ -248,24 +340,31 @@
     padding:20px 14px;
   }
   .name-card{
-    background:var(--paper);
+    background:linear-gradient(180deg,var(--board-2),var(--board));
     border:1px solid var(--line);
-    box-shadow:0 2px 0 var(--line), 0 18px 40px -20px rgba(0,0,0,0.55);
+    border-radius:12px;
+    box-shadow:0 24px 70px -24px rgba(0,0,0,0.85);
     padding:24px 22px 20px;
     width:100%;
-    max-width:380px;
+    max-width:390px;
     text-align:center;
   }
-  .name-card .tab{margin-left:0; margin-bottom:12px;}
+  .name-card .tab{margin-left:0; margin-bottom:14px;}
   .name-card h2{
-    font-family:'Special Elite', monospace;
-    font-size:16px;
+    font-family:'Oswald',sans-serif;
+    font-weight:600;
+    font-size:20px;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
     margin:0 0 8px;
+    color:var(--text);
   }
   .name-card p{
-    font-size:12.5px;
-    color:var(--ink-soft);
-    line-height:1.5;
+    font-family:'Rajdhani',sans-serif;
+    font-weight:500;
+    font-size:14px;
+    color:var(--text-soft);
+    line-height:1.45;
     margin:0 0 16px;
   }
   .name-card form{margin-bottom:0;}
@@ -283,52 +382,67 @@
     text-align:left;
     width:100%;
     padding:14px 16px;
-    background:var(--paper-dark);
-    border:1.5px solid var(--ink);
-    color:var(--ink);
+    background:var(--board);
+    border:1px solid var(--line);
+    border-radius:8px;
+    color:var(--text);
     text-transform:none;
     letter-spacing:normal;
   }
-  .mode-btn:hover:not(:disabled){background:var(--ink); color:var(--paper); border-color:var(--ink);}
-  .mode-btn:hover:not(:disabled) .mode-desc{color:var(--paper);}
-  .mode-btn.hardcore{border-color:var(--red);}
-  .mode-btn.hardcore:hover:not(:disabled){background:var(--red); border-color:var(--red);}
-  .mode-btn.hardcore:hover:not(:disabled) .mode-desc{color:var(--paper);}
-  .mode-name{font-family:'Special Elite', monospace; font-size:15px;}
-  .mode-desc{font-size:11.5px; color:var(--ink-soft); font-weight:400; line-height:1.45;}
+  .mode-btn:hover:not(:disabled){background:var(--board-3); border-color:var(--green); box-shadow:none;}
+  .mode-btn.hardcore{border-color:rgba(239,77,82,0.45);}
+  .mode-btn.hardcore:hover:not(:disabled){background:var(--board-3); border-color:var(--red); box-shadow:none;}
+  .mode-name{
+    font-family:'Oswald',sans-serif;
+    font-weight:600;
+    font-size:16px;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+    color:var(--text);
+  }
+  .mode-desc{
+    font-family:'Rajdhani',sans-serif;
+    font-size:13.5px;
+    font-weight:500;
+    color:var(--text-soft);
+    line-height:1.4;
+  }
 
   .player-tag{
-    font-size:11px;
-    color:var(--ink-soft);
+    font-family:'Oswald',sans-serif;
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    color:var(--text-soft);
     background:none;
     border:none;
     cursor:pointer;
     text-decoration:underline;
     padding:0;
-    text-transform:none;
-    letter-spacing:normal;
-    font-weight:400;
-    font-family:'IBM Plex Mono', monospace;
+    font-weight:500;
   }
-  .player-tag:hover{color:var(--red); background:none; border:none;}
+  .player-tag:hover{color:var(--green); background:none; border:none; box-shadow:none;}
 
   .lb-btn{
-    font-family:'IBM Plex Mono', monospace;
+    font-family:'Oswald',sans-serif;
     font-size:11px;
-    letter-spacing:0.5px;
-    background:none;
+    letter-spacing:1px;
+    background:var(--board);
     border:1px solid var(--line);
-    color:var(--ink-soft);
-    padding:4px 10px;
+    color:var(--text-soft);
+    padding:6px 12px;
+    border-radius:6px;
     cursor:pointer;
     text-transform:uppercase;
   }
-  .lb-btn:hover{color:var(--paper); background:var(--ink); border-color:var(--ink);}
+  .lb-btn:hover{color:#04180d; background:var(--led); border-color:var(--led); box-shadow:0 0 16px var(--led-glow);}
 
   .lb-overlay{
     position:fixed;
     inset:0;
-    background:rgba(32,36,43,0.72);
+    background:rgba(4,10,7,0.82);
+    -webkit-backdrop-filter:blur(3px);
+    backdrop-filter:blur(3px);
     display:none;
     align-items:center;
     justify-content:center;
@@ -336,9 +450,10 @@
     padding:20px 14px;
   }
   .lb-card{
-    background:var(--paper);
+    background:linear-gradient(180deg,var(--board-2),var(--board));
     border:1px solid var(--line);
-    box-shadow:0 2px 0 var(--line), 0 18px 40px -20px rgba(0,0,0,0.55);
+    border-radius:12px;
+    box-shadow:0 24px 70px -24px rgba(0,0,0,0.85);
     padding:20px 22px;
     width:100%;
     max-width:420px;
@@ -349,26 +464,32 @@
     display:flex;
     justify-content:space-between;
     align-items:center;
-    border-bottom:2px solid var(--ink);
-    padding-bottom:10px;
-    margin-bottom:12px;
+    border-bottom:1px solid var(--line);
+    padding-bottom:12px;
+    margin-bottom:14px;
   }
   .lb-card h2{
-    font-family:'Special Elite', monospace;
-    font-size:16px;
+    font-family:'Oswald',sans-serif;
+    font-weight:600;
+    font-size:18px;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
     margin:0;
+    color:var(--text);
   }
   .lb-close{
+    font-family:'Oswald',sans-serif;
+    font-size:11px;
+    letter-spacing:1px;
+    text-transform:uppercase;
     background:none;
-    border:none;
-    color:var(--ink-soft);
-    font-size:18px;
+    border:1px solid var(--line);
+    color:var(--text-soft);
+    padding:5px 10px;
+    border-radius:6px;
     cursor:pointer;
-    padding:0 4px;
-    text-transform:none;
-    letter-spacing:0;
   }
-  .lb-close:hover{color:var(--red); background:none;}
+  .lb-close:hover{color:var(--red); border-color:var(--red); background:none; box-shadow:none;}
   .lb-tabs{
     display:flex;
     gap:6px;
@@ -376,53 +497,64 @@
   }
   .lb-tab{
     flex:1;
-    font-family:'IBM Plex Mono', monospace;
+    font-family:'Oswald',sans-serif;
     font-size:11.5px;
-    letter-spacing:0.5px;
+    letter-spacing:1px;
     text-transform:uppercase;
-    padding:8px 6px;
-    background:var(--paper-dark);
-    border:1px solid var(--line);
-    color:var(--ink-soft);
+    padding:9px 6px;
+    background:var(--board);
+    border:1px solid var(--line-soft);
+    border-radius:6px;
+    color:var(--text-soft);
     cursor:pointer;
   }
-  .lb-tab.active{background:var(--ink); color:var(--paper); border-color:var(--ink);}
+  .lb-tab.active{background:var(--led); color:#04180d; border-color:var(--led);}
   .lb-list{
     display:flex;
     flex-direction:column;
-    gap:1px;
+    gap:4px;
   }
   .lb-row{
     display:flex;
     align-items:center;
     gap:10px;
-    padding:8px 9px;
-    background:var(--paper-dark);
+    padding:9px 11px;
+    background:var(--board);
+    border:1px solid var(--line-soft);
+    border-radius:6px;
     border-left:3px solid transparent;
   }
-  .lb-row.me{border-left-color:var(--red);}
+  .lb-row.me{border-left-color:var(--led);}
   .lb-rank{
-    font-family:'Special Elite', monospace;
+    font-family:'Orbitron',monospace;
+    font-weight:700;
     font-size:13px;
-    color:var(--gold);
-    width:22px;
+    color:var(--led);
+    width:30px;
     flex-shrink:0;
   }
   .lb-name{
     flex:1;
-    font-size:13px;
+    font-family:'Rajdhani',sans-serif;
+    font-weight:600;
+    font-size:15px;
+    color:var(--text);
     overflow:hidden;
     text-overflow:ellipsis;
     white-space:nowrap;
   }
   .lb-score{
-    font-size:13px;
-    font-weight:600;
+    font-family:'Orbitron',monospace;
+    font-weight:700;
+    font-size:14px;
+    color:var(--green);
   }
   .lb-empty, .lb-status{
     text-align:center;
-    font-size:12px;
-    color:var(--ink-soft);
+    font-family:'Rajdhani',sans-serif;
+    font-weight:500;
+    font-size:14px;
+    color:var(--text-soft);
     padding:20px 0;
   }
 </style>
@@ -431,7 +563,7 @@
 
 <div class="name-overlay" id="nameOverlay" style="display:none;">
   <div class="name-card">
-    <div class="tab">DOSSIER — REGISTRATION</div>
+    <div class="tab">TEAM SHEET</div>
     <h2>Who are you, scout?</h2>
     <p>Enter your name before you begin. It appears on the scoreboard and is remembered for next time.</p>
     <form id="nameForm">
@@ -443,7 +575,7 @@
 
 <div class="name-overlay" id="modeOverlay" style="display:none;">
   <div class="name-card">
-    <div class="tab">DOSSIER — CLEARANCE LEVEL</div>
+    <div class="tab">MATCH SETTINGS</div>
     <h2>Choose your mode</h2>
     <p>Pick how you want to play. You can switch modes any time from the game over screen.</p>
     <div class="mode-choices">
@@ -462,8 +594,8 @@
 <div class="lb-overlay" id="lbOverlay">
   <div class="lb-card">
     <header>
-      <h2>🏆 Leaderboard</h2>
-      <button type="button" class="lb-close" id="closeLeaderboardBtn">✕</button>
+      <h2>Leaderboard</h2>
+      <button type="button" class="lb-close" id="closeLeaderboardBtn">Close</button>
     </header>
     <div class="lb-tabs">
       <button type="button" class="lb-tab active" id="lbTabNormal" data-mode="normal">Normal mode</button>
@@ -476,7 +608,7 @@
 </div>
 
 <div class="wrap">
-  <div class="tab">STRICTLY CONFIDENTIAL</div>
+  <div class="tab">SCOUTING REPORT</div>
   <div class="file">
     <header class="top">
       <h1>The Player Dossier</h1>
@@ -484,10 +616,10 @@
     </header>
 
     <div class="streakbar">
-      <span>Current streak: <b id="streak">0</b></span>
-      <span>Best streak: <b id="best">0</b></span>
-      <span>Mode: <b id="modeDisplay">Normal</b></span>
-      <button type="button" class="lb-btn" id="openLeaderboardBtn">🏆 Leaderboard</button>
+      <span><label>Streak</label><b id="streak">0</b></span>
+      <span><label>Best</label><b id="best">0</b></span>
+      <span><label>Mode</label><b id="modeDisplay">Normal</b></span>
+      <button type="button" class="lb-btn" id="openLeaderboardBtn">Leaderboard</button>
     </div>
 
     <div id="playArea">
@@ -1088,10 +1220,9 @@ function renderLives(){
   livesEl.innerHTML = '';
   const max = MODE_CONFIG[currentMode].lives;
   for(let i=0;i<max;i++){
-    const h = document.createElement('span');
-    h.className = 'heart' + (i < lives ? '' : ' lost');
-    h.textContent = '♥';
-    livesEl.appendChild(h);
+    const c = document.createElement('span');
+    c.className = 'card' + (i < lives ? '' : ' lost');
+    livesEl.appendChild(c);
   }
 }
 
@@ -1186,7 +1317,7 @@ function showContinueButton(){
   if(existing) existing.remove();
   const btn = document.createElement('button');
   btn.id = 'continueBtn';
-  btn.textContent = 'Next player →';
+  btn.textContent = 'Next player';
   btn.style.width = '100%';
   btn.style.marginTop = '6px';
   btn.addEventListener('click', ()=>{
@@ -1214,7 +1345,7 @@ formEl.addEventListener('submit', (e)=>{
   if(correct){
     streak += 1;
     streakEl.textContent = streak;
-    feedbackEl.textContent = '✓ Correct! On to the next player…';
+    feedbackEl.textContent = 'Correct! On to the next player…';
     feedbackEl.className = 'feedback win';
     inputEl.disabled = true;
     submitBtn.disabled = true;
@@ -1230,7 +1361,7 @@ formEl.addEventListener('submit', (e)=>{
   if(clueIndex < MAX_CLUES){
     clueIndex += 1;
     renderClues();
-    feedbackEl.textContent = `✕ "${raw}" is not correct — here's another clue.`;
+    feedbackEl.textContent = `"${raw}" is not correct — here's another clue.`;
     feedbackEl.className = 'feedback wrong';
   } else {
     // All clues are used up and the player was not guessed: lose one life
@@ -1239,11 +1370,11 @@ formEl.addEventListener('submit', (e)=>{
     inputEl.disabled = true;
     submitBtn.disabled = true;
     if(lives <= 0){
-      feedbackEl.innerHTML = `✕ Not guessed — it was <b>${current.n}</b>. No lives left.`;
+      feedbackEl.innerHTML = `Not guessed — it was <b>${current.n}</b>. No lives left.`;
       feedbackEl.className = 'feedback wrong';
       setTimeout(endGame, 1600);
     } else {
-      feedbackEl.innerHTML = `✕ Not guessed — it was <b>${current.n}</b>. You lose a life.`;
+      feedbackEl.innerHTML = `Not guessed — it was <b>${current.n}</b>. You lose a life.`;
       feedbackEl.className = 'feedback wrong';
       showContinueButton();
     }
