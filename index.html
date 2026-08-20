@@ -236,9 +236,201 @@
     .file{padding:16px 14px 14px;}
     .clues{min-height:255px;}
   }
+
+  .name-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(32,36,43,0.72);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:100;
+    padding:20px 14px;
+  }
+  .name-card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    box-shadow:0 2px 0 var(--line), 0 18px 40px -20px rgba(0,0,0,0.55);
+    padding:24px 22px 20px;
+    width:100%;
+    max-width:380px;
+    text-align:center;
+  }
+  .name-card .tab{margin-left:0; margin-bottom:12px;}
+  .name-card h2{
+    font-family:'Special Elite', monospace;
+    font-size:16px;
+    margin:0 0 8px;
+  }
+  .name-card p{
+    font-size:12.5px;
+    color:var(--ink-soft);
+    line-height:1.5;
+    margin:0 0 16px;
+  }
+  .name-card form{margin-bottom:0;}
+  .name-card input[type=text]{text-align:center;}
+
+  .player-tag{
+    font-size:11px;
+    color:var(--ink-soft);
+    background:none;
+    border:none;
+    cursor:pointer;
+    text-decoration:underline;
+    padding:0;
+    text-transform:none;
+    letter-spacing:normal;
+    font-weight:400;
+    font-family:'IBM Plex Mono', monospace;
+  }
+  .player-tag:hover{color:var(--red); background:none; border:none;}
+
+  .lb-btn{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.5px;
+    background:none;
+    border:1px solid var(--line);
+    color:var(--ink-soft);
+    padding:4px 10px;
+    cursor:pointer;
+    text-transform:uppercase;
+  }
+  .lb-btn:hover{color:var(--paper); background:var(--ink); border-color:var(--ink);}
+
+  .lb-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(32,36,43,0.72);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:100;
+    padding:20px 14px;
+  }
+  .lb-card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    box-shadow:0 2px 0 var(--line), 0 18px 40px -20px rgba(0,0,0,0.55);
+    padding:20px 22px;
+    width:100%;
+    max-width:420px;
+    max-height:85vh;
+    overflow-y:auto;
+  }
+  .lb-card header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border-bottom:2px solid var(--ink);
+    padding-bottom:10px;
+    margin-bottom:12px;
+  }
+  .lb-card h2{
+    font-family:'Special Elite', monospace;
+    font-size:16px;
+    margin:0;
+  }
+  .lb-close{
+    background:none;
+    border:none;
+    color:var(--ink-soft);
+    font-size:18px;
+    cursor:pointer;
+    padding:0 4px;
+    text-transform:none;
+    letter-spacing:0;
+  }
+  .lb-close:hover{color:var(--red); background:none;}
+  .lb-tabs{
+    display:flex;
+    gap:6px;
+    margin-bottom:14px;
+  }
+  .lb-tab{
+    flex:1;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    padding:8px 6px;
+    background:var(--paper-dark);
+    border:1px solid var(--line);
+    color:var(--ink-soft);
+    cursor:pointer;
+  }
+  .lb-tab.active{background:var(--ink); color:var(--paper); border-color:var(--ink);}
+  .lb-list{
+    display:flex;
+    flex-direction:column;
+    gap:1px;
+  }
+  .lb-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:8px 9px;
+    background:var(--paper-dark);
+    border-left:3px solid transparent;
+  }
+  .lb-row.me{border-left-color:var(--red);}
+  .lb-rank{
+    font-family:'Special Elite', monospace;
+    font-size:13px;
+    color:var(--gold);
+    width:22px;
+    flex-shrink:0;
+  }
+  .lb-name{
+    flex:1;
+    font-size:13px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .lb-score{
+    font-size:13px;
+    font-weight:600;
+  }
+  .lb-empty, .lb-status{
+    text-align:center;
+    font-size:12px;
+    color:var(--ink-soft);
+    padding:20px 0;
+  }
 </style>
 </head>
 <body>
+
+<div class="name-overlay" id="nameOverlay" style="display:none;">
+  <div class="name-card">
+    <div class="tab">DOSSIER — REGISTRATIE</div>
+    <h2>Wie ben jij, scout?</h2>
+    <p>Vul je naam in voor je begint. Deze verschijnt op het scoreboard en wordt onthouden voor volgende keren.</p>
+    <form id="nameForm">
+      <input type="text" id="nameInput" placeholder="Jouw naam…" autocomplete="off" maxlength="30" required>
+      <button type="submit">Start</button>
+    </form>
+  </div>
+</div>
+
+<div class="lb-overlay" id="lbOverlay">
+  <div class="lb-card">
+    <header>
+      <h2>🏆 Ranglijst</h2>
+      <button type="button" class="lb-close" id="closeLeaderboardBtn">✕</button>
+    </header>
+    <div class="lb-tabs">
+      <button type="button" class="lb-tab active" id="lbTabNormal" data-mode="normal">Normale mode</button>
+      <button type="button" class="lb-tab" id="lbTabHardcore" data-mode="hardcore">Hardcore mode</button>
+    </div>
+    <div id="lbContent">
+      <div class="lb-status">Bezig met laden…</div>
+    </div>
+  </div>
+</div>
+
 <div class="wrap">
   <div class="tab">STRIKT VERTROUWELIJK</div>
   <div class="file">
@@ -250,6 +442,7 @@
     <div class="streakbar">
       <span>Huidige reeks: <b id="streak">0</b></span>
       <span>Beste reeks: <b id="best">0</b></span>
+      <button type="button" class="lb-btn" id="openLeaderboardBtn">🏆 Ranglijst</button>
     </div>
 
     <div id="playArea">
@@ -265,7 +458,10 @@
 
     <div id="gameOverArea" style="display:none;"></div>
 
-    <footer class="note">150+ spelers uit de grootste competities en voetballanden, van vroeger en nu.</footer>
+    <footer class="note">
+      150+ spelers uit de grootste competities en voetballanden, van vroeger en nu.<br>
+      Spelen als <b id="currentNameDisplay"></b> — <button type="button" class="player-tag" id="changeNameBtn">niet jij? naam wijzigen</button>
+    </footer>
   </div>
 </div>
 
@@ -586,6 +782,130 @@ const PLAYERS = [
 {n:"Warren Zaïre-Emery",c:["Geboren in Montreuil, Frankrijk","Debuteerde als zestienjarige al bij Paris Saint-Germain","Werd op jonge leeftijd al vaste basisspeler op het middenveld","Werd een van de jongste aanvoerders ooit van PSG in een officiële wedstrijd","Werd gezien als een van de grootste Franse talenten van zijn generatie"]},
 ];
 
+// --- Leaderboard API ---
+// Pas deze URL aan als je Render-service een andere naam heeft gekregen.
+const API_URL = 'https://spelersdossier-api.onrender.com';
+const CURRENT_MODE = 'normal'; // wordt later 'hardcore' voor de hardcore mode
+
+async function submitScoreToLeaderboard(score){
+  try{
+    await fetch(`${API_URL}/api/scores`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ player_name: playerName, score, mode: CURRENT_MODE })
+    });
+  }catch(e){
+    // Leaderboard offline of onbereikbaar: het spel blijft gewoon lokaal werken
+    console.warn('Kon score niet naar leaderboard sturen:', e);
+  }
+}
+
+// --- Leaderboard-scherm ---
+const lbOverlay = document.getElementById('lbOverlay');
+const lbContent = document.getElementById('lbContent');
+const lbTabNormal = document.getElementById('lbTabNormal');
+const lbTabHardcore = document.getElementById('lbTabHardcore');
+const openLeaderboardBtn = document.getElementById('openLeaderboardBtn');
+const closeLeaderboardBtn = document.getElementById('closeLeaderboardBtn');
+let activeLbMode = 'normal';
+
+async function loadLeaderboard(mode){
+  lbContent.innerHTML = '<div class="lb-status">Bezig met laden…</div>';
+  try{
+    const res = await fetch(`${API_URL}/api/leaderboard?mode=${mode}&limit=10`);
+    if(!res.ok) throw new Error('Serverfout');
+    const scores = await res.json();
+
+    if(scores.length === 0){
+      lbContent.innerHTML = '<div class="lb-empty">Nog geen scores in deze mode. Wees de eerste!</div>';
+      return;
+    }
+
+    const list = document.createElement('div');
+    list.className = 'lb-list';
+    scores.forEach((entry, i) => {
+      const row = document.createElement('div');
+      row.className = 'lb-row' + (entry.player_name === playerName ? ' me' : '');
+      row.innerHTML = `
+        <div class="lb-rank">#${i+1}</div>
+        <div class="lb-name">${escapeHtml(entry.player_name)}</div>
+        <div class="lb-score">${entry.score}</div>
+      `;
+      list.appendChild(row);
+    });
+    lbContent.innerHTML = '';
+    lbContent.appendChild(list);
+  }catch(e){
+    lbContent.innerHTML = '<div class="lb-status">Kon ranglijst niet laden. Probeer het straks opnieuw.</div>';
+  }
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function openLeaderboard(){
+  lbOverlay.style.display = 'flex';
+  loadLeaderboard(activeLbMode);
+}
+
+function closeLeaderboard(){
+  lbOverlay.style.display = 'none';
+}
+
+function switchLbTab(mode){
+  activeLbMode = mode;
+  lbTabNormal.classList.toggle('active', mode === 'normal');
+  lbTabHardcore.classList.toggle('active', mode === 'hardcore');
+  loadLeaderboard(mode);
+}
+
+openLeaderboardBtn.addEventListener('click', openLeaderboard);
+closeLeaderboardBtn.addEventListener('click', closeLeaderboard);
+lbOverlay.addEventListener('click', (e)=>{ if(e.target === lbOverlay) closeLeaderboard(); });
+lbTabNormal.addEventListener('click', ()=> switchLbTab('normal'));
+lbTabHardcore.addEventListener('click', ()=> switchLbTab('hardcore'));
+
+// --- Spelersnaam (blijft bewaard tussen bezoeken) ---
+const NAME_KEY = 'spelersdossier-naam';
+let playerName = localStorage.getItem(NAME_KEY) || '';
+
+const nameOverlay = document.getElementById('nameOverlay');
+const nameForm = document.getElementById('nameForm');
+const nameInput = document.getElementById('nameInput');
+const currentNameDisplay = document.getElementById('currentNameDisplay');
+const changeNameBtn = document.getElementById('changeNameBtn');
+
+function showNameOverlay(prefill){
+  nameInput.value = prefill || '';
+  nameOverlay.style.display = 'flex';
+  setTimeout(()=> nameInput.focus(), 50);
+}
+
+function hideNameOverlay(){
+  nameOverlay.style.display = 'none';
+}
+
+function setPlayerName(name){
+  playerName = name.trim().slice(0, 30);
+  localStorage.setItem(NAME_KEY, playerName);
+  currentNameDisplay.textContent = playerName;
+}
+
+nameForm.addEventListener('submit', (e)=>{
+  e.preventDefault();
+  const val = nameInput.value.trim();
+  if(!val) return;
+  setPlayerName(val);
+  hideNameOverlay();
+});
+
+changeNameBtn.addEventListener('click', ()=>{
+  showNameOverlay(playerName);
+});
+
 let deck = [];
 let current = null;
 let clueOrder = [];
@@ -658,9 +978,9 @@ function refillDeckIfNeeded(){
 
 async function loadStats(){
   try{
-    const r = await window.storage.get('voetbaldossier-stats');
-    if(r && r.value){
-      const parsed = JSON.parse(r.value);
+    const raw = localStorage.getItem('spelersdossier-stats');
+    if(raw){
+      const parsed = JSON.parse(raw);
       best = parsed.best || 0;
     }
   }catch(e){ /* nog geen opgeslagen record */ }
@@ -669,7 +989,7 @@ async function loadStats(){
 
 async function saveBest(){
   try{
-    await window.storage.set('voetbaldossier-stats', JSON.stringify({best}));
+    localStorage.setItem('spelersdossier-stats', JSON.stringify({best}));
   }catch(e){ /* opslaan mislukt, geen probleem voor het spel zelf */ }
 }
 
@@ -746,6 +1066,7 @@ function endGame(){
     bestEl.textContent = best;
     saveBest();
   }
+  submitScoreToLeaderboard(streak);
   playArea.style.display = 'none';
   gameOverArea.style.display = 'block';
   gameOverArea.innerHTML = `
@@ -753,9 +1074,11 @@ function endGame(){
       <div class="title">Game over</div>
       <div class="name">Deze speler bleef onbekend: <b>${current.n}</b><br>Eindreeks: <b>${streak}</b></div>
       <button id="restartBtn">Nieuw spel starten</button>
+      <button type="button" id="viewLbBtn" style="margin-top:8px; background:none; color:var(--ink); border-color:var(--ink);">Bekijk ranglijst</button>
     </div>
   `;
   document.getElementById('restartBtn').addEventListener('click', newGame);
+  document.getElementById('viewLbBtn').addEventListener('click', openLeaderboard);
 }
 
 function showContinueButton(){
@@ -822,7 +1145,24 @@ formEl.addEventListener('submit', (e)=>{
   }
 });
 
-loadStats().then(newGame);
+function initGame(){
+  if(playerName){
+    currentNameDisplay.textContent = playerName;
+    hideNameOverlay();
+    loadStats().then(newGame);
+  } else {
+    showNameOverlay();
+  }
+}
+
+// Zodra een naam voor het eerst wordt ingevuld, start het spel meteen daarna
+nameForm.addEventListener('submit', ()=>{
+  if(!gameOver && current === null){
+    loadStats().then(newGame);
+  }
+}, { once: false });
+
+initGame();
 </script>
 </body>
 </html>
