@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="nl">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Het Spelersdossier</title>
+<title>The Player Dossier</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -271,6 +271,41 @@
   .name-card form{margin-bottom:0;}
   .name-card input[type=text]{text-align:center;}
 
+  .mode-choices{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .mode-btn{
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    text-align:left;
+    width:100%;
+    padding:14px 16px;
+    background:var(--paper-dark);
+    border:1.5px solid var(--ink);
+    color:var(--ink);
+    text-transform:none;
+    letter-spacing:normal;
+  }
+  .mode-btn:hover:not(:disabled){background:var(--ink); color:var(--paper); border-color:var(--ink);}
+  .mode-btn:hover:not(:disabled) .mode-desc{color:var(--paper);}
+  .mode-btn.hardcore{border-color:var(--red);}
+  .mode-btn.hardcore:hover:not(:disabled){background:var(--red); border-color:var(--red);}
+  .mode-btn.hardcore:hover:not(:disabled) .mode-desc{color:var(--paper);}
+  .mode-name{font-family:'Special Elite', monospace; font-size:15px;}
+  .mode-desc{font-size:11.5px; color:var(--ink-soft); font-weight:400; line-height:1.45;}
+
+  .reveal-btn{
+    width:100%;
+    margin-top:6px;
+    background:none;
+    color:var(--ink);
+    border-color:var(--ink);
+  }
+  .reveal-btn:hover:not(:disabled){background:var(--ink); color:var(--paper);}
+
   .player-tag{
     font-size:11px;
     color:var(--ink-soft);
@@ -405,53 +440,72 @@
 
 <div class="name-overlay" id="nameOverlay" style="display:none;">
   <div class="name-card">
-    <div class="tab">DOSSIER — REGISTRATIE</div>
-    <h2>Wie ben jij, scout?</h2>
-    <p>Vul je naam in voor je begint. Deze verschijnt op het scoreboard en wordt onthouden voor volgende keren.</p>
+    <div class="tab">DOSSIER — REGISTRATION</div>
+    <h2>Who are you, scout?</h2>
+    <p>Enter your name before you begin. It appears on the scoreboard and is remembered for next time.</p>
     <form id="nameForm">
-      <input type="text" id="nameInput" placeholder="Jouw naam…" autocomplete="off" maxlength="30" required>
+      <input type="text" id="nameInput" placeholder="Your name…" autocomplete="off" maxlength="30" required>
       <button type="submit">Start</button>
     </form>
+  </div>
+</div>
+
+<div class="name-overlay" id="modeOverlay" style="display:none;">
+  <div class="name-card">
+    <div class="tab">DOSSIER — CLEARANCE LEVEL</div>
+    <h2>Choose your mode</h2>
+    <p>Pick how you want to play. You can switch modes any time from the game over screen.</p>
+    <div class="mode-choices">
+      <button type="button" class="mode-btn" id="modeNormalBtn">
+        <span class="mode-name">Normal</span>
+        <span class="mode-desc">Three lives. A wrong guess just reveals another clue.</span>
+      </button>
+      <button type="button" class="mode-btn hardcore" id="modeHardcoreBtn">
+        <span class="mode-name">Hardcore</span>
+        <span class="mode-desc">One life. A single wrong guess ends your run instantly.</span>
+      </button>
+    </div>
   </div>
 </div>
 
 <div class="lb-overlay" id="lbOverlay">
   <div class="lb-card">
     <header>
-      <h2>🏆 Ranglijst</h2>
+      <h2>🏆 Leaderboard</h2>
       <button type="button" class="lb-close" id="closeLeaderboardBtn">✕</button>
     </header>
     <div class="lb-tabs">
-      <button type="button" class="lb-tab active" id="lbTabNormal" data-mode="normal">Normale mode</button>
+      <button type="button" class="lb-tab active" id="lbTabNormal" data-mode="normal">Normal mode</button>
       <button type="button" class="lb-tab" id="lbTabHardcore" data-mode="hardcore">Hardcore mode</button>
     </div>
     <div id="lbContent">
-      <div class="lb-status">Bezig met laden…</div>
+      <div class="lb-status">Loading…</div>
     </div>
   </div>
 </div>
 
 <div class="wrap">
-  <div class="tab">STRIKT VERTROUWELIJK</div>
+  <div class="tab">STRICTLY CONFIDENTIAL</div>
   <div class="file">
     <header class="top">
-      <h1>Het Spelersdossier</h1>
+      <h1>The Player Dossier</h1>
       <div class="lives" id="lives"></div>
     </header>
 
     <div class="streakbar">
-      <span>Huidige reeks: <b id="streak">0</b></span>
-      <span>Beste reeks: <b id="best">0</b></span>
-      <button type="button" class="lb-btn" id="openLeaderboardBtn">🏆 Ranglijst</button>
+      <span>Current streak: <b id="streak">0</b></span>
+      <span>Best streak: <b id="best">0</b></span>
+      <span>Mode: <b id="modeDisplay">Normal</b></span>
+      <button type="button" class="lb-btn" id="openLeaderboardBtn">🏆 Leaderboard</button>
     </div>
 
     <div id="playArea">
       <div class="clues" id="clues"></div>
       <div class="feedback" id="feedback"></div>
       <form id="guessForm">
-        <input type="text" id="guessInput" placeholder="Typ de naam van de speler…" autocomplete="off" list="playerSuggestions">
+        <input type="text" id="guessInput" placeholder="Type the player's name…" autocomplete="off" list="playerSuggestions">
         <datalist id="playerSuggestions"></datalist>
-        <button type="submit" id="submitBtn">Gok</button>
+        <button type="submit" id="submitBtn">Guess</button>
       </form>
       <div class="log" id="log"></div>
     </div>
@@ -459,348 +513,358 @@
     <div id="gameOverArea" style="display:none;"></div>
 
     <footer class="note">
-      150+ spelers uit de grootste competities en voetballanden, van vroeger en nu.<br>
-      Spelen als <b id="currentNameDisplay"></b> — <button type="button" class="player-tag" id="changeNameBtn">niet jij? naam wijzigen</button>
+      150+ players from the biggest leagues and football nations, past and present.<br>
+      Playing as <b id="currentNameDisplay"></b> — <button type="button" class="player-tag" id="changeNameBtn">not you? change name</button>
     </footer>
   </div>
 </div>
 
 <script>
 const PLAYERS = [
-{n:"Lionel Messi",c:["Geboren in Rosario, Argentinië","Doorliep vanaf jonge leeftijd de jeugdopleiding La Masia","Bijnaam 'La Pulga', de Vlo","Recordhouder met acht Gouden Ballen","Werd in 2022 eindelijk wereldkampioen met zijn land"]},
-{n:"Cristiano Ronaldo",c:["Geboren op het Portugese eiland Madeira","Begon zijn profcarrière bij Sporting Lissabon","Bekend om zijn 'Siuuu'-juichgebaar","Won vijf keer de Champions League","All-time topscorer van het Portugese nationale elftal"]},
-{n:"Diego Maradona",c:["Geboren in een arme buitenwijk van Buenos Aires","Speelde het merendeel van zijn carrière in Napels","Scoorde in 1986 de 'Hand van God'","Leidde Argentinië in 1986 naar de wereldtitel","Wordt vaak samen met Pelé de beste ooit genoemd"]},
-{n:"Pelé",c:["Geboren als Edson Arantes do Nascimento","Debuteerde als tiener bij Santos","Werd op zijn 17e al wereldkampioen","Won in totaal drie keer het WK met Brazilië","Wordt vaak 'O Rei' (De Koning) genoemd"]},
-{n:"Johan Cruyff",c:["Geboren in Amsterdam-Oost, vlak bij het stadion van Ajax","Droeg bij Ajax en Oranje het legendarische rugnummer 14","Gaf zijn naam aan een beroemde draai met de bal","Werd drie keer verkozen tot Europees Voetballer van het Jaar","Werd na zijn carrière een invloedrijke trainer bij Ajax en Barcelona"]},
-{n:"Franz Beckenbauer",c:["Geboren in München, West-Duitsland","Herdefinieerde de rol van laatste man als aanvallende libero","Bijnaam 'Der Kaiser'","Won het WK zowel als speler (1974) als bondscoach (1990)","Bracht het WK 2006 naar zijn thuisland als organisator"]},
-{n:"Zinedine Zidane",c:["Geboren in Marseille uit Algerijnse ouders","Stond bekend om zijn balvaardigheid met de 'roulette'","Kopte twee keer raak in de WK-finale van 1998","Werd in de WK-finale van 2006 uitgesloten na een kopstoot","Won later als trainer drie keer op rij de Champions League met Real Madrid"]},
-{n:"Ronaldo Nazário",c:["Geboren in een arme wijk van Rio de Janeiro","Brak internationaal door bij PSV Eindhoven","Bijnaam 'De Fenomeen'","Werd topscorer op het WK van 2002","Herstelde na zware knieblessures van diverse comebacks"]},
-{n:"Ronaldinho",c:["Geboren in Porto Alegre, Brazilië","Stond bekend om zijn permanente glimlach op het veld","Speelde zijn beste jaren bij FC Barcelona","Werd twee keer verkozen tot FIFA Wereldvoetballer van het Jaar","Won in 2002 het WK met Brazilië"]},
-{n:"Romário",c:["Geboren in Rio de Janeiro, Brazilië","Vormde bij Barcelona een dodelijk duo met Hristo Stoichkov","Bijnaam 'De Korte'","Scoorde meer dan duizend doelpunten in zijn carrière (eigen telling)","Werd topscorer en wereldkampioen op het WK van 1994"]},
-{n:"Rivaldo",c:["Geboren in Recife, Brazilië, in armoede","Had een herkenbare, kromme beenstand","Werd in 1999 verkozen tot Wereldvoetballer van het Jaar","Maakte een spectaculaire omhaal in de Champions League voor Barcelona","Werd wereldkampioen met Brazilië in 2002"]},
-{n:"Roberto Carlos",c:["Geboren in het Braziliaanse Garça","Speelde vrijwel zijn hele carrière als linksback bij Real Madrid","Stond bekend om zijn enorme trapkracht","Schoot in 1997 een vrije trap die leek te buigen als een boemerang","Werd viermaal kampioen van Spanje met Real Madrid"]},
-{n:"Cafu",c:["Geboren in een favela in São Paulo","Speelde als rechtsback bij AS Roma en AC Milan","Is de enige speler die drie WK-finales speelde","Was aanvoerder van Brazilië op het WK van 2002","Werd twee keer wereldkampioen (1994 en 2002)"]},
-{n:"Kaká",c:["Geboren in Brasília, Brazilië","Was diep gelovig en toonde dit na elk doelpunt","Werd in 2007 Wereldvoetballer van het Jaar bij AC Milan","Vertrok in 2009 voor een recordbedrag naar Real Madrid","Won in 2007 de Champions League"]},
-{n:"Neymar",c:["Geboren in São Paulo, Brazilië","Brak door bij Santos, de oude club van Pelé","Vertrok in 2017 voor een wereldrecordbedrag naar Paris Saint-Germain","Staat bekend om zijn dribbels en soms overdreven valpartijen","Is topscorer aller tijden van het Braziliaanse nationale elftal"]},
-{n:"Vinícius Júnior",c:["Geboren in São Gonçalo, Brazilië","Kwam als tiener over van Flamengo naar Real Madrid","Speelt als linksbuiten met explosieve snelheid","Scoorde de winnende goal in de Champions League-finale van 2022","Werd tweede bij de Ballon d'Or-verkiezing van 2024"]},
-{n:"Casemiro",c:["Geboren in São José dos Campos, Brazilië","Speelde jarenlang als verdedigende middenvelder bij Real Madrid","Won vijf keer de Champions League","Stond bekend als de stille motor achter de sterren","Vertrok in 2022 naar Manchester United"]},
-{n:"Thiago Silva",c:["Geboren in Rio de Janeiro, Brazilië","Gold lange tijd als een van de beste centrale verdedigers ter wereld","Was aanvoerder van zowel AC Milan als PSG","Speelde tot op late leeftijd nog op topniveau in de Premier League","Werd door velen 'O Monstro' genoemd"]},
-{n:"Alisson Becker",c:["Geboren in Novo Hamburgo, Brazilië","Werd bekend als doelman van AS Roma","Maakte een cruciale kopgoal in blessuretijd tegen West Bromwich","Won de Champions League met Liverpool in 2019","Geldt als een van de beste doelmannen van zijn generatie"]},
-{n:"Sergio Agüero",c:["Geboren in Quilmes, Argentinië","Trouwde ooit met de dochter van Diego Maradona","Bijnaam 'Kun'","Scoorde in de allerlaatste minuut een titelbepalend doelpunt in 2012","Is topscorer aller tijden van Manchester City"]},
-{n:"Ángel Di María",c:["Geboren in Rosario, Argentinië","Stond bekend om zijn dribbels over de linkerflank","Scoorde de winnende goal in de Copa América-finale van 2021","Maakte ook de openingstreffer in de WK-finale van 2022","Werd bijgenaamd 'Fideo' (de noedel)"]},
-{n:"Julián Álvarez",c:["Geboren in Calchín, Argentinië","Brak door bij River Plate","Vormde bij het WK 2022 een dodelijk duo met Messi","Vertrok naar Manchester City en later Atlético Madrid","Werd op jonge leeftijd al wereldkampioen"]},
-{n:"Lautaro Martínez",c:["Geboren in Bahía Blanca, Argentinië","Speelt als spits bij Internazionale","Vormt vaak een aanvalslinie met Julián Álvarez bij Argentinië","Werd topscorer van de Copa América 2024","Draagt bij Inter de aanvoerdersband"]},
-{n:"Emiliano Martínez",c:["Geboren in Mar del Plata, Argentinië","Werd doelman van Aston Villa na jaren op de bank bij Arsenal","Stond bekend om zijn intimiderende gedrag bij strafschoppen","Won de Gouden Handschoen op het WK van 2022","Bijnaam 'Dibu'"]},
-{n:"Gabriel Batistuta",c:["Geboren in Reconquista, Argentinië","Stond bekend om zijn keiharde afstandsschoten","Speelde zijn beste jaren bij Fiorentina in Italië","Vierde doelpunten met een kenmerkend gebaar naar de hemel","Is een van Argentinië's grootste spitsen aller tijden"]},
-{n:"Javier Zanetti",c:["Geboren in Buenos Aires, Argentinië","Speelde zijn hele Europese carrière bij Internazionale","Was jarenlang aanvoerder van zowel Inter als Argentinië","Combineerde de rol van rechtsback en middenvelder","Speelde meer dan achthonderd wedstrijden voor Inter"]},
-{n:"Juan Román Riquelme",c:["Geboren in Buenos Aires, Argentinië","Stond bekend om zijn trage, elegante speelstijl","Speelde voor zowel Boca Juniors als Villarreal","Miste in 2006 een beslissende strafschop tegen Villarreal","Werd gezien als de laatste echte 'nummer 10' van zijn generatie"]},
-{n:"Javier Mascherano",c:["Geboren in San Lorenzo, Argentinië","Werd bij Barcelona omgevormd van middenvelder tot centrale verdediger","Bijnaam 'El Jefecito' (het kleine baasje)","Was jarenlang aanvoerder van het Argentijnse nationale elftal","Speelde de WK-finale van 2014"]},
-{n:"Diego Godín",c:["Geboren in Sauce, Uruguay","Was jarenlang de rots in de verdediging van Atlético Madrid","Kopte een titelbepalend doelpunt tegen Barcelona in 2014","Was aanvoerder van Uruguay op meerdere toernooien","Stond bekend om zijn kale hoofd en fysieke duels"]},
-{n:"Lothar Matthäus",c:["Geboren in Erlangen, West-Duitsland","Speelde op zowel het middenveld als in de verdediging","Was aanvoerder van West-Duitsland tijdens het WK van 1990","Won als eerste Duitser de Gouden Bal","Speelt met recordaantal WK-duels voor Duitsland"]},
-{n:"Jürgen Klinsmann",c:["Geboren in Göppingen, West-Duitsland","Vierde doelpunten vaak met een kenmerkende duik","Werd topscorer op het WK van 1990","Werd later bondscoach van zowel Duitsland als de VS","Speelde voor onder meer Inter, Monaco en Tottenham"]},
-{n:"Oliver Kahn",c:["Geboren in Karlsruhe, West-Duitsland","Stond bekend om zijn agressieve, intimiderende speelstijl als doelman","Bijnaam 'Der Titan'","Werd op het WK van 2002 verkozen tot beste speler van het toernooi","Speelde vrijwel zijn hele carrière bij Bayern München"]},
-{n:"Michael Ballack",c:["Geboren in Görlitz, Oost-Duitsland","Speelde voor Bayer Leverkusen, Bayern München en Chelsea","Verloor met Leverkusen in 2002 drie finales op rij","Was jarenlang aanvoerder van het Duitse nationale elftal","Miste door blessure de WK-finale van 2010, niet die van 2002"]},
-{n:"Miroslav Klose",c:["Geboren in Opole, Polen, maar speelde voor Duitsland","Stond bekend om zijn salto's bij het juichen","Werd topscorer op het WK van 2006","Is recordhouder aller tijden met de meeste WK-doelpunten","Speelde voor onder meer Werder Bremen en Lazio"]},
-{n:"Philipp Lahm",c:["Geboren in München, Duitsland","Kon zowel als linksback als rechtsback uitstekend uit de voeten","Was aanvoerder van Duitsland tijdens het WK van 2014","Won dat toernooi de wereldtitel in Zuid-Amerika","Speelde zijn hele carrière voor Bayern München"]},
-{n:"Bastian Schweinsteiger",c:["Geboren in Kolbermoor, West-Duitsland","Speelde als controlerende middenvelder bij Bayern München","Werd tot beste speler van de WK-finale 2014 verkozen","Trouwde met een tennisster","Sloot zijn carrière af bij Chicago Fire"]},
-{n:"Manuel Neuer",c:["Geboren in Gelsenkirchen, Duitsland","Herdefinieerde de rol van doelman als extra veldspeler","Was aanvoerder van Bayern München","Won de wereldtitel met Duitsland in 2014","Speelde eerder voor Schalke 04 voordat hij naar Bayern vertrok"]},
-{n:"Thomas Müller",c:["Geboren in Weilheim, Duitsland","Werd topscorer op het WK van 2010 als tiener","Munt zichzelf de term 'Raumdeuter' (ruimte-interpreteerder) toe","Speelde zijn hele carrière bij Bayern München","Won in 2014 de wereldtitel met Duitsland"]},
-{n:"Toni Kroos",c:["Geboren in Greifswald, Duitsland","Stond bekend om zijn precieze lange passes","Won meerdere Champions Leagues bij Real Madrid","Werd wereldkampioen met Duitsland in 2014","Stopte in 2024 na het EK in eigen land"]},
-{n:"Joshua Kimmich",c:["Geboren in Rottweil, Duitsland","Kan zowel als rechtsback als verdedigende middenvelder spelen","Werd opgeleid bij RB Leipzig voordat hij naar Bayern vertrok","Is een vaste waarde en vaak aanvoerder bij Bayern München","Vormt al jaren de ruggengraat van het Duitse nationale elftal"]},
-{n:"Jamal Musiala",c:["Geboren in Stuttgart, Duitsland, maar groeide op in Engeland","Speelde als jeugdspeler bij Chelsea voordat hij naar Bayern vertrok","Koos ervoor voor Duitsland te spelen in plaats van Engeland","Staat bekend om zijn dribbels in kleine ruimtes","Is een van de grootste jonge talenten van het Duitse voetbal"]},
-{n:"Mario Götze",c:["Geboren in Memmingen, Duitsland","Brak jong door bij Borussia Dortmund","Vertrok als tiener naar aartsrivaal Bayern München","Scoorde de winnende goal in de WK-finale van 2014","Kon nooit meer helemaal aan die piek tippen"]},
-{n:"Marco Reus",c:["Geboren in Dortmund, Duitsland","Speelde zijn hele topcarrière bij zijn geboortestad Borussia Dortmund","Werd vaak geplaagd door blessures op cruciale momenten","Miste jarenlang grote toernooien met Duitsland door pech","Was jarenlang aanvoerder van Dortmund"]},
-{n:"Mesut Özil",c:["Geboren in Gelsenkirchen, Duitsland, uit een Turkse familie","Werd bekend om zijn subtiele, verrassende passing","Speelde voor Real Madrid en later Arsenal","Won de wereldtitel met Duitsland in 2014","Trok zich later terug uit het Duitse elftal na felle kritiek"]},
-{n:"Mats Hummels",c:["Geboren in Bergisch Gladbach, Duitsland","Speelde afwisselend voor Borussia Dortmund en Bayern München","Stond bekend om zijn precieze passing vanuit de verdediging","Werd wereldkampioen met Duitsland in 2014","Zoon van een voormalig assistent-trainer van Dortmund"]},
-{n:"Michel Platini",c:["Geboren in Joeuf, Frankrijk","Stond bekend om zijn precieze vrije trappen","Won drie keer op rij de Gouden Bal","Leidde Frankrijk naar de Europese titel van 1984","Werd later voorzitter van de Europese voetbalbond UEFA"]},
-{n:"Thierry Henry",c:["Geboren in Les Ulis, bij Parijs","Werd omgevormd van buitenspeler naar dodelijke spits bij Arsenal","Is topscorer aller tijden van Arsenal","Was onderdeel van het ongeslagen Arsenal-team van 2003-2004","Werd wereldkampioen met Frankrijk in 1998"]},
-{n:"Kylian Mbappé",c:["Geboren in Bondy, bij Parijs","Brak door bij AS Monaco als tiener","Scoorde op zijn negentiende al in een WK-finale","Werd topscorer van het WK van 2022 met een hattrick in de finale","Vertrok in 2024 transfervrij naar Real Madrid"]},
-{n:"Karim Benzema",c:["Geboren in Lyon, Frankrijk","Speelde zestien seizoenen als spits bij Real Madrid","Won in 2022 eindelijk de Gouden Bal","Vormde ooit een dodelijk trio met Cristiano Ronaldo en Gareth Bale","Vertrok in 2023 naar Saudi-Arabië"]},
-{n:"Antoine Griezmann",c:["Geboren in Mâcon, Frankrijk","Werd afgewezen door Franse clubs en vertrok jong naar Spanje","Speelde zijn beste jaren bij Atlético Madrid","Werd topschutter en beste speler van het WK 2018","Won dat toernooi de wereldtitel met Frankrijk"]},
-{n:"N'Golo Kanté",c:["Geboren in Parijs, Frankrijk","Werd pas laat opgemerkt door grote clubs","Won de Premier League met Leicester City als ongekende verrassing","Won een jaar later ook de Champions League met Chelsea","Staat bekend als een van de beste balveroveraars ter wereld"]},
-{n:"Paul Pogba",c:["Geboren in Lagny-sur-Marne, Frankrijk","Verliet Manchester United als jongere om bij Juventus te doorbreken","Keerde later voor een recordbedrag terug naar Manchester United","Stond bekend om zijn opvallende kapsels","Werd wereldkampioen met Frankrijk in 2018"]},
-{n:"Ousmane Dembélé",c:["Geboren in Vernon, Frankrijk","Brak razendsnel door bij Rennes en Borussia Dortmund","Vertrok als piepjonge speler voor een recordbedrag naar Barcelona","Had bij Barcelona te kampen met veel blessures","Speelt inmiddels voor Paris Saint-Germain"]},
-{n:"Patrick Vieira",c:["Geboren op Senegalese bodem, maar speelde voor Frankrijk","Vormde bij Arsenal een ijzersterk middenveld duo","Was jarenlang aanvoerder van Arsenal","Werd wereldkampioen met Frankrijk in 1998","Werd later trainer bij onder meer Crystal Palace"]},
-{n:"Marcel Desailly",c:["Geboren in Accra, Ghana, maar speelde voor Frankrijk","Won de Champions League met zowel Marseille als AC Milan","Speelde als controlerende verdediger op het hoogste niveau","Werd wereldkampioen met Frankrijk in 1998","Bijnaam 'De Rots van Gibraltar'"]},
-{n:"Lilian Thuram",c:["Geboren op Guadeloupe, speelde voor Frankrijk","Scoorde in de WK-halve finale van 1998 zijn enige twee interlandgoals ooit","Speelde jarenlang als rechtsback bij Parma en Juventus","Werd wereldkampioen met Frankrijk in 1998","Is de vader van voetballer Marcus Thuram"]},
-{n:"Robert Pirès",c:["Geboren in Reims, Frankrijk, uit een Portugese familie","Was een sleutelspeler in het ongeslagen Arsenal-seizoen van 2003-2004","Stond bekend om zijn techniek als linksbuiten","Werd wereldkampioen met Frankrijk in 1998","Werd ook Europees kampioen in 2000"]},
-{n:"Franck Ribéry",c:["Geboren in Boulogne-sur-Mer, Frankrijk","Heeft een opvallend litteken in zijn gezicht door een ongeval als kind","Speelde jarenlang samen met Arjen Robben bij Bayern München","Won in 2013 de Champions League, Bundesliga en DFB-Pokal","Werd nooit verkozen tot Wereldvoetballer van het Jaar, ondanks een topjaar"]},
-{n:"David Trezeguet",c:["Geboren in Rouen, Frankrijk, maar groeide op in Argentinië","Scoorde de gouden goal waarmee Frankrijk het EK van 2000 won","Speelde zijn beste jaren als spits bij Juventus","Werd wereldkampioen met Frankrijk in 1998","Miste een strafschop in de WK-finale van 2006"]},
-{n:"Eusébio",c:["Geboren in Mozambique, destijds een Portugese kolonie","Werd de eerste grote Afrikaanse ster van het Europese voetbal","Speelde zijn hele carrière bij Benfica","Bijnaam 'De Zwarte Panter'","Werd topscorer van het WK van 1966"]},
-{n:"Luís Figo",c:["Geboren in Lissabon, Portugal","Maakte in 2000 een omstreden overstap van Barcelona naar Real Madrid","Werd bij zijn terugkeer in Barcelona met een varkenskop bekogeld","Won in 2000 de Gouden Bal","Was jarenlang aanvoerder van het Portugese nationale elftal"]},
-{n:"Rui Costa",c:["Geboren in Lissabon, Portugal","Stond bekend om zijn subtiele, verrassende passing","Speelde zijn beste jaren bij Fiorentina","Vertrok in 2001 naar AC Milan","Werd vaak 'Maestro' genoemd om zijn spelinzicht"]},
-{n:"Bernardo Silva",c:["Geboren op het eiland Madeira, Portugal","Werd opgeleid bij Benfica","Speelt als aanvallende middenvelder bij Manchester City","Won meerdere keren de Premier League en de Champions League","Staat bekend om zijn techniek in kleine ruimtes"]},
-{n:"Pepe",c:["Geboren in Maceió, Brazilië, maar speelde voor Portugal","Werd bekend als harde, fysieke centrale verdediger bij Real Madrid","Speelde later jarenlang samen met Ronaldo bij Portugal","Bleef tot op zeer late leeftijd op topniveau spelen","Werd berucht om zijn agressieve overtredingen"]},
-{n:"Bruno Fernandes",c:["Geboren in Maia, Portugal","Brak door bij Sporting Lissabon","Werd na zijn transfer meteen de motor van Manchester United","Combineert veel doelpunten met veel assists vanaf het middenveld","Is aanvoerder van zowel Manchester United als Portugal"]},
-{n:"João Félix",c:["Geboren in Viseu, Portugal","Brak sensationeel door bij Benfica als tiener","Werd voor een recordbedrag verkocht aan Atlético Madrid","Kon zijn torenhoge verwachtingen daar niet altijd waarmaken","Werd later uitgeleend aan onder meer Chelsea en Barcelona"]},
-{n:"Bobby Charlton",c:["Geboren in Ashington, Engeland","Overleefde in 1958 een vliegtuigongeluk met zijn club","Speelde zijn hele carrière bij Manchester United","Werd wereldkampioen met Engeland in 1966","Werd later geridderd voor zijn verdiensten voor het voetbal"]},
-{n:"David Beckham",c:["Geboren in Leytonstone, Engeland","Stond bekend om zijn precieze vrije trappen en voorzetten","Trouwde met een van de Spice Girls","Speelde onder meer voor Manchester United en Real Madrid","Sloot zijn carrière af in de Amerikaanse competitie bij LA Galaxy"]},
-{n:"Steven Gerrard",c:["Geboren in Whiston, Engeland","Speelde zijn hele carrière als middenvelder bij Liverpool","Leidde in 2005 een historische comeback in een Europese finale vanaf 0-3","Was jarenlang aanvoerder van zowel Liverpool als Engeland","Werd later trainer bij onder meer Rangers"]},
-{n:"Frank Lampard",c:["Geboren in Romford, Engeland","Werd de topscorer aller tijden van Chelsea als middenvelder","Vormde jarenlang een rivaliteit met Steven Gerrard op het middenveld van Engeland","Won meerdere keren de Premier League met Chelsea","Werd later trainer, onder andere bij Chelsea zelf"]},
-{n:"Paul Scholes",c:["Geboren in Salford, Engeland","Stond bekend om zijn precieze lange passes en harde schoten","Speelde zijn hele carrière bij Manchester United","Werd door veel topspelers gezien als onderschat op wereldniveau","Speelde zelden voor het Engelse nationale elftal na eigen keuze"]},
-{n:"Wayne Rooney",c:["Geboren in Liverpool, Engeland","Brak op zijn zestiende door bij Everton met een spectaculair doelpunt","Werd topscorer aller tijden van zowel Manchester United als Engeland","Stond bekend om zijn felle, directe speelstijl","Werd op jonge leeftijd al aanvoerder van Engeland"]},
-{n:"Michael Owen",c:["Geboren in Chester, Engeland","Scoorde op het WK van 1998 een spectaculair solodoelpunt tegen Argentinië","Won in 2001 de Gouden Bal","Speelde voor Liverpool, Real Madrid en Manchester United","Werd later bekend als analist en pundit"]},
-{n:"Alan Shearer",c:["Geboren in Newcastle, Engeland","Is topscorer aller tijden van de Premier League","Speelde zijn beste jaren voor zijn geboortestad Newcastle United","Stond bekend om zijn kenmerkende juichgesture met opgestoken arm","Werd nooit met een club landskampioen van Engeland"]},
-{n:"Gary Lineker",c:["Geboren in Leicester, Engeland","Werd topscorer op het WK van 1986","Kreeg tijdens zijn hele carrière nooit een gele kaart","Speelde onder meer voor Barcelona en Tottenham Hotspur","Werd na zijn carrière een bekende tv-presentator"]},
-{n:"Harry Kane",c:["Geboren in Walthamstow, Engeland","Werd topscorer aller tijden van Tottenham Hotspur","Werd topscorer van het WK van 2018","Vertrok in 2023 eindelijk naar Bayern München voor zijn eerste grote prijs","Is topscorer aller tijden van het Engelse nationale elftal"]},
-{n:"Jude Bellingham",c:["Geboren in Stourbridge, Engeland","Debuteerde al op zijn zestiende in het profvoetbal bij Birmingham City","Vertrok jong naar Borussia Dortmund voordat hij naar Real Madrid ging","Scoorde direct indrukwekkende doelpunten in zijn eerste seizoen bij Real Madrid","Wordt gezien als een van de grootste talenten van zijn generatie"]},
-{n:"Bukayo Saka",c:["Geboren in Ealing, Londen, Engeland","Doorliep de volledige jeugdopleiding van Arsenal","Miste op zijn negentiende een beslissende penalty in een EK-finale","Herstelde van de misser op het EK en werd nadien een vaste waarde bij Arsenal en Engeland","Speelt meestal als rechtsbuiten"]},
-{n:"Declan Rice",c:["Geboren in Kingston upon Thames, Engeland","Speelde jeugdvoetbal bij Chelsea voordat hij naar West Ham vertrok","Werd voor een recordbedrag verkocht aan Arsenal","Speelt als verdedigende middenvelder","Koos er als tiener voor om voor Engeland te spelen in plaats van Ierland"]},
-{n:"Phil Foden",c:["Geboren in Stockport, Engeland","Doorliep de jeugdopleiding van Manchester City","Werd al vroeg vergeleken met zijn landgenoot Steven Gerrard qua stijl","Won meerdere keren de Premier League met zijn club","Werd verkozen tot Speler van het Jaar in de Premier League"]},
-{n:"John Terry",c:["Geboren in Barking, Engeland","Speelde zijn hele carrière bij Chelsea als centrale verdediger","Gleed in 2008 uit bij een beslissende strafschop in een Europese finale","Was jarenlang aanvoerder van zowel Chelsea als Engeland","Won vijf keer de Premier League"]},
-{n:"Rio Ferdinand",c:["Geboren in Peckham, Londen, Engeland","Werd voor een recordbedrag voor een verdediger naar Manchester United gehaald","Vormde daar een sterk duo in de verdediging","Werd later een bekende televisieanalist","Speelde voor West Ham en Leeds United"]},
-{n:"Ashley Cole",c:["Geboren in Stepney, Londen, Engeland","Gold jarenlang als een van de beste linksbacks ter wereld","Maakte een omstreden overstap van Arsenal naar rivaal Chelsea","Won meerdere keren zowel de FA Cup als de Premier League","Was onderdeel van het ongeslagen Arsenal-seizoen van 2003-2004"]},
-{n:"Peter Crouch",c:["Geboren in Macclesfield, Engeland","Stond bekend om zijn ongewoon lange gestalte voor een spits","Werd bekend om een robotachtig juichdansje","Speelde voor onder meer Liverpool, Tottenham en Stoke City","Scoorde relatief veel interlanddoelpunten voor Engeland ondanks weinig basisplaatsen"]},
-{n:"Kevin De Bruyne",c:["Geboren in Drongen, België","Vertrok na een moeizame periode bij Chelsea naar de Bundesliga","Brak definitief door bij VfL Wolfsburg","Werd een van de beste aangevers ter wereld bij Manchester City","Was jarenlang aanvoerder van de 'Gouden Generatie' van België"]},
-{n:"Eden Hazard",c:["Geboren in La Louvière, België","Brak door bij het Franse Lille","Werd tweemaal verkozen tot Speler van het Jaar in de Premier League bij Chelsea","Vertrok in 2019 voor een recordbedrag naar Real Madrid","Kon door blessures nooit zijn topniveau bij Real Madrid bereiken"]},
-{n:"Romelu Lukaku",c:["Geboren in Antwerpen, België, uit een Congolese familie","Werd als tiener al topscorer bij Anderlecht","Speelde voor onder meer Everton, Manchester United en Chelsea","Werd topscorer aller tijden van het Belgische nationale elftal","Speelt inmiddels in de Italiaanse competitie"]},
-{n:"Thibaut Courtois",c:["Geboren in Bree, België","Werd op jonge leeftijd uitgeleend aan Atlético Madrid vanuit Chelsea","Werd twee keer beste doelman van het WK","Won de Champions League met Real Madrid in een spectaculaire finale","Wordt gezien als een van de langste en beste doelmannen ter wereld"]},
-{n:"Vincent Kompany",c:["Geboren in Ukkel, België, uit een Congolese familie","Was jarenlang aanvoerder van Manchester City","Won meerdere Premier League-titels als verdediger","Werd later trainer, onder meer bij Burnley en Bayern München","Was ook aanvoerder van de Belgische 'Gouden Generatie'"]},
-{n:"Marouane Fellaini",c:["Geboren in Etterbeek, België, uit een Marokkaanse familie","Stond bekend om zijn opvallende afro-kapsel","Brak door bij Standard Luik en vertrok daarna naar Everton","Speelde later ook voor Manchester United","Werd vaak ingezet als fysieke aanvallende middenvelder"]},
-{n:"Dries Mertens",c:["Geboren in Leuven, België","Brak door bij PSV Eindhoven","Werd bij Napoli omgevormd van buitenspeler tot dodelijke spits","Werd topscorer aller tijden van zijn Italiaanse club","Vierde doelpunten met een kenmerkend gebaar met beide handen"]},
-{n:"Luis Suárez",c:["Geboren in Salto, Uruguay","Werd geschorst op het WK van 2010 na een handsbal op de doellijn","Werd later ook geschorst voor het bijten van tegenstanders","Vormde bij Barcelona een dodelijk trio met Messi en Neymar","Is topscorer aller tijden van het Uruguayaanse nationale elftal"]},
-{n:"Edinson Cavani",c:["Geboren in Salto, Uruguay","Stond bekend om zijn kopballen en werklust als spits","Werd topscorer aller tijden van Paris Saint-Germain","Speelde later voor Manchester United en Valencia","Vierde doelpunten vaak met een kenmerkend gebaar met twee vingers"]},
-{n:"Diego Forlán",c:["Geboren in Montevideo, Uruguay, uit een voetbalfamilie","Speelde in Engeland eerst als teleurstellende aankoop bij Manchester United","Bloeide op bij Villarreal en Atlético Madrid","Werd verkozen tot beste speler van het WK van 2010","Werd twee keer topscorer van de Spaanse competitie"]},
-{n:"Federico Valverde",c:["Geboren in Montevideo, Uruguay","Brak door bij Peñarol voordat hij naar Real Madrid vertrok","Staat bekend om zijn enorme loopvermogen op het middenveld","Scoort regelmatig spectaculaire afstandsschoten","Werd een vaste basisspeler bij Real Madrid en Uruguay"]},
-{n:"Zlatan Ibrahimović",c:["Geboren in Malmö, Zweden, uit een Balkan-familie","Stond bekend om zijn acrobatische, onmogelijke doelpunten","Speelde voor een indrukwekkende reeks topclubs door heel Europa","Werd bekend om zijn zelfverzekerde uitspraken in interviews","Sloot zijn Europese carrière af bij AC Milan op latere leeftijd"]},
-{n:"Henrik Larsson",c:["Geboren in Helsingborg, Zweden","Werd een clublegende bij Celtic in Schotland","Stond bekend om zijn kale hoofd en snorretje","Won een korte, succesvolle periode later ook bij Barcelona","Wordt gezien als een van de beste Zweedse spitsen ooit"]},
-{n:"Luka Modrić",c:["Geboren tijdens de oorlog in het toenmalige Joegoslavië, in Kroatië","Stond bekend om zijn balvastheid ondanks zijn kleine gestalte","Leidde Kroatië naar de WK-finale van 2018","Doorbrak dat jaar de dominantie van Messi en Ronaldo bij de Gouden Bal-verkiezing","Speelt al jaren op het middenveld van Real Madrid"]},
-{n:"Davor Šuker",c:["Geboren in Osijek, in het toenmalige Joegoslavië","Speelde voor onder meer Sevilla en Real Madrid","Werd topscorer van het WK van 1998","Leidde het kersverse Kroatië naar een verrassende derde plaats op dat toernooi","Werd later voorzitter van de Kroatische voetbalbond"]},
-{n:"Ivan Rakitić",c:["Geboren in Zwitserland uit Kroatische ouders","Brak door bij FC Basel en Sevilla","Won meerdere Champions Leagues bij FC Barcelona","Speelde de WK-finale van 2018 met Kroatië","Stond bekend om zijn veelzijdigheid op het middenveld"]},
-{n:"Mario Mandžukić",c:["Geboren in het toenmalige West-Duitsland uit Kroatische ouders","Stond bekend om zijn fysieke, strijdlustige speelstijl als spits","Won de Champions League met zowel Bayern München als Juventus","Scoorde een spectaculaire volley in de WK-finale van 2018","Was berucht om zijn felle duels met tegenstanders"]},
-{n:"Robert Lewandowski",c:["Geboren in Warschau, Polen","Brak door bij Borussia Dortmund","Scoorde ooit vijf doelpunten in negen minuten tijd voor Bayern München","Werd meerdere keren topscorer van de Bundesliga en de Champions League","Vertrok op latere leeftijd naar Barcelona"]},
-{n:"Peter Schmeichel",c:["Geboren in Gladsaxe, Denemarken","Stond bekend om zijn enorme uitstraling en 'ster-redding'","Was een sleutelspeler in de historische treble van Manchester United in 1999","Won met Denemarken verrassend het EK van 1992","Is de vader van doelman Kasper Schmeichel"]},
-{n:"Michael Laudrup",c:["Geboren in Kopenhagen, Denemarken","Stond bekend om zijn elegante balbehandeling en passing","Speelde voor zowel Barcelona als aartsrivaal Real Madrid","Wordt door velen de beste Deense voetballer ooit genoemd","Werd later een succesvolle trainer bij Swansea City"]},
-{n:"Christian Eriksen",c:["Geboren in Middelfart, Denemarken","Brak door bij Ajax voordat hij naar Tottenham vertrok","Stond bekend om zijn precieze vrije trappen en passing","Kreeg in 2021 tijdens een EK-duel een hartstilstand op het veld","Keerde na zijn hartstilstand terug in het topvoetbal met een defibrillator"]},
-{n:"Ryan Giggs",c:["Geboren in Cardiff, Wales","Speelde zijn hele carrière bij Manchester United","Won een recordaantal Premier League-titels","Stond bekend om zijn dribbels over de linkerflank","Werd nooit uitgeloot voor een groot toernooi met Wales tijdens zijn topjaren"]},
-{n:"Gareth Bale",c:["Geboren in Cardiff, Wales","Werd bij Tottenham omgevormd van linksback tot buitenspeler","Vertrok voor een wereldrecordbedrag naar Real Madrid","Scoorde een spectaculaire omhaal in een Champions League-finale","Leidde Wales in 2016 naar de halve finale van het EK"]},
-{n:"Ferenc Puskás",c:["Geboren in Boedapest, Hongarije","Stond bekend om zijn dodelijke linkerbeen","Was de ster van het 'Gouden Elftal' van Hongarije in de jaren vijftig","Vluchtte na een mislukte opstand naar Spanje","Werd topscorer bij Real Madrid, ondanks zijn late start daar"]},
-{n:"Mohamed Salah",c:["Geboren in Nagrig, Egypte","Werd bij Chelsea niet gezien als geschikt voor de Premier League","Brak alsnog door bij AS Roma en vervolgens Liverpool","Verbrak bij zijn eerste seizoen bij Liverpool een doelpuntenrecord","Is topscorer aller tijden van het Egyptische nationale elftal"]},
-{n:"Sadio Mané",c:["Geboren in Bambali, Senegal, in eenvoudige omstandigheden","Brak door bij Red Bull Salzburg en Southampton","Vormde bij Liverpool een dodelijk trio met Salah en Firmino","Won in 2022 met Senegal de Afrika Cup","Vertrok later naar Bayern München en de Saudische competitie"]},
-{n:"Didier Drogba",c:["Geboren in Abidjan, Ivoorkust","Werd bij Chelsea de dodelijke spits van hun eerste gouden periode","Scoorde de beslissende strafschop in de Champions League-finale van 2012","Riep na een burgeroorlog in zijn thuisland op tot vrede","Was jarenlang aanvoerder van Ivoorkust"]},
-{n:"Samuel Eto'o",c:["Geboren in Nkon, Kameroen","Won drie keer de Champions League bij drie verschillende clubs","Werd meerdere keren Afrikaans Voetballer van het Jaar","Speelde zijn beste jaren bij FC Barcelona en Internazionale","Vierde doelpunten regelmatig met een uitbundig dansje"]},
-{n:"Michael Essien",c:["Geboren in Accra, Ghana","Stond bekend om zijn fysieke kracht op het middenveld","Werd bij Chelsea bijgenaamd 'The Bison'","Speelde een sleutelrol in Chelsea's succesvolle periode onder José Mourinho","Werd meerdere keren Afrikaans Voetballer van het Jaar genomineerd"]},
-{n:"Riyad Mahrez",c:["Geboren in Sarcelles, Frankrijk, maar speelde voor Algerije","Was een sleutelspeler in de sensationele titel van Leicester City in 2016","Werd dat seizoen Speler van het Jaar in de Premier League","Vertrok later naar Manchester City","Won met Algerije de Afrika Cup van 2019"]},
-{n:"Erling Haaland",c:["Geboren in Leeds, Engeland, maar speelt voor Noorwegen","Zijn vader speelde ooit zelf in de Premier League","Scoorde als tiener negen keer in één WK-duel op jeugdniveau","Brak clubrecords bij Red Bull Salzburg en Borussia Dortmund","Verbrak in zijn eerste seizoen bij Manchester City het doelpuntenrecord van de Premier League"]},
-{n:"Roberto Baggio",c:["Geboren in Caldogno, Italië","Stond bekend om zijn paardenstaart als handelsmerk","Won in 1993 de Gouden Bal","Miste de beslissende strafschop in de WK-finale van 1994","Werd door fans liefdevol 'Il Divin Codino' genoemd"]},
-{n:"Paolo Maldini",c:["Geboren in Milaan, Italië, zoon van een oud-international","Speelde zijn hele carrière, ruim vijfentwintig jaar, bij AC Milan","Combineerde de posities linksback en centrale verdediger","Won vijf keer de Champions League","Wordt algemeen gezien als een van de beste verdedigers aller tijden"]},
-{n:"Franco Baresi",c:["Geboren in Travagliato, Italië","Speelde zijn hele carrière bij AC Milan","Vormde met Maldini een legendarische verdediging","Was aanvoerder van zowel Milan als Italië","Werd nooit met een groot internationaal toernooi kampioen, tot zijn frustratie"]},
-{n:"Andrea Pirlo",c:["Geboren in Flero, Italië","Werd bij AC Milan omgevormd van aanvallende naar verdedigende middenvelder","Stond bekend om zijn onnavolgbare passing van diep op het veld","Werd wereldkampioen met Italië in 2006","Bleef ook op latere leeftijd nog een sleutelspeler bij Juventus"]},
-{n:"Francesco Totti",c:["Geboren in Rome, Italië","Speelde zijn hele carrière, meer dan twintig jaar, bij AS Roma","Werd topscorer aller tijden van zijn club","Won de wereldtitel met Italië in 2006","Wordt door de fans van zijn club als een god vereerd"]},
-{n:"Alessandro Del Piero",c:["Geboren in Conegliano, Italië","Speelde bijna twintig jaar bij Juventus","Werd topscorer aller tijden van zijn club","Stond bekend om zijn kenmerkende doelpunten vanaf de rand van het strafschopgebied","Won de wereldtitel met Italië in 2006"]},
-{n:"Fabio Cannavaro",c:["Geboren in Napels, Italië","Was aanvoerder van Italië tijdens het WK van 2006","Won dat toernooi de wereldtitel als centrale verdediger","Werd als eerste verdediger in bijna twintig jaar tot Wereldvoetballer van het Jaar verkozen","Speelde voor Real Madrid"]},
-{n:"Gianluigi Buffon",c:["Geboren in Carrara, Italië","Speelde het grootste deel van zijn lange carrière bij Juventus","Won de wereldtitel met Italië in 2006","Bleef tot op zeer late leeftijd op topniveau keepen","Wordt gezien als een van de beste doelmannen aller tijden"]},
-{n:"Gianluigi Donnarumma",c:["Geboren in Castellammare di Stabia, Italië","Debuteerde al op zestienjarige leeftijd bij AC Milan","Werd op jonge leeftijd al vaste keus onder de lat","Werd beste speler van de EK-finale van 2021","Speelt inmiddels voor Paris Saint-Germain"]},
-{n:"Federico Chiesa",c:["Geboren in Genua, Italië, zoon van oud-international Enrico Chiesa","Brak door bij Fiorentina","Speelde een sleutelrol in het EK-succes van Italië in 2021","Speelde na zijn periode bij Fiorentina voor Juventus","Vertrok later naar de Premier League bij Liverpool"]},
-{n:"Alessandro Nesta",c:["Geboren in Rome, Italië","Gold als een van de meest elegante verdedigers van zijn generatie","Speelde voor zowel Lazio als AC Milan","Won meerdere keren de Champions League","Vormde met Maldini een sterk verdedigend duo bij Milan"]},
-{n:"Gennaro Gattuso",c:["Geboren in Corigliano Calabro, Italië","Stond bekend om zijn felle, strijdlustige speelstijl op het middenveld","Speelde jarenlang bij AC Milan","Werd wereldkampioen met Italië in 2006","Werd later trainer, onder meer bij zijn oude club Milan"]},
-{n:"Antonio Cassano",c:["Geboren in Bari, Italië","Werd gezien als een van de grootste talenten van zijn generatie","Speelde voor onder meer AS Roma, Real Madrid en Milan","Stond bekend om zijn talent, maar ook om zijn grillige gedrag","Kon zijn potentieel nooit volledig waarmaken op het hoogste niveau"]},
-{n:"Christian Vieri",c:["Geboren in Bologna, Italië, groeide op in Australië","Werd voor een wereldrecordbedrag verkocht aan Internazionale","Stond bekend om zijn kopkracht en afwerking als spits","Werd topscorer van het WK van 2002","Speelde voor een groot aantal verschillende Italiaanse topclubs"]},
-{n:"Alfredo Di Stéfano",c:["Geboren in Buenos Aires, Argentinië, maar speelde uiteindelijk voor Spanje","Won vijf keer op rij de Europacup met Real Madrid","Werd meerdere keren topscorer van de Spaanse competitie","Wordt beschouwd als een van de eerste echte wereldsterren van het voetbal","Kreeg de bijnaam 'De Blonde Pijl'"]},
-{n:"Xavi Hernández",c:["Geboren in Terrassa, vlak bij Barcelona","Doorliep de jeugdopleiding La Masia van FC Barcelona","Vormde met Andrés Iniesta het hart van het beroemde Barcelona-middenveld","Werd wereldkampioen met Spanje in 2010","Keerde later terug als hoofdtrainer bij zijn club"]},
-{n:"Andrés Iniesta",c:["Geboren in Fuentealbilla, een klein dorp in Spanje","Doorliep net als Xavi de jeugdopleiding La Masia","Scoorde de beslissende treffer in de WK-finale van 2010","Werd tweede bij de Gouden Bal-verkiezing van dat jaar","Wordt gezien als de belichaming van de 'tiki-taka'-speelstijl"]},
-{n:"Raúl González",c:["Geboren in Madrid, Spanje","Werd op zeventienjarige leeftijd al topscorer van Real Madrid","Was jarenlang topscorer aller tijden van zowel zijn club als Spanje","Won drie keer de Champions League","Stond bekend om zijn kenmerkende juichgebaar met duim en wijsvinger"]},
-{n:"Iker Casillas",c:["Geboren in Móstoles, Spanje","Debuteerde al op zeventienjarige leeftijd bij Real Madrid","Werd op zijn negentiende al vaste doelman in de Champions League-finale","Was aanvoerder van Spanje tijdens hun gouden generatie","Werd wereldkampioen in 2010 en tweevoudig Europees kampioen"]},
-{n:"Carles Puyol",c:["Geboren in La Pobla de Segur, Spanje","Stond bekend om zijn lange haren en agressieve speelstijl","Was jarenlang aanvoerder van FC Barcelona","Kopte Spanje naar de WK-finale van 2010","Speelde zijn hele carrière bij één club"]},
-{n:"Sergio Ramos",c:["Geboren in Camas, bij Sevilla, Spanje","Werd op jonge leeftijd al aanvoerder van Real Madrid","Scoorde een cruciale, late kopgoal in de Champions League-finale van 2014","Won de wereldtitel met Spanje in 2010","Staat bekend als een van de meest bestrafte spelers ooit met gele en rode kaarten"]},
-{n:"David Villa",c:["Geboren in Tuilla, Spanje","Is topscorer aller tijden van het Spaanse nationale elftal","Werd topscorer van het EK van 2008","Won de wereldtitel met Spanje in 2010","Speelde later ook nog in de Amerikaanse competitie bij New York City FC"]},
-{n:"Fernando Torres",c:["Geboren in Fuenlabrada, Spanje","Werd een publiekslieveling bij Liverpool als dodelijke spits","Maakte een omstreden overstap naar rivaal Chelsea voor een recordbedrag","Won met Spanje zowel het WK van 2010 als twee Europese titels","Keerde op latere leeftijd terug naar zijn jeugdclub Atlético Madrid"]},
-{n:"Pedri",c:["Geboren op de Canarische Eilanden, Spanje","Brak op zeer jonge leeftijd door bij FC Barcelona","Werd verkozen tot beste jonge speler van het EK van 2020","Stond bekend om zijn balvastheid en rust op het middenveld","Wordt gezien als de opvolger van Xavi en Iniesta qua speelstijl"]},
-{n:"Rodri",c:["Geboren in Madrid, Spanje","Brak door bij Atlético Madrid voordat hij naar Manchester City vertrok","Speelt als verdedigende middenvelder en regisseur","Scoorde de winnende goal in een Champions League-finale voor zijn club","Won in 2024 de Gouden Bal"]},
-{n:"Sergio Busquets",c:["Geboren in Sabadell, Spanje, zoon van een oud-doelman","Doorliep de jeugdopleiding La Masia van FC Barcelona","Speelde als verdedigende middenvelder achter Xavi en Iniesta","Werd wereldkampioen met Spanje in 2010","Vertrok op latere leeftijd naar de Amerikaanse competitie"]},
-{n:"Gerard Piqué",c:["Geboren in Barcelona, Spanje","Speelde als jeugdspeler enkele jaren bij Manchester United","Werd een clubicoon als verdediger bij FC Barcelona","Won de wereldtitel met Spanje in 2010","Werd na zijn carrière bekend als ondernemer en tv-persoonlijkheid"]},
-{n:"David Silva",c:["Geboren op de Canarische Eilanden, Spanje","Brak door bij Valencia voordat hij naar Manchester City vertrok","Stond bekend om zijn subtiele passing en balbehandeling","Werd wereldkampioen met Spanje in 2010","Was jarenlang de creatieve motor van Manchester City"]},
-{n:"Diego Costa",c:["Geboren in Lagarto, Brazilië, maar koos voor het Spaanse elftal","Stond bekend om zijn agressieve, confronterende speelstijl als spits","Werd twee keer kampioen van Engeland met Chelsea","Speelde voor Atlético Madrid","Werd berucht om zijn talrijke schermutselingen met tegenstanders"]},
-{n:"Marco van Basten",c:["Geboren in Utrecht, Nederland","Stond bekend om zijn perfecte, klassieke schiettechniek","Scoorde in de EK-finale van 1988 een onmogelijke volley","Won drie keer de Gouden Bal","Moest zijn carrière vroegtijdig beëindigen door aanhoudende enkelblessures"]},
-{n:"Dennis Bergkamp",c:["Geboren in Amsterdam, Nederland","Stond bekend om zijn angst om te vliegen","Werd bij Arsenal een publiekslieveling om zijn techniek en balcontrole","Scoorde een legendarisch doelpunt tegen Argentinië op het WK van 1998","Werd bijgenaamd 'The Non-Flying Dutchman'"]},
-{n:"Ruud Gullit",c:["Geboren in Amsterdam, Nederland","Stond bekend om zijn kenmerkende dreadlocks","Won in 1987 de Gouden Bal","Leidde Nederland naar de Europese titel van 1988","Werd later trainer en tv-analist"]},
-{n:"Frank Rijkaard",c:["Geboren in Amsterdam, Nederland","Was onderdeel van het gouden Nederlandse elftal van 1988","Won meerdere Europacups als speler bij AC Milan","Speelde in de jeugd samen met Gullit bij Ajax","Werd later succesvol trainer bij FC Barcelona"]},
-{n:"Edwin van der Sar",c:["Geboren in Voorhout, Nederland","Speelde jarenlang als doelman bij Ajax voordat hij naar Engeland vertrok","Stopte de beslissende strafschop in de Champions League-finale van 2008","Hield een clubrecord aantal wedstrijden zonder tegendoelpunt bij Manchester United","Werd later directeur bij zijn oude club Ajax"]},
-{n:"Robin van Persie",c:["Geboren in Rotterdam, Nederland","Werd topscorer van de Premier League bij Arsenal en Manchester United","Scoorde een spectaculaire vliegende kopbal tegen Spanje op het WK van 2014","Werd bijgenaamd 'The Flying Dutchman'","Is een van de topscorers aller tijden van het Nederlands elftal"]},
-{n:"Arjen Robben",c:["Geboren in Bedum, Nederland","Stond bekend om zijn onvermijdelijke actie naar binnen op zijn linkerbeen","Speelde jarenlang samen met Franck Ribéry bij Bayern München","Miste een grote kans in de WK-finale van 2010","Scoorde een legendarisch doelpunt in de laatste minuut tegen Spanje in 2014"]},
-{n:"Wesley Sneijder",c:["Geboren in Utrecht, Nederland","Won in één kalenderjaar de Champions League, Serie A en Coppa Italia met Internazionale","Stond bekend om zijn precieze afstandsschoten en vrije trappen","Leidde Nederland naar de WK-finale van 2010","Eindigde dat toernooi bij de laatste drie voor de Gouden Bal"]},
-{n:"Virgil van Dijk",c:["Geboren in Breda, Nederland","Werd voor een recordbedrag voor een verdediger naar Liverpool gehaald","Won de Champions League met Liverpool in 2019","Werd tweede bij de Gouden Bal-verkiezing van dat jaar","Is aanvoerder van zowel Liverpool als het Nederlands elftal"]},
-{n:"Frenkie de Jong",c:["Geboren in het Zeeuwse Arnemuiden, Nederland","Brak door bij Ajax tijdens hun sensationele Champions League-run in 2019","Vertrok naar FC Barcelona","Staat bekend om zijn techniek en draaien onder druk","Speelt als controlerende of aanvallende middenvelder"]},
-{n:"Memphis Depay",c:["Geboren in Moordrecht, Nederland","Brak door bij PSV Eindhoven","Maakte een moeizame overstap naar Manchester United","Herstelde zijn carrière bij Olympique Lyon","Is een van de topscorers van het Nederlands elftal in het moderne tijdperk"]},
-{n:"Clarence Seedorf",c:["Geboren in Paramaribo, Suriname, maar speelde voor Nederland","Won de Champions League met vier verschillende clubs","Is de enige speler ooit die dat kunststukje presteerde","Speelde onder meer bij Ajax, Real Madrid, Internazionale en AC Milan","Werd later ook trainer bij Milan"]},
-{n:"Patrick Kluivert",c:["Geboren in Amsterdam, Nederland, zoon van een international","Scoorde als negentienjarige de winnende goal in een Champions League-finale","Werd topscorer aller tijden van het Nederlands elftal, tot hij werd ingehaald","Speelde voor onder meer Ajax, Barcelona en AC Milan","Werd later bondscoach van meerdere Afrikaanse landen"]},
-{n:"Edgar Davids",c:["Geboren in Suriname, maar speelde voor Nederland","Stond bekend om zijn getinte bril die hij altijd droeg","Bijnaam 'Pitbull' vanwege zijn felle speelstijl op het middenveld","Speelde voor onder meer Ajax, AC Milan en Juventus","Werd geschorst na een positieve dopingtest"]},
-{n:"Jaap Stam",c:["Geboren in Kampen, Nederland","Gold als een van de beste centrale verdedigers van zijn tijd","Werd tot ieders verbazing plots verkocht door Manchester United","Speelde voor Lazio en Ajax","Werd later trainer bij onder meer Reading en Feyenoord"]},
-{n:"Marek Hamšík",c:["Geboren in Bánovce nad Bebravou, Slowakije","Werd de clublegende en topscorer aller tijden van Napoli","Stond bekend om zijn opvallende hanenkam-kapsel","Vertrok op latere leeftijd naar de Chinese competitie","Was jarenlang aanvoerder van het Slowaakse nationale elftal"]},
-{n:"Nemanja Vidić",c:["Geboren in Užice, in het toenmalige Joegoslavië, speelde voor Servië","Vormde bij Manchester United een ijzersterk verdedigingsduo","Was jarenlang aanvoerder van Manchester United","Won meerdere keren de Premier League","Stond bekend om zijn compromisloze, harde speelstijl"]},
-{n:"Radamel Falcao",c:["Geboren in Santa Marta, Colombia","Werd bekend als dodelijke afmaker bij FC Porto en Atlético Madrid","Kreeg de bijnaam 'El Tigre'","Miste door een zware knieblessure het WK van 2014","Speelde later ook voor Monaco en Manchester United"]},
-{n:"James Rodríguez",c:["Geboren in Cúcuta, Colombia","Werd topscorer van het WK van 2014 met een spectaculair volleydoelpunt","Vertrok voor veel geld naar Real Madrid","Speelde later ook voor Bayern München op huurbasis","Stond bekend om zijn techniek en linkerbeen"]},
-{n:"Alexis Sánchez",c:["Geboren in Tocopilla, Chili","Brak door bij Udinese voordat hij naar Barcelona vertrok","Werd een publiekslieveling bij Arsenal om zijn inzet en doelpunten","Maakte een omstreden overstap naar rivaal Manchester United","Is topscorer aller tijden van het Chileense nationale elftal"]},
-{n:"Arturo Vidal",c:["Geboren in San Joaquín, Chili","Stond bekend om zijn felle, energieke speelstijl op het middenveld","Speelde voor onder meer Juventus, Bayern München en Barcelona","Won de Copa América twee keer op rij met Chili","Werd bijgenaamd 'De Koning van Chili'"]},
-{n:"Sami Khedira",c:["Geboren in Stuttgart, Duitsland, uit een Tunesische familie","Speelde als verdedigende middenvelder bij Real Madrid en Juventus","Werd wereldkampioen met Duitsland in 2014, ondanks een blessure voor de finale","Vormde vaak een duo met Toni Kroos op het middenveld","Was bekend om zijn loopvermogen en balans"]},
-{n:"Jamie Carragher",c:["Geboren in Bootle, Engeland","Speelde zijn hele carrière als verdediger bij Liverpool","Maakte de historische comeback in de Champions League-finale van 2005 mee","Werd na zijn carrière een gerespecteerd televisieanalist","Speelde nooit voor een andere club dan zijn geboortestad"]},
-{n:"Gary Neville",c:["Geboren in Bury, Engeland","Speelde zijn hele carrière als rechtsback bij Manchester United","Was onderdeel van de beroemde 'Class of 92'","Werd later een scherpe televisieanalist","Is de broer van voetballer Phil Neville"]},
-{n:"Phil Neville",c:["Geboren in Bury, Engeland","Speelde net als zijn broer bij Manchester United","Kon zowel als verdediger als middenvelder uit de voeten","Werd later bondscoach van het Engelse vrouwenelftal","Is de jongere broer van Gary Neville"]},
-{n:"Emile Heskey",c:["Geboren in Leicester, Engeland","Stond bekend om zijn fysieke kracht als spits","Speelde voor onder meer Leicester City, Liverpool en Birmingham","Vormde vaak een aanvalsduo met Michael Owen bij Engeland","Scoorde relatief weinig doelpunten ondanks veel interlands"]},
-{n:"Kevin Keegan",c:["Geboren in Armthorpe, Engeland","Won twee keer de Gouden Bal bij Hamburger SV","Was jarenlang aanvoerder van Liverpool en Engeland","Werd later bondscoach van het Engelse nationale elftal","Stond bekend om zijn energieke, aanvallende speelstijl"]},
-{n:"Gordon Banks",c:["Geboren in Sheffield, Engeland","Maakte een van de beroemdste reddingen ooit tegen Pelé op het WK van 1970","Was doelman van Engeland tijdens hun wereldtitel van 1966","Speelde voor onder meer Leicester City en Stoke City","Verloor na een auto-ongeluk het zicht in één oog"]},
-{n:"Sol Campbell",c:["Geboren in Newham, Londen, Engeland","Maakte een omstreden transfervrije overstap van Tottenham naar rivaal Arsenal","Was onderdeel van het ongeslagen Arsenal-seizoen van 2003-2004","Stond bekend om zijn fysieke kracht als centrale verdediger","Speelde meer dan zeventig interlands voor Engeland"]},
-{n:"Jermain Defoe",c:["Geboren in Beckton, Londen, Engeland","Scoorde vijf doelpunten in één interland tegen Bulgarije","Speelde voor onder meer West Ham, Tottenham en Sunderland","Stond bekend om zijn afwerking in het strafschopgebied","Bouwde een bijzondere vriendschap op met een jonge fan tijdens diens ziekte"]},
-{n:"Jamie Vardy",c:["Geboren in Sheffield, Engeland","Speelde ooit nog in de lagere amateurdivisies van Engeland","Was een sleutelspeler in de sensationele titel van Leicester City in 2016","Stond bekend om zijn snelheid in de rug van de verdediging","Werd op latere leeftijd nog topscorer van de Premier League"]},
-{n:"James Milner",c:["Geboren in Leeds, Engeland","Stond bekend om zijn ongekende veelzijdigheid op vrijwel elke positie","Speelde voor onder meer Leeds, Newcastle, Aston Villa, Manchester City en Liverpool","Won de Champions League met Liverpool in 2019","Bleef tot op zeer late leeftijd actief op het hoogste niveau"]},
-{n:"Michael Carrick",c:["Geboren in Wallsend, Engeland","Speelde als rustige, verdedigende middenvelder bij Manchester United","Werd nooit een vaste basisspeler bij het Engelse nationale elftal ondanks zijn kwaliteit","Won meerdere keren de Premier League","Werd later assistent-trainer en tijdelijk hoofdtrainer bij Manchester United"]},
-{n:"Owen Hargreaves",c:["Geboren in Calgary, Canada, uit een Engelse vader","Groeide op in Duitsland en brak door bij Bayern München","Vertrok pas op latere leeftijd naar Manchester United","Werd zwaar geplaagd door blessures tijdens zijn carrière","Speelde de WK-kwartfinale van 2006 voor Engeland"]},
-{n:"Joe Cole",c:["Geboren in Islington, Londen, Engeland","Werd als tiener al gezien als een groot Engels talent bij West Ham","Won meerdere prijzen als aanvallende middenvelder bij Chelsea","Stond bekend om zijn techniek en dribbels","Speelde een periode in de Franse competitie bij Lille"]},
-{n:"Aaron Lennon",c:["Geboren in Leeds, Engeland","Debuteerde als zestienjarige in de Premier League bij Leeds United","Speelde zijn beste jaren als snelle rechtsbuiten bij Tottenham Hotspur","Speelde voor Everton en Burnley","Werd meerdere keren opgeroepen voor het Engelse nationale elftal"]},
-{n:"Mehmet Scholl",c:["Geboren in Karlsruhe, West-Duitsland","Speelde zijn hele carrière bij Bayern München","Stond bekend om zijn techniek en creativiteit als aanvallende middenvelder","Kampte regelmatig met blessures die zijn carrière beperkten","Werd na zijn carrière een bekende televisieanalist"]},
-{n:"Torsten Frings",c:["Geboren in Wesel, Duitsland","Speelde als verdedigende middenvelder bij Werder Bremen en Bayern München","Werd geschorst voor de WK-halve finale van 2006 om een elleboogstoot","Stond bekend om zijn harde afstandsschoten","Speelde meer dan zeventig interlands voor Duitsland"]},
-{n:"Per Mertesacker",c:["Geboren in Hannover, Duitsland","Stond bekend om zijn opvallend lange gestalte als centrale verdediger","Won de wereldtitel met Duitsland in 2014","Speelde zijn beste Europese jaren bij Arsenal","Werd na zijn carrière hoofd van de jeugdopleiding van Arsenal"]},
-{n:"Julian Draxler",c:["Geboren in Gladbeck, Duitsland","Brak jong door bij Schalke 04","Won de wereldtitel met Duitsland in 2014, al speelde hij die zomer geen minuut op het WK zelf","Speelde later voor VfL Wolfsburg en Paris Saint-Germain","Stond bekend om zijn techniek als aanvallende middenvelder"]},
-{n:"Mario Gómez",c:["Geboren in Riedlingen, West-Duitsland, uit een Spaanse vader","Werd meerdere keren topscorer van de Bundesliga","Speelde zijn beste jaren bij VfB Stuttgart en Bayern München","Stond bekend om zijn positiespel en kopkracht als spits","Speelde een periode in de Italiaanse competitie bij Fiorentina"]},
-{n:"Antonio Rüdiger",c:["Geboren in Berlijn, Duitsland, uit een Sierra Leoonse familie","Won de Champions League met Chelsea in 2021","Stond bekend om zijn felle, fysieke speelstijl als verdediger","Vertrok later naar Real Madrid","Werd berucht om een bijt-gebaar richting een tegenstander"]},
-{n:"Leroy Sané",c:["Geboren in Essen, Duitsland, zoon van een oud-international","Brak door bij Schalke 04 voordat hij naar Manchester City vertrok","Stond bekend om zijn snelheid als buitenspeler","Won meerdere keren de Premier League","Vertrok later naar Bayern München"]},
-{n:"Timo Werner",c:["Geboren in Stuttgart, Duitsland","Brak op jonge leeftijd al door bij VfB Stuttgart","Werd bekend als snelle spits bij RB Leipzig","Maakte een moeizame overstap naar Chelsea","Won desondanks de Champions League met Chelsea in 2021"]},
-{n:"İlkay Gündoğan",c:["Geboren in Gelsenkirchen, Duitsland, uit een Turkse familie","Brak door bij Borussia Dortmund","Werd een vaste waarde op het middenveld van Manchester City","Was jarenlang aanvoerder van Manchester City","Vertrok later naar Barcelona"]},
-{n:"Raymond Kopa",c:["Geboren in Frankrijk als zoon van Poolse immigranten","Werkte als kind al in de kolenmijnen","Won drie keer op rij de Europacup met Real Madrid","Won in 1958 de Gouden Bal","Wordt gezien als een van de eerste Franse voetbalsterren"]},
-{n:"Christian Karembeu",c:["Geboren op het Franse eiland Nieuw-Caledonië","Speelde als verdedigende middenvelder in de WK-finale van 1998","Weigerde ooit het Franse volkslied mee te zingen uit protest","Speelde voor Real Madrid en Middlesbrough","Won de Champions League met Real Madrid"]},
-{n:"Fabien Barthez",c:["Geboren in Lavelanet, Frankrijk","Stond bekend om zijn kale hoofd, dat teamgenoten voor geluk aaiden","Was doelman tijdens de wereldtitel van Frankrijk in 1998","Speelde voor Manchester United en Olympique Marseille","Won zowel het WK als het EK met Frankrijk"]},
-{n:"Emmanuel Petit",c:["Geboren in Dieppe, Frankrijk","Scoorde de afsluitende derde goal in de WK-finale van 1998","Vormde bij Arsenal een sterk middenvellduo met Patrick Vieira","Won met Arsenal de dubbel in 1998","Werd wereldkampioen en Europees kampioen met Frankrijk"]},
-{n:"William Gallas",c:["Geboren in Île-de-France, Frankrijk, uit een Guadeloupese familie","Speelde als verdediger voor zowel Chelsea als aartsrivaal Arsenal","Was aanvoerder van Arsenal in een roerige periode","Speelde voor Olympique Marseille en Tottenham","Speelde meer dan tachtig interlands voor Frankrijk"]},
-{n:"Samir Nasri",c:["Geboren in Marseille, Frankrijk","Brak door bij zijn geboorteclub Olympique Marseille","Werd een sleutelspeler bij Arsenal voordat hij naar Manchester City vertrok","Won de Premier League met Manchester City","Stond bekend om zijn techniek als aanvallende middenvelder"]},
-{n:"Blaise Matuidi",c:["Geboren in Toulouse, Frankrijk, uit een Congolese en Angolese familie","Stond bekend om zijn enorme loopvermogen op het middenveld","Won de wereldtitel met Frankrijk in 2018","Won de Champions League met Juventus","Speelde jarenlang voor Paris Saint-Germain, voordat hij naar Juventus vertrok"]},
-{n:"Hugo Lloris",c:["Geboren in Nice, Frankrijk","Was jarenlang aanvoerder van zowel Tottenham Hotspur als Frankrijk","Won de wereldtitel met Frankrijk in 2018 als vaste doelman","Speelde voor zijn Europese doorbraak bij Olympique Lyon","Stond bekend om zijn reflexen en persoonlijke leiderschap"]},
-{n:"Raphaël Varane",c:["Geboren in Lille, Frankrijk","Brak jong door bij Lens voordat hij naar Real Madrid vertrok","Won meerdere keren de Champions League als centrale verdediger","Werd wereldkampioen met Frankrijk in 2018","Vertrok later naar Manchester United"]},
-{n:"Kingsley Coman",c:["Geboren in Parijs, Frankrijk","Brak door bij Paris Saint-Germain als tiener","Scoorde de winnende goal in de Champions League-finale van 2020 voor Bayern München","Werd wereldkampioen met Frankrijk in 2018","Speelde als jeugdspeler ook voor Valenciennes"]},
-{n:"Theo Hernandez",c:["Geboren in Marmande, Frankrijk, uit een voetbalfamilie","Zijn broer Lucas speelt eveneens international voetbal","Werd een sleutelspeler als linksback bij AC Milan","Won de Serie A met Milan in 2022","Stond bekend om zijn snelheid en aanvallende inbreng"]},
-{n:"Marco Materazzi",c:["Geboren in Lecco, Italië","Werd in de WK-finale van 2006 uitgescholden door Zidane voor diens kopstoot","Scoorde in de WK-finale van 2006 zelf ook een doelpunt","Won de Champions League met Internazionale in 2010","Stond bekend om zijn fysieke, harde speelstijl als verdediger"]},
-{n:"Andrea Barzagli",c:["Geboren in Fiesole, Italië","Vormde bij Juventus een sterke verdedigingslinie met Bonucci en Chiellini","Werd wereldkampioen met Italië in 2006","Speelde voor VfL Wolfsburg in Duitsland","Stond bekend om zijn rustige, betrouwbare speelstijl"]},
-{n:"Giorgio Chiellini",c:["Geboren in Pisa, Italië","Speelde vrijwel zijn hele carrière als centrale verdediger bij Juventus","Was jarenlang aanvoerder van Juventus en Italië","Won de Europese titel met Italië in 2021","Sloot zijn carrière af in de Amerikaanse competitie bij LAFC"]},
-{n:"Leonardo Bonucci",c:["Geboren in Viterbo, Italië","Vormde bij Juventus een ijzersterke verdediging met Chiellini","Stond bekend om zijn precieze passing vanuit de verdediging","Won de Europese titel met Italië in 2021","Speelde kort voor AC Milan"]},
-{n:"Ciro Immobile",c:["Geboren in Torre Annunziata, Italië","Werd meerdere keren topscorer van de Serie A bij Lazio","Verbrak ooit een doelpuntenrecord in één Serie A-seizoen","Speelde voor Borussia Dortmund, voordat hij naar Lazio vertrok","Won de Europese titel met Italië in 2021"]},
-{n:"Lorenzo Insigne",c:["Geboren in Frattamaggiore, Italië","Speelde zijn beste jaren bij zijn geboortestreek-club Napoli","Won de Europese titel met Italië in 2021","Vertrok later naar de Canadese competitie bij Toronto FC","Stond bekend om zijn linkervoet en dribbels"]},
-{n:"Marco Verratti",c:["Geboren in Pescara, Italië","Brak jong door bij zijn kleine geboorteclub voordat hij naar PSG vertrok","Stond bekend om zijn balvastheid en passing op het middenveld","Werd jarenlang gezien als een van de beste middenvelders van Europa","Speelde desondanks relatief weinig grote toernooien met Italië"]},
-{n:"Jorginho",c:["Geboren in Imbituba, Brazilië, maar speelde voor Italië","Brak door bij Napoli onder trainer Maurizio Sarri","Won de Europese titel met Italië in 2021","Won de Champions League met Chelsea in 2021","Stond bekend om zijn kenmerkende aanloop bij strafschoppen"]},
-{n:"Dino Zoff",c:["Geboren in Mariano del Friuli, Italië","Werd op zijn veertigste de oudste wereldkampioen ooit als speler, in 1982","Speelde zijn beste jaren bij Juventus","Hield een lang record aantal minuten zonder tegendoelpunt voor Italië","Werd na zijn carrière ook nog bondscoach van Italië"]},
-{n:"Fabio Grosso",c:["Geboren in Rome, Italië","Scoorde de beslissende strafschop in de WK-finale van 2006","Maakte ook de winnende actie in de halve finale van dat toernooi","Speelde als linksback voor onder meer Palermo en Internazionale","Werd wereldkampioen met Italië in 2006"]},
-{n:"Filippo Inzaghi",c:["Geboren in Piacenza, Italië","Stond bekend om zijn perfecte gevoel voor timing in het strafschopgebied","Scoorde in een Champions League-finale voor AC Milan","Werd meerdere keren topscorer van Europese toernooien","Werd na zijn carrière ook trainer, onder meer bij Milan"]},
-{n:"Daniele De Rossi",c:["Geboren in Rome, Italië, zoon van een jeugdtrainer van AS Roma","Speelde zijn hele carrière bij AS Roma","Werd wereldkampioen met Italië in 2006","Was jarenlang aanvoerder van AS Roma","Stond bekend om zijn felle, strijdlustige speelstijl"]},
-{n:"Luis Enrique",c:["Geboren in Gijón, Spanje","Speelde voor zowel Real Madrid als aartsrivaal Barcelona","Werd na zijn spelerscarrière een succesvolle trainer bij Barcelona","Won als trainer de Champions League met zowel Barcelona als PSG","Werd ook bondscoach van Spanje"]},
-{n:"Joaquín",c:["Geboren in Fuengirola, Spanje","Speelde een opmerkelijk lange carrière tot ver in zijn veertigste","Werd een clublegende bij Real Betis","Stond bekend om zijn humor en dribbels als buitenspeler","Speelde voor Valencia en Málaga"]},
-{n:"Santi Cazorla",c:["Geboren in Llanera, Spanje","Speelde zijn beste jaren bij Villarreal en Arsenal","Stond bekend om zijn techniek ondanks zijn kleine gestalte","Herstelde van een zware voetblessure die zijn carrière bijna beëindigde","Keerde na een zware blessure nog terug op het hoogste niveau bij Villarreal"]},
-{n:"Koke",c:["Geboren in Madrid, Spanje","Doorliep de jeugdopleiding van Atlético Madrid","Is al jarenlang aanvoerder van Atlético Madrid","Werd Europees kampioen met Spanje bij de jeugd voordat hij dat bij de senioren deed","Stond bekend om zijn balans tussen aanvallen en verdedigen"]},
-{n:"Isco",c:["Geboren in Benalmádena, Spanje","Brak door bij Málaga voordat hij naar Real Madrid vertrok","Won meerdere Champions Leagues met Real Madrid","Stond bekend om zijn techniek als aanvallende middenvelder","Verloor later zijn basisplaats en vertrok uiteindelijk uit Madrid"]},
-{n:"Marco Asensio",c:["Geboren op Mallorca, Spanje","Brak door bij RCD Mallorca voordat hij naar Real Madrid vertrok","Scoorde als jonge invaller belangrijke doelpunten in finales","Stond bekend om zijn afstandsschoten","Vertrok later naar Paris Saint-Germain"]},
-{n:"Ansu Fati",c:["Geboren in Bissau, Guinee-Bissau, maar speelde voor Spanje","Werd de jongste doelpuntenmaker ooit voor FC Barcelona","Werd al op zestienjarige leeftijd international van Spanje","Kampte na zijn snelle doorbraak met langdurige blessures","Werd gezien als een van de grootste talenten van zijn generatie"]},
-{n:"Jordi Alba",c:["Geboren in L'Hospitalet, bij Barcelona, Spanje","Werd bij Barcelona omgevormd tot een van de beste linksbacks ter wereld","Scoorde de tweede goal in de WK-finale van 2010 niet, maar was wel aanwezig in de selectie","Speelde voor Valencia, voordat hij naar FC Barcelona vertrok","Stond bekend om zijn snelheid over de linkerflank"]},
-{n:"Cesc Fàbregas",c:["Geboren in Vilassar de Mar, Spanje","Vertrok als tiener naar de jeugdopleiding van Arsenal","Werd op zeventienjarige leeftijd al aanvoerder van Arsenal","Keerde later terug naar FC Barcelona","Werd wereldkampioen met Spanje in 2010"]},
-{n:"Xabi Alonso",c:["Geboren in San Sebastián, Spanje, zoon van een oud-international","Maakte de historische comeback van Liverpool in de Champions League-finale van 2005 mee","Speelde voor Real Madrid en Bayern München","Werd wereldkampioen met Spanje in 2010","Werd na zijn carrière een veelgevraagde trainer, onder meer bij Bayer Leverkusen"]},
-{n:"David de Gea",c:["Geboren in Madrid, Spanje","Brak jong door als doelman bij Atlético Madrid","Werd jarenlang de vaste doelman van Manchester United","Werd meerdere keren verkozen tot beste doelman van de Premier League","Kreeg relatief weinig kansen in het Spaanse nationale elftal"]},
-{n:"Nuno Gomes",c:["Geboren in Amarante, Portugal","Werd topscorer aller tijden van het Portugese nationale elftal, tot hij werd ingehaald","Speelde zijn beste jaren bij Benfica en Fiorentina","Scoorde belangrijke doelpunten op het EK van 2000 en 2004","Stond bekend om zijn afwerking als spits"]},
-{n:"Deco",c:["Geboren in Brazilië, maar koos ervoor voor Portugal te spelen","Brak door bij FC Porto onder trainer José Mourinho","Won met Porto de Champions League in 2004","Vertrok naar FC Barcelona","Werd tweemaal Europees Voetballer van het Jaar genomineerd"]},
-{n:"Ricardo Carvalho",c:["Geboren in Amarante, Portugal","Vormde bij FC Porto en Chelsea sterke verdedigingsduo's","Won de Champions League met FC Porto in 2004","Speelde jarenlang samen met John Terry bij Chelsea","Speelde later voor Real Madrid en Monaco"]},
-{n:"Nani",c:["Geboren op de Kaapverdische Eilanden, speelde voor Portugal","Brak door bij Sporting Lissabon voordat hij naar Manchester United vertrok","Stond bekend om zijn dribbels en soms grillige beslissingen","Won de Europese titel met Portugal in 2016","Speelde later ook in de Turkse en Amerikaanse competitie"]},
-{n:"Rúben Dias",c:["Geboren in Amadora, Portugal","Brak door bij Benfica voordat hij naar Manchester City vertrok","Werd al snel na zijn komst een sleutelspeler in de verdediging van City","Won meerdere keren de Premier League","Stond bekend om zijn leiderschap ondanks zijn jonge leeftijd"]},
-{n:"Frank de Boer",c:["Geboren in Hoorn, Nederland, tweelingbroer van Ronald de Boer","Speelde jarenlang als centrale verdediger bij Ajax","Won de Champions League met Ajax in 1995","Werd later trainer bij onder meer Ajax en Crystal Palace","Was ook korte tijd bondscoach van Nederland"]},
-{n:"Ole Gunnar Solskjær",c:["Geboren in Kristiansund, Noorwegen","Stond bekend als de gevreesde 'super-sub' vanaf de bank bij Manchester United","Scoorde in de allerlaatste minuut van de Champions League-finale van 1999","Bezorgde Manchester United met zijn winnende goal in 1999 een historische treble","Werd later ook nog hoofdtrainer van Manchester United"]},
-{n:"Vladimír Šmicer",c:["Geboren in Děčín, Tsjecho-Slowakije","Scoorde als invaller de aansluitingstreffer in de legendarische comeback van Liverpool in 2005","De comeback van Liverpool vanaf 0-3 tegen AC Milan in 2005 geldt als een van de grootste ooit","Benutte ook zijn strafschop in de beslissende serie van die finale","Sloot zijn carrière af bij Bordeaux in Frankrijk"]},
-{n:"Jerzy Dudek",c:["Geboren in Rybnik, Polen","Stond als doelman met wankele beentjes op de doellijn tijdens strafschoppen in 2005","Stopte de beslissende strafschop van Sjevtsjenko in de Champions League-finale van 2005","Maakte in diezelfde CL-finale van 2005 ook nog een knappe dubbele redding","Speelde voor Feyenoord en Real Madrid"]},
-{n:"Dietmar Hamann",c:["Geboren in Waldsassen, West-Duitsland","Werd bij rust ingebracht in de legendarische Liverpool-comeback van 2005","Zijn tactische wissel wordt gezien als sleutelmoment in die comeback","Benutte ook zijn strafschop in de beslissende serie","Speelde voor Newcastle United en Manchester City"]},
-{n:"Djimi Traoré",c:["Geboren in Parijs, Frankrijk, speelde voor Mali","Was een van de minder bekende namen in de basisploeg van Liverpool in 2005","Maakte die avond in Istanbul toch de finale van de Champions League vol","Werd nadien nooit meer een vaste basisspeler bij een topclub","Speelde later onder meer voor Charlton Athletic"]},
-{n:"Milan Baroš",c:["Geboren in Ostrava, Tsjechië","Was de spits van Liverpool tijdens de legendarische comeback van 2005","Werd topscorer van het EK van 2004 met Tsjechië","Speelde voor Aston Villa en Olympique Lyon","Kon zijn Liverpool-niveau daarna nooit meer evenaren"]},
-{n:"Harry Kewell",c:["Geboren in Sydney, Australië","Speelde als buitenspeler de Champions League-finale van 2005 mee","Moest die finale door een blessure al vroeg gewisseld worden","Was een sleutelspeler bij Leeds United, voordat hij naar Liverpool vertrok","Werd gezien als een van de beste Australische voetballers ooit"]},
-{n:"Sylvain Wiltord",c:["Geboren in Neuilly-sur-Marne, Frankrijk","Scoorde de late gelijkmaker waarmee Frankrijk het EK van 2000 won","Scoorde voor Arsenal de titelbepalende goal bij aartsrivaal Tottenham, in hun ongeslagen seizoen","Werd nooit gezien als een echte wereldster, maar wel als clutch-speler","Speelde voor Olympique Lyon en Rennes"]},
-{n:"Freddie Ljungberg",c:["Geboren in Vittsjö, Zweden","Stond bekend om zijn felgekleurde haar bij Arsenal","Was een sleutelspeler in het ongeslagen Arsenal-seizoen van 2003-2004","Werd gezicht van een bekende ondergoedcampagne","Speelde later ook nog kort in de Amerikaanse competitie"]},
-{n:"Nicklas Bendtner",c:["Geboren in Kopenhagen, Denemarken","Stond bekend om zijn zelfverzekerde, soms overmoedige uitspraken","Speelde voor Arsenal, Juventus en Wolfsburg zonder ooit een echte topspeler te worden","Toonde ooit gesponsorde ondergoed na een doelpunt op het EK","Werd door fans vooral herinnerd om zijn imago in plaats van zijn niveau"]},
-{n:"Park Ji-sung",c:["Geboren in Goyang, Zuid-Korea","Werd bij Manchester United vooral gewaardeerd om zijn tomeloze inzet","Scoorde een beroemd doelpunt tegen AC Milan in de Champions League-kwartfinale van 2007","Stond bekend als een van de weinige spelers die Ronaldinho ooit uit een wedstrijd hield","Was aanvoerder van het Zuid-Koreaanse nationale elftal"]},
-{n:"Federico Macheda",c:["Geboren in Rome, Italië","Scoorde als zeventienjarige debutant een beslissende late winnende goal voor Manchester United","Verliet Manchester United enkele jaren later zonder een vaste basisplek te veroveren","Speelde nooit meer op het niveau van zijn sensationele debuutmoment","Speelde later voor clubs als Cardiff City en Panathinaikos"]},
-{n:"Robert Green",c:["Geboren in Chertsey, Engeland","Liet op het WK van 2010 een simpel schot van Clint Dempsey door zijn handen glippen","Zijn blunder tegen de Verenigde Staten op het WK van 2010 werd wereldnieuws","Speelde als doelman voor onder meer West Ham en Norwich City","Werd door de Engelse fans nooit meer volledig vertrouwd als vaste doelman van het nationale elftal"]},
-{n:"David James",c:["Geboren in Welwyn Garden City, Engeland","Speelde een recordaantal wedstrijden in de Premier League als doelman","Stond bekend om zowel spectaculaire reddingen als geheugensteunende blunders","Kreeg de bijnaam 'Calamity James' vanwege die fouten","Speelde voor onder meer Liverpool, Aston Villa en West Ham"]},
-{n:"Andy Carroll",c:["Geboren in Gateshead, Engeland","Werd voor een verrassend hoog bedrag verkocht van Newcastle naar Liverpool","Kon zijn hoge transferprijs bij Liverpool nooit helemaal waarmaken","Scoorde wel een spectaculaire omhaal voor Engeland tegen Zweden op het EK van 2012","Stond bekend om zijn kopkracht"]},
-{n:"Charlie Adam",c:["Geboren in Dundee, Schotland","Speelde als middenvelder voor onder meer Blackpool en Liverpool","Scoorde een van de meest besproken afstandsschoten ooit, van eigen helft tegen Chelsea","Zijn schot vanaf eigen helft tegen Chelsea werd wereldwijd bekend, ook al telde het doelpunt niet mee","Speelde voor Stoke City"]},
-{n:"Xherdan Shaqiri",c:["Geboren in Gnjilane, destijds Joegoslavië, speelde voor Zwitserland","Stond bekend om zijn kleine gestalte gecombineerd met explosieve kracht","Maakte een spectaculaire omhaal tegen Polen op het EK van 2016","Speelde voor onder meer Bayern München, Internazionale en Liverpool","Werd nooit een absolute wereldster, maar wel een publiekslieveling"]},
-{n:"Kevin Phillips",c:["Geboren in Hitchin, Engeland","Werd topscorer van de Premier League bij het relatief kleine Sunderland","Won in 1999-2000 zelfs de Europese Gouden Schoen als topscorer van Europa","Werd pas laat opgemerkt voor het Engelse nationale elftal","Speelde voor onder meer Southampton en West Bromwich Albion"]},
-{n:"Rickie Lambert",c:["Geboren in Liverpool, Engeland","Speelde tot zijn vroege twintiger jaren nog in de lagere Engelse divisies","Werd op zijn eenendertigste alsnog opgeroepen voor het Engelse nationale elftal","Scoorde bij zijn debuut voor Engeland meteen een doelpunt","Speelde zijn beste jaren bij Southampton"]},
-{n:"Wes Morgan",c:["Geboren in Nottingham, Engeland, uit een Jamaicaanse familie","Was aanvoerder van de verdediging tijdens de sensationele titel van Leicester City in 2016","Werd voor die titel nooit gezien als een speler van het hoogste niveau","Speelde jarenlang in de lagere Engelse divisies voordat hij naar Leicester kwam","Bleef zijn hele Premier League-carrière trouw aan Leicester City"]},
-{n:"Danny Drinkwater",c:["Geboren in Manchester, Engeland","Was een sleutelspeler op het middenveld bij de titel van Leicester City in 2016","Werd na die titel voor een groot bedrag verkocht aan Chelsea","Kon zijn Leicester-niveau bij Chelsea nooit meer evenaren","Werd desondanks nog opgeroepen voor het Engelse nationale elftal"]},
-{n:"Christian Fuchs",c:["Geboren in Wenen, Oostenrijk","Speelde als linksback een sleutelrol in de titel van Leicester City in 2016","Was actief bij Schalke 04 in de Bundesliga, voordat hij naar Leicester City vertrok","Werd na zijn carrière ook actief als contentmaker en ondernemer","Was aanvoerder van het Oostenrijkse nationale elftal"]},
-{n:"Marc Albrighton",c:["Geboren in Tamworth, Engeland","Werd door Aston Villa transfervrij weggestuurd voordat hij naar Leicester vertrok","Werd bij Leicester City een sleutelspeler in hun sensationele titel van 2016","Stond bekend om zijn voorzetten vanaf de rechterflank","Bleef ook na die titel jarenlang trouw aan de club"]},
-{n:"Shinji Okazaki",c:["Geboren in Konan, Japan","Stond bekend om zijn enorme werklust als spits bij Leicester City","Speelde een sleutelrol in de sensationele titel van Leicester in 2016","Speelde in de Bundesliga voor Mainz en Stuttgart, voordat hij naar Leicester City vertrok","Was aanvoerder van het Japanse nationale elftal"]},
-{n:"Robert Huth",c:["Geboren in Berlijn, Duitsland","Won twee keer de Premier League als verdediger bij Chelsea, voordat hij naar Leicester vertrok","Werd bij Leicester City opnieuw kampioen in hun sensationele titel van 2016","Stond bekend om zijn fysieke, harde speelstijl","Speelde nooit een groot toernooi voor Duitsland ondanks zijn successen op clubniveau"]},
-{n:"Mario Balotelli",c:["Geboren in Palermo, Italië, groeide op in een pleeggezin","Stond bekend om zijn grillige gedrag zowel op als naast het veld","Maakte twee doelpunten in een EK-halve finale tegen Duitsland in 2012","Toonde ooit na een doelpunt een shirt met de tekst 'Why always me?'","Speelde voor onder meer Internazionale, Manchester City en AC Milan"]},
-{n:"Diego Milito",c:["Geboren in Bernal, Argentinië","Scoorde beide doelpunten in de Champions League-finale van 2010","Bezorgde Internazionale in 2010 een historische treble onder trainer Mourinho","Werd nooit gezien als een absolute wereldster, ondanks dat succes","Speelde voor Genoa en Zaragoza, voordat hij naar Internazionale vertrok"]},
-{n:"Simone Zaza",c:["Geboren in Policoro, Italië","Miste een cruciale strafschop op het EK van 2016 met een bizarre aanloop","Zijn mislukte penalty tegen Duitsland op het EK van 2016 ging wereldwijd viraal","Speelde voor onder meer Juventus en West Ham","Kon zijn reputatie na die misser nooit meer helemaal herstellen"]},
-{n:"Antonio Di Natale",c:["Geboren in Napels, Italië","Bleef zijn hele topcarrière trouw aan het relatief kleine Udinese","Werd op latere leeftijd nog topscorer van de Serie A","Speelde ondanks zijn niveau relatief weinig grote internationale toernooien voor Italië","Stond bekend om zijn precieze afwerking als kleine, snelle spits"]},
-{n:"Fernando Llorente",c:["Geboren in Pamplona, Spanje","Kopte een cruciaal doelpunt tegen Frankrijk op het EK van 2016","Won eerder de wereldtitel met Spanje in 2010 zonder een basisspeler te zijn","Speelde voor onder meer Athletic Bilbao, Juventus en Tottenham Hotspur","Stond bekend om zijn kopkracht als aanvaller"]},
-{n:"Diego Tristán",c:["Geboren in Las Palmas de Gran Canaria, Spanje","Was de dodelijke spits van het verrassende Deportivo La Coruña rond 2000","Hielp Deportivo La Coruña in 2004 aan een historische comeback tegen AC Milan in de Champions League","Werd nooit opgeroepen voor een groot toernooi met het Spaanse nationale elftal","Werd nooit een absolute wereldster ondanks zijn niveau in die periode"]},
-{n:"Juan Carlos Valerón",c:["Geboren op Gran Canaria, Spanje","Bleef zijn beste jaren trouw aan het relatief kleine Deportivo La Coruña","Stond bekend om zijn techniek en visie op het middenveld","Werd door veel topspelers gezien als onderschat op wereldniveau","Speelde een sleutelrol in Deportivo's verrassende landstitel van 2000"]},
-{n:"Ailton",c:["Geboren in Iguaí, Brazilië","Werd bij het kleine Werder Bremen topscorer van de Bundesliga in 2004","Eindigde in 2004 als topscorer van de Bundesliga, vóór de sterspelers van Bayern München","Stond bekend om zijn afwerking ondanks zijn gedrongen postuur","Werd nooit een echte wereldster ondanks dat topscorerschap"]},
-{n:"Naldo",c:["Geboren in Boa Vista, Brazilië","Werd bij Werder Bremen en Schalke 04 bekend om zijn spectaculaire doelpunten als verdediger","Maakte regelmatig doelpunten van afstand of met kopballen die viral gingen","Stond bekend om zijn fysieke kracht","Werd nooit een basisspeler bij het Braziliaanse nationale elftal"]},
-{n:"Pauleta",c:["Geboren op de Azoren, Portugal","Werd topscorer aller tijden van het Portugese nationale elftal, tot Cristiano Ronaldo hem inhaalde","Speelde zijn beste jaren bij Paris Saint-Germain","Stond bekend om zijn kopkracht en afwerking als spits","Werd nooit gezien als een absolute wereldster ondanks zijn doelpuntenaantal"]},
-{n:"Roy Makaay",c:["Geboren in Beverwijk, Nederland","Scoorde ooit het snelste doelpunt ooit in de Champions League, binnen tien seconden","Werd na zijn topjaren bij Bayern München teruggehaald door zijn oude club Deportivo La Coruña","Werd ook topscorer van de Spaanse competitie bij Deportivo La Coruña, voordat hij naar Bayern München vertrok","Werd nooit een absolute wereldster ondanks zijn doelpuntenproductie"]},
-{n:"Esteban Cambiasso",c:["Geboren in Buenos Aires, Argentinië","Maakte op het WK van 2006 een beroemd doelpunt na een combinatie van meer dan twintig passes","Won de Champions League met Internazionale in 2010","Werd op late leeftijd nog verrassend kampioen met Leicester City in 2016, al speelde hij daar weinig","Stond bekend om zijn balvastheid als controlerende middenvelder"]},
-{n:"Juninho Pernambucano",c:["Geboren in Recife, Brazilië","Stond bekend als een van de beste vrijetrapnemers ooit","Scoorde tientallen doelpunten rechtstreeks uit vrije trappen voor Olympique Lyon","Werd nooit een basisspeler bij het Braziliaanse nationale elftal ondanks zijn kwaliteiten","Won zeven landstitels op rij met Lyon"]},
-{n:"Djibril Cissé",c:["Geboren in Arles, Frankrijk","Stond bekend om zijn felgekleurde haarkleuren en opvallende tatoeages","Scoorde in de strafschoppenserie van de Champions League-finale van 2007","Brak bij zowel Liverpool als eerder Auxerre zijn been op verschillende momenten","Speelde later nog in de Griekse competitie en lagere Engelse divisies"]},
-{n:"Martin Ødegaard",c:["Geboren in Drammen, Noorwegen","Werd al op zestienjarige leeftijd gehaald door Real Madrid, tot veel ophef","Groeide bij Arsenal uit tot vaste aanvoerder","Speelt als aanvallende middenvelder met een fijne linkervoet","Is een van de jongste debutanten ooit in de Noorse nationale ploeg"]},
-{n:"William Saliba",c:["Geboren in Bondy, Frankrijk, dezelfde stad als Kylian Mbappé","Brak door bij Saint-Étienne voordat hij naar Arsenal vertrok","Werd eerst een aantal seizoenen uitgeleend voordat hij een basisspeler werd","Vormt de laatste jaren een sterk centraal duo in de verdediging van Arsenal","Werd wereldkampioen met Frankrijk bij de beloften"]},
-{n:"Gabriel Magalhães",c:["Geboren in São Paulo, Brazilië","Brak door bij Avaí voordat hij via Frankrijk naar Arsenal vertrok","Vormt samen met William Saliba een ijzersterke defensie bij Arsenal","Stond bekend om zijn kopkracht bij zowel verdedigen als aanvallen","Werd nooit een basisspeler bij het Braziliaanse nationale elftal ondanks zijn niveau bij Arsenal"]},
-{n:"Trent Alexander-Arnold",c:["Geboren in Liverpool, Engeland","Doorliep de volledige jeugdopleiding van Liverpool","Stond bekend om zijn precieze lange passes vanaf de rechtsback-positie","Won de Champions League met Liverpool in 2019","Werd meerdere keren opgesteld als een extra middenvelder in plaats van pure verdediger"]},
-{n:"Andrew Robertson",c:["Geboren in Glasgow, Schotland","Werd door zijn eerste club nog afgekeurd en speelde even in de lagere Schotse divisies","Groeide bij Liverpool uit tot een van de beste linksbacks ter wereld","Won de Champions League met Liverpool in 2019","Was jarenlang aanvoerder van het Schotse nationale elftal"]},
-{n:"Alexis Mac Allister",c:["Geboren in Santa Rosa, Argentinië, uit een voetbalfamilie","Brak door bij Argentinos Juniors voordat hij naar Brighton vertrok","Won de wereldtitel met Argentinië in 2022","Vertrok daarna naar Liverpool","Speelt als aanvallende of controlerende middenvelder"]},
-{n:"Dominik Szoboszlai",c:["Geboren in Székesfehérvár, Hongarije","Brak jong door bij Red Bull Salzburg","Werd al op negentienjarige leeftijd aanvoerder van het Hongaarse nationale elftal","Speelde daarna voor RB Leipzig voordat hij naar Liverpool vertrok","Stond bekend om zijn harde afstandsschoten"]},
-{n:"Bruno Guimarães",c:["Geboren in Rio de Janeiro, Brazilië","Brak door bij Athletico Paranaense en Olympique Lyon","Werd na zijn transfer naar Newcastle United al snel aanvoerder van de club","Stond bekend om zijn balvastheid als controlerende middenvelder","Hielp Newcastle terug te keren in de Champions League"]},
-{n:"Kieran Trippier",c:["Geboren in Bury, Engeland","Werd bekend om zijn vrije trap in de WK-halve finale van 2018 tegen Kroatië","Speelde ook voor Tottenham Hotspur en Atlético Madrid","Werd bij zijn terugkeer naar Newcastle United een sleutelspeler","Stond bekend om zijn precieze voorzetten als rechtsback"]},
-{n:"John Stones",c:["Geboren in Barnsley, Engeland","Werd bij Manchester City vaak ingezet als opbouwende verdediger of zelfs middenvelder","Won meerdere keren de Premier League en de Champions League","Speelde ook voor Everton voordat hij naar City vertrok","Stond bekend om zijn balvaardigheid voor een verdediger"]},
-{n:"Ederson",c:["Geboren in Osasco, Brazilië","Werd bij Manchester City een van de eerste echte 'voetballende' doelmannen","Won meerdere keren de Premier League en de Champions League","Stond bekend om zijn precieze lange trapbeurten als opbouw van achteruit","Speelde eerder ook voor Benfica in Portugal"]},
-{n:"Moises Caicedo",c:["Geboren in Santo Domingo de los Colorados, Ecuador","Brak door bij Independiente del Valle voordat hij naar Brighton vertrok","Werd voor een recordbedrag voor een middenvelder verkocht aan Chelsea","Stond bekend om zijn loopvermogen en balverovering","Werd al jong aanvoerder van het Ecuadoraanse nationale elftal"]},
-{n:"Enzo Fernández",c:["Geboren in San Martín, Argentinië","Brak door bij River Plate voordat hij naar Benfica vertrok","Werd beste jonge speler van het WK van 2022","Werd wereldkampioen met Argentinië in datzelfde toernooi","Vertrok daarna voor een recordbedrag naar Chelsea"]},
-{n:"Cole Palmer",c:["Geboren in Manchester, Engeland","Doorliep de jeugdopleiding van Manchester City","Kreeg daar weinig speeltijd ondanks zijn talent","Werd na zijn overstap naar Chelsea meteen een uitblinker","Combineert veel doelpunten met veel assists als aanvallende middenvelder"]},
-{n:"Ollie Watkins",c:["Geboren in Torquay, Engeland","Speelde ooit nog in de lagere Engelse divisies bij Exeter City","Werd topscorer bij Brentford voordat hij naar Aston Villa vertrok","Scoorde een cruciale late goal in een EK-halve finale voor Engeland in 2024","Werd bij Aston Villa een vaste basisspits"]},
-{n:"Alexander Isak",c:["Geboren in Solna, Zweden, uit een Eritrese familie","Brak door bij AIK voordat hij naar Borussia Dortmund vertrok","Speelde daarna voor Real Sociedad in Spanje","Werd bij Newcastle United een dodelijke afmaker","Stond bekend om zijn techniek en snelheid als spits"]},
-{n:"Diogo Jota",c:["Geboren in Porto, Portugal","Brak door bij Paços de Ferreira en Wolverhampton Wanderers","Werd bij Liverpool gewaardeerd om zijn veelzijdigheid als aanvaller","Won de Champions League niet, maar wel meerdere binnenlandse prijzen met Liverpool","Werd Europees kampioen met Portugal in 2019"]},
-{n:"Darwin Núñez",c:["Geboren in Artigas, Uruguay","Brak door bij Peñarol voordat hij naar Benfica vertrok","Werd voor een recordbedrag verkocht aan Liverpool","Stond bekend om zijn explosiviteit, maar ook om gemiste kansen","Speelde met Uruguay meerdere grote toernooien"]},
-{n:"Luis Díaz",c:["Geboren in Barrancas, Colombia","Brak door bij Junior de Barranquilla en FC Porto","Werd bij Liverpool een sleutelspeler op de linksbuitenpositie","Vertrok later naar Bayern München","Werd zijn vader ooit ontvoerd, wat wereldwijd nieuws werd"]},
-{n:"Antony",c:["Geboren in São Paulo, Brazilië","Brak door bij São Paulo FC en Ajax","Werd voor een groot bedrag verkocht aan Manchester United","Stond bekend om zijn kenmerkende, herhalende dribbelbeweging","Kon zijn Ajax-niveau bij Manchester United nooit meer evenaren"]},
-{n:"Lisandro Martínez",c:["Geboren in Gualeguay, Argentinië","Brak door bij Defensa y Justicia voordat hij naar Ajax vertrok","Werd bij Manchester United gewaardeerd om zijn felheid ondanks zijn kleine gestalte","Werd wereldkampioen met Argentinië in 2022, al was hij geen basisspeler op dat toernooi","Bijnaam 'The Butcher' vanwege zijn harde duels"]},
-{n:"Aurélien Tchouaméni",c:["Geboren in Rouen, Frankrijk, uit een Kameroense familie","Brak door bij AS Monaco","Vertrok daarna voor een groot bedrag naar Real Madrid","Speelt als verdedigende middenvelder","Speelde de WK-finale van 2022 met Frankrijk"]},
-{n:"Eduardo Camavinga",c:["Geboren in een vluchtelingenkamp in Angola uit Congolese ouders","Debuteerde al op zestienjarige leeftijd bij Stade Rennais","Vertrok als tiener naar Real Madrid","Won er meerdere keren de Champions League","Kan zowel als verdedigende middenvelder als linksback spelen"]},
-{n:"Dani Carvajal",c:["Geboren in Madrid, Spanje","Doorliep de jeugdopleiding van Real Madrid","Werd na een uitleenperiode bij Bayer Leverkusen een vaste basisspeler bij Real Madrid","Won er een recordaantal keren de Champions League als rechtsback","Was jarenlang aanvoerder van Real Madrid"]},
-{n:"Éder Militão",c:["Geboren in Sertãozinho, Brazilië","Brak door bij São Paulo FC en FC Porto","Werd bij Real Madrid een vaste centrale verdediger","Won er meerdere keren de Champions League","Herstelde van een zware knieblessure die hij tijdens een competitiewedstrijd opliep"]},
-{n:"Jules Koundé",c:["Geboren in Parijs, Frankrijk","Brak door bij Bordeaux en Sevilla","Werd bij FC Barcelona omgevormd van rechtsback naar centrale verdediger","Speelde de WK-finale van 2022 met Frankrijk","Stond bekend om zijn snelheid als verdediger"]},
-{n:"Ronald Araújo",c:["Geboren in Rivera, Uruguay","Brak door bij Boston River voordat hij naar FC Barcelona vertrok","Werd een sleutelspeler in de verdediging van Barcelona","Stond bekend om zijn felle, fysieke speelstijl","Was aanvoerder van Uruguay op meerdere toernooien"]},
-{n:"Marc-André ter Stegen",c:["Geboren in Mönchengladbach, Duitsland","Brak door als doelman bij Borussia Mönchengladbach","Werd al op tweeëntwintigjarige leeftijd vaste doelman van FC Barcelona","Won er meerdere keren de Champions League","Werd desondanks lange tijd overschaduwd door Manuel Neuer bij het Duitse elftal"]},
-{n:"Gavi",c:["Geboren in Los Palacios y Villafranca, Spanje","Debuteerde al op zestienjarige leeftijd bij FC Barcelona","Werd op zeventienjarige leeftijd al international van Spanje","Stond bekend om zijn felle, energieke speelstijl op het middenveld","Kampte op jonge leeftijd al met een zware kruisbandblessure"]},
-{n:"Nico Williams",c:["Geboren in Bilbao, Spanje, jongere broer van Iñaki Williams","Doorliep de jeugdopleiding van Athletic Bilbao","Speelde een sleutelrol in de Europese titel van Spanje in 2024","Werd verkozen tot man van de wedstrijd in die EK-finale","Stond bekend om zijn snelheid als buitenspeler"]},
-{n:"Victor Osimhen",c:["Geboren in Lagos, Nigeria","Brak door bij Lille voordat hij naar Napoli vertrok","Werd topscorer van de Serie A en hielp Napoli aan hun eerste landstitel in decennia","Werd meerdere keren Afrikaans Voetballer van het Jaar genomineerd","Stond bekend om zijn explosiviteit en kopkracht als spits"]},
-{n:"Khvicha Kvaratskhelia",c:["Geboren in Tbilisi, Georgië","Brak door bij Dinamo Tbilisi en Rubin Kazan","Werd bij Napoli een sleutelspeler in hun landstitel","Stond bekend om zijn dribbels als linksbuiten","Vertrok later naar Paris Saint-Germain"]},
-{n:"Rafael Leão",c:["Geboren in Almada, Portugal","Brak door bij Sporting Lissabon en Lille","Werd bij AC Milan een sleutelspeler in hun landstitel van 2022","Stond bekend om zijn snelheid en dribbels als linksbuiten","Werd Europees kampioen met Portugal bij de beloften"]},
-{n:"Mike Maignan",c:["Geboren in Cayenne, Frans-Guyana","Brak door als doelman bij Lille","Werd bij AC Milan de opvolger van Gianluigi Donnarumma","Won met Milan de landstitel van 2022","Stond bekend om zijn reflexen en opbouw met de bal aan de voet"]},
-{n:"Nicolò Barella",c:["Geboren in Cagliari, Italië","Brak door bij zijn geboorteclub Cagliari","Werd bij Internazionale een sleutelspeler op het middenveld","Won de landstitel met Inter en speelde de Champions League-finale van 2023","Stond bekend om zijn loopvermogen en directe speelstijl"]},
-{n:"Hakan Çalhanoğlu",c:["Geboren in Mannheim, Duitsland, uit een Turkse familie","Brak door bij Hamburger SV en Bayer Leverkusen","Werd bij AC Milan omgevormd tot een van de beste vrijetrapnemers van Europa","Vertrok naar aartsrivaal Internazionale, tot woede van Milan-fans","Werd omgevormd tot controlerende middenvelder bij Inter"]},
-{n:"Dušan Vlahović",c:["Geboren in Belgrado, Servië","Brak door bij Fiorentina als jonge topscorer","Vertrok voor een groot bedrag naar Juventus","Stond bekend om zijn kopkracht en directe speelstijl als spits","Vierde doelpunten met een kenmerkend gebaar naar zijn oor"]},
-{n:"Paulo Dybala",c:["Geboren in Laguna Larga, Argentinië","Brak door bij Instituto en Palermo","Werd bij Juventus jarenlang een sleutelspeler als aanvallende middenvelder","Vertrok transfervrij naar AS Roma","Stond bekend om zijn kenmerkende 'masker'-juichgebaar"]},
-{n:"Florian Wirtz",c:["Geboren in Keulen, Duitsland","Debuteerde al op zestienjarige leeftijd bij Bayer Leverkusen","Won met Leverkusen de eerste landstitel ooit in de clubgeschiedenis, ongeslagen","Werd gezien als een van de grootste Duitse talenten van zijn generatie","Vertrok later naar de Premier League"]},
-{n:"Serge Gnabry",c:["Geboren in Stuttgart, Duitsland, uit een Ivoriaanse vader","Speelde als jeugdspeler eerst bij Arsenal voordat hij terugkeerde naar Duitsland","Werd bij Bayern München een vaste basisspeler","Scoorde vier keer in één Champions League-wedstrijd tegen Tottenham","Won meerdere keren de Bundesliga en de Champions League"]},
-{n:"Alphonso Davies",c:["Geboren in een vluchtelingenkamp in Ghana uit Liberiaanse ouders","Groeide op in Canada nadat zijn familie daarheen vluchtte","Brak door bij de Vancouver Whitecaps voordat hij naar Bayern München vertrok","Werd bij Bayern een van de snelste linksbacks ter wereld","Won er meerdere keren de Bundesliga en de Champions League"]},
-{n:"Granit Xhaka",c:["Geboren in Basel, Zwitserland, uit een Kosovaarse familie","Speelde jarenlang bij Arsenal, vaak met wisselende kritiek van de fans","Werd bij Bayer Leverkusen alsnog kampioen van Duitsland","Was jarenlang aanvoerder van zowel Arsenal als het Zwitserse nationale elftal","Zijn broer Taulant speelde ooit tegen hem op een EK"]},
-{n:"Marquinhos",c:["Geboren in São Paulo, Brazilië","Brak door bij Corinthians en AS Roma","Werd al op jonge leeftijd aanvoerder van Paris Saint-Germain","Won er een recordaantal Franse landstitels","Speelt zowel als centrale verdediger als verdedigende middenvelder"]},
-{n:"Achraf Hakimi",c:["Geboren in Madrid, Spanje, uit Marokkaanse ouders","Doorliep de jeugdopleiding van Real Madrid","Werd bij Borussia Dortmund en Internazionale een van de snelste rechtsbacks ter wereld","Leidde Marokko in 2022 naar een historische WK-halve finale","Speelt inmiddels voor Paris Saint-Germain"]},
-{n:"Warren Zaïre-Emery",c:["Geboren in Montreuil, Frankrijk","Debuteerde als zestienjarige al bij Paris Saint-Germain","Werd op jonge leeftijd al vaste basisspeler op het middenveld","Werd een van de jongste aanvoerders ooit van PSG in een officiële wedstrijd","Werd gezien als een van de grootste Franse talenten van zijn generatie"]},
+{n:"Lionel Messi",c:["Born in Rosario, Argentina","Came through the La Masia youth academy from a young age","Nicknamed 'La Pulga', the Flea","Record holder with eight Ballon d'Or awards","Finally became world champion with his country in 2022"]},
+{n:"Cristiano Ronaldo",c:["Born on the Portuguese island of Madeira","Began his professional career at Sporting Lisbon","Known for his 'Siuuu' celebration","Won the Champions League five times","All-time top scorer of the Portuguese national team"]},
+{n:"Diego Maradona",c:["Born in a poor suburb of Buenos Aires","Spent most of his career in Naples","Scored the 'Hand of God' in 1986","Led Argentina to the 1986 World Cup title","Is often named alongside Pelé as the greatest ever"]},
+{n:"Pelé",c:["Born as Edson Arantes do Nascimento","Debuted as a teenager for Santos","Became world champion at just 17","Won the World Cup three times in total with Brazil","Is often called 'O Rei' (The King)"]},
+{n:"Johan Cruyff",c:["Born in Amsterdam-Oost, close to Ajax's stadium","Wore the legendary number 14 shirt for Ajax and the Netherlands","Gave his name to a famous turn with the ball","Was voted European Footballer of the Year three times","Became an influential coach at Ajax and Barcelona after his career"]},
+{n:"Franz Beckenbauer",c:["Born in Munich, West Germany","Redefined the role of last man as an attacking sweeper","Nicknamed 'Der Kaiser'","Won the World Cup both as a player (1974) and as manager (1990)","Brought the 2006 World Cup to his home country as organiser"]},
+{n:"Zinedine Zidane",c:["Born in Marseille to Algerian parents","Known for his ball control with the 'roulette'","Headed in twice in the 1998 World Cup final","Was sent off in the 2006 World Cup final for a headbutt","Later won three consecutive Champions Leagues as coach of Real Madrid"]},
+{n:"Ronaldo Nazário",c:["Born in a poor neighbourhood of Rio de Janeiro","Broke through internationally at PSV Eindhoven","Nicknamed 'The Phenomenon'","Was top scorer at the 2002 World Cup","Made several comebacks after serious knee injuries"]},
+{n:"Ronaldinho",c:["Born in Porto Alegre, Brazil","Known for his permanent smile on the pitch","Played his best years at FC Barcelona","Was twice voted FIFA World Player of the Year","Won the 2002 World Cup with Brazil"]},
+{n:"Romário",c:["Born in Rio de Janeiro, Brazil","Formed a deadly duo with Hristo Stoichkov at Barcelona","Nicknamed 'The Short One'","Scored more than a thousand goals in his career (by his own count)","Was top scorer and world champion at the 1994 World Cup"]},
+{n:"Rivaldo",c:["Born in Recife, Brazil, in poverty","Had a recognisable, bow-legged stance","Was voted World Player of the Year in 1999","Scored a spectacular bicycle kick in the Champions League for Barcelona","Became world champion with Brazil in 2002"]},
+{n:"Roberto Carlos",c:["Born in Garça, Brazil","Played almost his entire career as a left-back at Real Madrid","Known for his enormous shooting power","Scored a 1997 free kick that seemed to bend like a boomerang","Was Spanish champion four times with Real Madrid"]},
+{n:"Cafu",c:["Born in a favela in São Paulo","Played as a right-back for AS Roma and AC Milan","Is the only player to have played in three World Cup finals","Was Brazil's captain at the 2002 World Cup","Became world champion twice (1994 and 2002)"]},
+{n:"Kaká",c:["Born in Brasília, Brazil","Was deeply religious and showed it after every goal","Was voted World Player of the Year in 2007 at AC Milan","Moved to Real Madrid for a record fee in 2009","Won the Champions League in 2007"]},
+{n:"Neymar",c:["Born in São Paulo, Brazil","Broke through at Santos, Pelé's old club","Moved to Paris Saint-Germain for a world-record fee in 2017","Known for his dribbling and sometimes exaggerated falls","Is the all-time top scorer of the Brazilian national team"]},
+{n:"Vinícius Júnior",c:["Born in São Gonçalo, Brazil","Joined Real Madrid from Flamengo as a teenager","Plays as a left winger with explosive pace","Scored the winning goal in the 2022 Champions League final","Finished second in the 2024 Ballon d'Or"]},
+{n:"Casemiro",c:["Born in São José dos Campos, Brazil","Played for years as a defensive midfielder at Real Madrid","Won the Champions League five times","Was known as the quiet engine behind the stars","Moved to Manchester United in 2022"]},
+{n:"Thiago Silva",c:["Born in Rio de Janeiro, Brazil","Was long regarded as one of the best centre-backs in the world","Was captain of both AC Milan and PSG","Still played at the top level in the Premier League at a late age","Was called 'O Monstro' by many"]},
+{n:"Alisson Becker",c:["Born in Novo Hamburgo, Brazil","Became known as the goalkeeper of AS Roma","Scored a crucial stoppage-time header against West Bromwich","Won the Champions League with Liverpool in 2019","Is regarded as one of the best goalkeepers of his generation"]},
+{n:"Sergio Agüero",c:["Born in Quilmes, Argentina","Once married Diego Maradona's daughter","Nicknamed 'Kun'","Scored a title-winning goal in the very last minute in 2012","Is Manchester City's all-time top scorer"]},
+{n:"Ángel Di María",c:["Born in Rosario, Argentina","Known for his dribbling down the left flank","Scored the winning goal in the 2021 Copa América final","Also scored the opening goal in the 2022 World Cup final","Was nicknamed 'Fideo' (the noodle)"]},
+{n:"Julián Álvarez",c:["Born in Calchín, Argentina","Broke through at River Plate","Formed a deadly duo with Messi at the 2022 World Cup","Moved to Manchester City and later Atlético Madrid","Became world champion at a young age"]},
+{n:"Lautaro Martínez",c:["Born in Bahía Blanca, Argentina","Plays as a striker for Internazionale","Often forms an attack with Julián Álvarez for Argentina","Was top scorer of the 2024 Copa América","Wears the captain's armband at Inter"]},
+{n:"Emiliano Martínez",c:["Born in Mar del Plata, Argentina","Became Aston Villa's goalkeeper after years on the bench at Arsenal","Known for his intimidating behaviour during penalties","Won the Golden Glove at the 2022 World Cup","Nicknamed 'Dibu'"]},
+{n:"Gabriel Batistuta",c:["Born in Reconquista, Argentina","Known for his ferocious long-range shots","Played his best years at Fiorentina in Italy","Celebrated goals with a distinctive gesture to the sky","Is one of Argentina's greatest strikers of all time"]},
+{n:"Javier Zanetti",c:["Born in Buenos Aires, Argentina","Spent his entire European career at Internazionale","Was captain of both Inter and Argentina for years","Combined the roles of right-back and midfielder","Played more than eight hundred matches for Inter"]},
+{n:"Juan Román Riquelme",c:["Born in Buenos Aires, Argentina","Known for his slow, elegant style of play","Played for both Boca Juniors and Villarreal","Missed a decisive penalty against Villarreal in 2006","Was seen as the last true 'number 10' of his generation"]},
+{n:"Javier Mascherano",c:["Born in San Lorenzo, Argentina","Was converted from midfielder to centre-back at Barcelona","Nicknamed 'El Jefecito' (the little boss)","Was captain of the Argentine national team for years","Played in the 2014 World Cup final"]},
+{n:"Diego Godín",c:["Born in Sauce, Uruguay","Was for years the rock in Atlético Madrid's defence","Headed a title-winning goal against Barcelona in 2014","Was Uruguay's captain at several tournaments","Known for his bald head and physical duels"]},
+{n:"Lothar Matthäus",c:["Born in Erlangen, West Germany","Played both in midfield and in defence","Was captain of West Germany at the 1990 World Cup","Was the first German to win the Ballon d'Or","Holds the record for most World Cup matches for Germany"]},
+{n:"Jürgen Klinsmann",c:["Born in Göppingen, West Germany","Often celebrated goals with a distinctive dive","Was top scorer at the 1990 World Cup","Later became manager of both Germany and the USA","Played for Inter, Monaco and Tottenham among others"]},
+{n:"Oliver Kahn",c:["Born in Karlsruhe, West Germany","Known for his aggressive, intimidating goalkeeping style","Nicknamed 'Der Titan'","Was voted best player of the tournament at the 2002 World Cup","Spent almost his entire career at Bayern Munich"]},
+{n:"Michael Ballack",c:["Born in Görlitz, East Germany","Played for Bayer Leverkusen, Bayern Munich and Chelsea","Lost three finals in a row with Leverkusen in 2002","Was captain of the German national team for years","Missed the 2010 World Cup through injury, not the 2002 final"]},
+{n:"Miroslav Klose",c:["Born in Opole, Poland, but played for Germany","Known for his somersaults when celebrating","Was top scorer at the 2006 World Cup","Is the all-time record holder for most World Cup goals","Played for Werder Bremen and Lazio among others"]},
+{n:"Philipp Lahm",c:["Born in Munich, Germany","Could play excellently as both left-back and right-back","Was Germany's captain at the 2014 World Cup","Won the world title that tournament in South America","Spent his entire career at Bayern Munich"]},
+{n:"Bastian Schweinsteiger",c:["Born in Kolbermoor, West Germany","Played as a controlling midfielder at Bayern Munich","Was voted man of the match in the 2014 World Cup final","Married a tennis star","Ended his career at Chicago Fire"]},
+{n:"Manuel Neuer",c:["Born in Gelsenkirchen, Germany","Redefined the goalkeeper's role as an extra outfield player","Was captain of Bayern Munich","Won the world title with Germany in 2014","Played for Schalke 04 before moving to Bayern"]},
+{n:"Thomas Müller",c:["Born in Weilheim, Germany","Was top scorer at the 2010 World Cup as a teenager","Coined the term 'Raumdeuter' (space interpreter) for himself","Spent his entire career at Bayern Munich","Won the world title with Germany in 2014"]},
+{n:"Toni Kroos",c:["Born in Greifswald, Germany","Known for his precise long passes","Won multiple Champions Leagues at Real Madrid","Became world champion with Germany in 2014","Retired in 2024 after the home Euros"]},
+{n:"Joshua Kimmich",c:["Born in Rottweil, Germany","Can play both as right-back and defensive midfielder","Was developed at RB Leipzig before moving to Bayern","Is a mainstay and often captain at Bayern Munich","Has been the backbone of the German national team for years"]},
+{n:"Jamal Musiala",c:["Born in Stuttgart, Germany, but grew up in England","Played as a youth player at Chelsea before moving to Bayern","Chose to play for Germany rather than England","Known for his dribbling in tight spaces","Is one of German football's greatest young talents"]},
+{n:"Mario Götze",c:["Born in Memmingen, Germany","Broke through young at Borussia Dortmund","Moved to arch-rivals Bayern Munich as a teenager","Scored the winning goal in the 2014 World Cup final","Could never quite reach that peak again"]},
+{n:"Marco Reus",c:["Born in Dortmund, Germany","Spent his entire top career at his home city club Borussia Dortmund","Was often plagued by injuries at crucial moments","Missed major tournaments with Germany for years through bad luck","Was Dortmund's captain for years"]},
+{n:"Mesut Özil",c:["Born in Gelsenkirchen, Germany, to a Turkish family","Became known for his subtle, surprising passing","Played for Real Madrid and later Arsenal","Won the world title with Germany in 2014","Later withdrew from the German team after fierce criticism"]},
+{n:"Mats Hummels",c:["Born in Bergisch Gladbach, Germany","Played alternately for Borussia Dortmund and Bayern Munich","Known for his precise passing from defence","Became world champion with Germany in 2014","Son of a former Dortmund assistant coach"]},
+{n:"Michel Platini",c:["Born in Joeuf, France","Known for his precise free kicks","Won the Ballon d'Or three times in a row","Led France to the 1984 European title","Later became president of European football body UEFA"]},
+{n:"Thierry Henry",c:["Born in Les Ulis, near Paris","Was converted from winger to deadly striker at Arsenal","Is Arsenal's all-time top scorer","Was part of the unbeaten Arsenal side of 2003-2004","Became world champion with France in 1998"]},
+{n:"Kylian Mbappé",c:["Born in Bondy, near Paris","Broke through at AS Monaco as a teenager","Scored in a World Cup final at just nineteen","Was top scorer at the 2022 World Cup with a hat-trick in the final","Moved to Real Madrid on a free transfer in 2024"]},
+{n:"Karim Benzema",c:["Born in Lyon, France","Played sixteen seasons as a striker at Real Madrid","Finally won the Ballon d'Or in 2022","Once formed a deadly trio with Cristiano Ronaldo and Gareth Bale","Moved to Saudi Arabia in 2023"]},
+{n:"Antoine Griezmann",c:["Born in Mâcon, France","Was rejected by French clubs and moved to Spain young","Played his best years at Atlético Madrid","Was top scorer and best player of the 2018 World Cup","Won the world title that tournament with France"]},
+{n:"N'Golo Kanté",c:["Born in Paris, France","Was only noticed by big clubs late","Won the Premier League with Leicester City as an incredible surprise","Won the Champions League with Chelsea a year later","Is known as one of the best ball-winners in the world"]},
+{n:"Paul Pogba",c:["Born in Lagny-sur-Marne, France","Left Manchester United as a youngster to break through at Juventus","Later returned to Manchester United for a record fee","Known for his eye-catching hairstyles","Became world champion with France in 2018"]},
+{n:"Ousmane Dembélé",c:["Born in Vernon, France","Broke through rapidly at Rennes and Borussia Dortmund","Moved to Barcelona for a record fee at a very young age","Struggled with many injuries at Barcelona","Now plays for Paris Saint-Germain"]},
+{n:"Patrick Vieira",c:["Born on Senegalese soil, but played for France","Formed a rock-solid midfield duo at Arsenal","Was Arsenal's captain for years","Became world champion with France in 1998","Later became a coach at Crystal Palace among others"]},
+{n:"Marcel Desailly",c:["Born in Accra, Ghana, but played for France","Won the Champions League with both Marseille and AC Milan","Played as a controlling defender at the highest level","Became world champion with France in 1998","Nicknamed 'The Rock of Gibraltar'"]},
+{n:"Lilian Thuram",c:["Born in Guadeloupe, played for France","Scored his only two international goals ever in the 1998 World Cup semi-final","Played for years as a right-back at Parma and Juventus","Became world champion with France in 1998","Is the father of footballer Marcus Thuram"]},
+{n:"Robert Pirès",c:["Born in Reims, France, to a Portuguese family","Was a key player in Arsenal's unbeaten 2003-2004 season","Known for his technique as a left winger","Became world champion with France in 1998","Also became European champion in 2000"]},
+{n:"Franck Ribéry",c:["Born in Boulogne-sur-Mer, France","Has a striking scar on his face from a childhood accident","Played for years alongside Arjen Robben at Bayern Munich","Won the Champions League, Bundesliga and DFB-Pokal in 2013","Was never voted World Player of the Year despite a top season"]},
+{n:"David Trezeguet",c:["Born in Rouen, France, but grew up in Argentina","Scored the golden goal that won France Euro 2000","Played his best years as a striker at Juventus","Became world champion with France in 1998","Missed a penalty in the 2006 World Cup final"]},
+{n:"Eusébio",c:["Born in Mozambique, then a Portuguese colony","Became the first great African star of European football","Spent his entire career at Benfica","Nicknamed 'The Black Panther'","Was top scorer at the 1966 World Cup"]},
+{n:"Luís Figo",c:["Born in Lisbon, Portugal","Made a controversial move from Barcelona to Real Madrid in 2000","Was pelted with a pig's head on his return to Barcelona","Won the Ballon d'Or in 2000","Was captain of the Portuguese national team for years"]},
+{n:"Rui Costa",c:["Born in Lisbon, Portugal","Known for his subtle, surprising passing","Played his best years at Fiorentina","Moved to AC Milan in 2001","Was often called 'Maestro' for his vision"]},
+{n:"Bernardo Silva",c:["Born on the island of Madeira, Portugal","Was developed at Benfica","Plays as an attacking midfielder at Manchester City","Won the Premier League and Champions League multiple times","Known for his technique in tight spaces"]},
+{n:"Pepe",c:["Born in Maceió, Brazil, but played for Portugal","Became known as a hard, physical centre-back at Real Madrid","Later played for years alongside Ronaldo for Portugal","Kept playing at the top level to a very old age","Became notorious for his aggressive fouls"]},
+{n:"Bruno Fernandes",c:["Born in Maia, Portugal","Broke through at Sporting Lisbon","Immediately became Manchester United's driving force after his transfer","Combines many goals with many assists from midfield","Is captain of both Manchester United and Portugal"]},
+{n:"João Félix",c:["Born in Viseu, Portugal","Broke through sensationally at Benfica as a teenager","Was sold to Atlético Madrid for a record fee","Could not always live up to his sky-high expectations there","Was later loaned to Chelsea and Barcelona among others"]},
+{n:"Bobby Charlton",c:["Born in Ashington, England","Survived a plane crash with his club in 1958","Spent his entire career at Manchester United","Became world champion with England in 1966","Was later knighted for his services to football"]},
+{n:"David Beckham",c:["Born in Leytonstone, England","Known for his precise free kicks and crosses","Married one of the Spice Girls","Played for Manchester United and Real Madrid among others","Ended his career in the American league at LA Galaxy"]},
+{n:"Steven Gerrard",c:["Born in Whiston, England","Spent his entire career as a midfielder at Liverpool","Led a historic comeback from 0-3 in a 2005 European final","Was captain of both Liverpool and England for years","Later became a coach at Rangers among others"]},
+{n:"Frank Lampard",c:["Born in Romford, England","Became Chelsea's all-time top scorer as a midfielder","Formed a long rivalry with Steven Gerrard in England's midfield","Won the Premier League multiple times with Chelsea","Later became a coach, including at Chelsea itself"]},
+{n:"Paul Scholes",c:["Born in Salford, England","Known for his precise long passes and hard shots","Spent his entire career at Manchester United","Was regarded by many top players as underrated on the world stage","Rarely played for the English national team by his own choice"]},
+{n:"Wayne Rooney",c:["Born in Liverpool, England","Broke through at sixteen for Everton with a spectacular goal","Became all-time top scorer of both Manchester United and England","Known for his fierce, direct style of play","Became England's captain at a young age"]},
+{n:"Michael Owen",c:["Born in Chester, England","Scored a spectacular solo goal against Argentina at the 1998 World Cup","Won the Ballon d'Or in 2001","Played for Liverpool, Real Madrid and Manchester United","Later became known as an analyst and pundit"]},
+{n:"Alan Shearer",c:["Born in Newcastle, England","Is the all-time top scorer of the Premier League","Played his best years for his home city Newcastle United","Known for his trademark celebration with a raised arm","Never won an English league title with a club"]},
+{n:"Gary Lineker",c:["Born in Leicester, England","Was top scorer at the 1986 World Cup","Never received a single yellow card in his entire career","Played for Barcelona and Tottenham Hotspur among others","Became a well-known TV presenter after his career"]},
+{n:"Harry Kane",c:["Born in Walthamstow, England","Became Tottenham Hotspur's all-time top scorer","Was top scorer at the 2018 World Cup","Finally moved to Bayern Munich in 2023 for his first major trophy","Is the all-time top scorer of the English national team"]},
+{n:"Jude Bellingham",c:["Born in Stourbridge, England","Debuted in professional football at just sixteen for Birmingham City","Moved young to Borussia Dortmund before joining Real Madrid","Scored impressive goals immediately in his first season at Real Madrid","Is seen as one of the greatest talents of his generation"]},
+{n:"Bukayo Saka",c:["Born in Ealing, London, England","Came through Arsenal's entire youth academy","Missed a decisive penalty in a Euro final at nineteen","Recovered from the miss and became a mainstay for Arsenal and England","Usually plays as a right winger"]},
+{n:"Declan Rice",c:["Born in Kingston upon Thames, England","Played youth football at Chelsea before moving to West Ham","Was sold to Arsenal for a record fee","Plays as a defensive midfielder","Chose as a teenager to play for England rather than Ireland"]},
+{n:"Phil Foden",c:["Born in Stockport, England","Came through Manchester City's youth academy","Was compared early to compatriot Steven Gerrard in style","Won the Premier League multiple times with his club","Was voted Premier League Player of the Season"]},
+{n:"John Terry",c:["Born in Barking, England","Spent his entire career at Chelsea as a centre-back","Slipped during a decisive penalty in a 2008 European final","Was captain of both Chelsea and England for years","Won the Premier League five times"]},
+{n:"Rio Ferdinand",c:["Born in Peckham, London, England","Was signed by Manchester United for a record fee for a defender","Formed a strong defensive duo there","Later became a well-known television analyst","Played for West Ham and Leeds United"]},
+{n:"Ashley Cole",c:["Born in Stepney, London, England","Was regarded for years as one of the best left-backs in the world","Made a controversial move from Arsenal to rivals Chelsea","Won the FA Cup and Premier League multiple times","Was part of the unbeaten Arsenal season of 2003-2004"]},
+{n:"Peter Crouch",c:["Born in Macclesfield, England","Known for his unusually tall stature for a striker","Became known for a robot-like celebration dance","Played for Liverpool, Tottenham and Stoke City among others","Scored relatively many international goals for England despite few starts"]},
+{n:"Kevin De Bruyne",c:["Born in Drongen, Belgium","Moved to the Bundesliga after a difficult spell at Chelsea","Broke through definitively at VfL Wolfsburg","Became one of the best playmakers in the world at Manchester City","Was captain of Belgium's 'Golden Generation' for years"]},
+{n:"Eden Hazard",c:["Born in La Louvière, Belgium","Broke through at French club Lille","Was twice voted Player of the Season in the Premier League at Chelsea","Moved to Real Madrid for a record fee in 2019","Could never reach his top level at Real Madrid due to injuries"]},
+{n:"Romelu Lukaku",c:["Born in Antwerp, Belgium, to a Congolese family","Was already top scorer at Anderlecht as a teenager","Played for Everton, Manchester United and Chelsea among others","Became all-time top scorer of the Belgian national team","Now plays in the Italian league"]},
+{n:"Thibaut Courtois",c:["Born in Bree, Belgium","Was loaned young to Atlético Madrid from Chelsea","Was twice named best goalkeeper of the World Cup","Won the Champions League with Real Madrid in a spectacular final","Is seen as one of the tallest and best goalkeepers in the world"]},
+{n:"Vincent Kompany",c:["Born in Uccle, Belgium, to a Congolese family","Was Manchester City's captain for years","Won multiple Premier League titles as a defender","Later became a coach, including at Burnley and Bayern Munich","Was also captain of Belgium's 'Golden Generation'"]},
+{n:"Marouane Fellaini",c:["Born in Etterbeek, Belgium, to a Moroccan family","Known for his striking afro hairstyle","Broke through at Standard Liège and then moved to Everton","Later also played for Manchester United","Was often used as a physical attacking midfielder"]},
+{n:"Dries Mertens",c:["Born in Leuven, Belgium","Broke through at PSV Eindhoven","Was converted from winger to deadly striker at Napoli","Became all-time top scorer of his Italian club","Celebrated goals with a distinctive two-handed gesture"]},
+{n:"Luis Suárez",c:["Born in Salto, Uruguay","Was suspended at the 2010 World Cup for a handball on the line","Was later also banned for biting opponents","Formed a deadly trio with Messi and Neymar at Barcelona","Is the all-time top scorer of the Uruguayan national team"]},
+{n:"Edinson Cavani",c:["Born in Salto, Uruguay","Known for his headers and work rate as a striker","Became all-time top scorer of Paris Saint-Germain","Later played for Manchester United and Valencia","Often celebrated goals with a distinctive two-fingered gesture"]},
+{n:"Diego Forlán",c:["Born in Montevideo, Uruguay, into a football family","Was first a disappointing signing at Manchester United in England","Flourished at Villarreal and Atlético Madrid","Was voted best player of the 2010 World Cup","Was twice top scorer of the Spanish league"]},
+{n:"Federico Valverde",c:["Born in Montevideo, Uruguay","Broke through at Peñarol before moving to Real Madrid","Known for his enormous running power in midfield","Regularly scores spectacular long-range shots","Became a mainstay at Real Madrid and Uruguay"]},
+{n:"Zlatan Ibrahimović",c:["Born in Malmö, Sweden, to a Balkan family","Known for his acrobatic, impossible goals","Played for an impressive string of top clubs across Europe","Became known for his confident statements in interviews","Ended his European career at AC Milan at an older age"]},
+{n:"Henrik Larsson",c:["Born in Helsingborg, Sweden","Became a club legend at Celtic in Scotland","Known for his bald head and moustache","Later won a short, successful spell at Barcelona too","Is seen as one of the best Swedish strikers ever"]},
+{n:"Luka Modrić",c:["Born during the war in the former Yugoslavia, in Croatia","Known for his composure on the ball despite his small stature","Led Croatia to the 2018 World Cup final","Broke the Messi and Ronaldo dominance at the Ballon d'Or that year","Has played for years in Real Madrid's midfield"]},
+{n:"Davor Šuker",c:["Born in Osijek, in the former Yugoslavia","Played for Sevilla and Real Madrid among others","Was top scorer at the 1998 World Cup","Led the newly formed Croatia to a surprising third place at that tournament","Later became president of the Croatian football association"]},
+{n:"Ivan Rakitić",c:["Born in Switzerland to Croatian parents","Broke through at FC Basel and Sevilla","Won multiple Champions Leagues at FC Barcelona","Played in the 2018 World Cup final with Croatia","Known for his versatility in midfield"]},
+{n:"Mario Mandžukić",c:["Born in the former West Germany to Croatian parents","Known for his physical, combative style as a striker","Won the Champions League with both Bayern Munich and Juventus","Scored a spectacular volley in the 2018 World Cup final","Was notorious for his fierce duels with opponents"]},
+{n:"Robert Lewandowski",c:["Born in Warsaw, Poland","Broke through at Borussia Dortmund","Once scored five goals in nine minutes for Bayern Munich","Was top scorer of the Bundesliga and Champions League multiple times","Moved to Barcelona at an older age"]},
+{n:"Peter Schmeichel",c:["Born in Gladsaxe, Denmark","Known for his huge presence and 'star jump' saves","Was a key player in Manchester United's historic 1999 treble","Surprisingly won Euro 1992 with Denmark","Is the father of goalkeeper Kasper Schmeichel"]},
+{n:"Michael Laudrup",c:["Born in Copenhagen, Denmark","Known for his elegant ball control and passing","Played for both Barcelona and arch-rivals Real Madrid","Is called by many the best Danish footballer ever","Later became a successful coach at Swansea City"]},
+{n:"Christian Eriksen",c:["Born in Middelfart, Denmark","Broke through at Ajax before moving to Tottenham","Known for his precise free kicks and passing","Suffered a cardiac arrest on the pitch during a Euro 2020 match","Returned to top football with a defibrillator after his cardiac arrest"]},
+{n:"Ryan Giggs",c:["Born in Cardiff, Wales","Spent his entire career at Manchester United","Won a record number of Premier League titles","Known for his dribbling down the left flank","Was never drawn for a major tournament with Wales during his top years"]},
+{n:"Gareth Bale",c:["Born in Cardiff, Wales","Was converted from left-back to winger at Tottenham","Moved to Real Madrid for a world-record fee","Scored a spectacular bicycle kick in a Champions League final","Led Wales to the semi-final of Euro 2016"]},
+{n:"Ferenc Puskás",c:["Born in Budapest, Hungary","Known for his deadly left foot","Was the star of Hungary's 'Golden Team' in the 1950s","Fled to Spain after a failed uprising","Became top scorer at Real Madrid despite his late start there"]},
+{n:"Mohamed Salah",c:["Born in Nagrig, Egypt","Was not seen as suited to the Premier League at Chelsea","Broke through anyway at AS Roma and then Liverpool","Broke a goalscoring record in his first season at Liverpool","Is the all-time top scorer of the Egyptian national team"]},
+{n:"Sadio Mané",c:["Born in Bambali, Senegal, in humble circumstances","Broke through at Red Bull Salzburg and Southampton","Formed a deadly trio with Salah and Firmino at Liverpool","Won the Africa Cup of Nations with Senegal in 2022","Later moved to Bayern Munich and the Saudi league"]},
+{n:"Didier Drogba",c:["Born in Abidjan, Ivory Coast","Became the deadly striker of Chelsea's first golden era","Scored the decisive penalty in the 2012 Champions League final","Called for peace after a civil war in his home country","Was Ivory Coast's captain for years"]},
+{n:"Samuel Eto'o",c:["Born in Nkon, Cameroon","Won the Champions League three times at three different clubs","Was named African Footballer of the Year multiple times","Played his best years at FC Barcelona and Internazionale","Often celebrated goals with an exuberant dance"]},
+{n:"Michael Essien",c:["Born in Accra, Ghana","Known for his physical strength in midfield","Was nicknamed 'The Bison' at Chelsea","Played a key role in Chelsea's successful era under José Mourinho","Was nominated African Footballer of the Year several times"]},
+{n:"Riyad Mahrez",c:["Born in Sarcelles, France, but played for Algeria","Was a key player in Leicester City's sensational 2016 title","Was voted Player of the Season in the Premier League that year","Later moved to Manchester City","Won the 2019 Africa Cup of Nations with Algeria"]},
+{n:"Erling Haaland",c:["Born in Leeds, England, but plays for Norway","His father once played in the Premier League himself","Scored nine times in one youth World Cup match as a teenager","Broke club records at Red Bull Salzburg and Borussia Dortmund","Broke the Premier League goalscoring record in his first season at Manchester City"]},
+{n:"Roberto Baggio",c:["Born in Caldogno, Italy","Known for his ponytail as a trademark","Won the Ballon d'Or in 1993","Missed the decisive penalty in the 1994 World Cup final","Was affectionately called 'Il Divin Codino' by fans"]},
+{n:"Paolo Maldini",c:["Born in Milan, Italy, son of a former international","Spent his entire career, over twenty-five years, at AC Milan","Combined the positions of left-back and centre-back","Won the Champions League five times","Is widely seen as one of the best defenders of all time"]},
+{n:"Franco Baresi",c:["Born in Travagliato, Italy","Spent his entire career at AC Milan","Formed a legendary defence with Maldini","Was captain of both Milan and Italy","Never won a major international tournament, to his frustration"]},
+{n:"Andrea Pirlo",c:["Born in Flero, Italy","Was converted from attacking to defensive midfielder at AC Milan","Known for his inimitable passing from deep","Became world champion with Italy in 2006","Remained a key player at Juventus even at an older age"]},
+{n:"Francesco Totti",c:["Born in Rome, Italy","Spent his entire career, more than twenty years, at AS Roma","Became his club's all-time top scorer","Won the world title with Italy in 2006","Is worshipped like a god by his club's fans"]},
+{n:"Alessandro Del Piero",c:["Born in Conegliano, Italy","Played almost twenty years at Juventus","Became his club's all-time top scorer","Known for his trademark goals from the edge of the box","Won the world title with Italy in 2006"]},
+{n:"Fabio Cannavaro",c:["Born in Naples, Italy","Was Italy's captain at the 2006 World Cup","Won the world title that tournament as a centre-back","Was the first defender in nearly twenty years to be voted World Player of the Year","Played for Real Madrid"]},
+{n:"Gianluigi Buffon",c:["Born in Carrara, Italy","Spent most of his long career at Juventus","Won the world title with Italy in 2006","Kept playing at the top level to a very old age","Is seen as one of the best goalkeepers of all time"]},
+{n:"Gianluigi Donnarumma",c:["Born in Castellammare di Stabia, Italy","Debuted at just sixteen for AC Milan","Became a regular between the posts at a young age","Was named man of the match in the Euro 2020 final","Now plays for Paris Saint-Germain"]},
+{n:"Federico Chiesa",c:["Born in Genoa, Italy, son of former international Enrico Chiesa","Broke through at Fiorentina","Played a key role in Italy's Euro 2020 success","Played for Juventus after his time at Fiorentina","Later moved to the Premier League at Liverpool"]},
+{n:"Alessandro Nesta",c:["Born in Rome, Italy","Was regarded as one of the most elegant defenders of his generation","Played for both Lazio and AC Milan","Won the Champions League multiple times","Formed a strong defensive duo with Maldini at Milan"]},
+{n:"Gennaro Gattuso",c:["Born in Corigliano Calabro, Italy","Known for his fierce, combative style in midfield","Played for years at AC Milan","Became world champion with Italy in 2006","Later became a coach, including at his old club Milan"]},
+{n:"Antonio Cassano",c:["Born in Bari, Italy","Was seen as one of the greatest talents of his generation","Played for AS Roma, Real Madrid and Milan among others","Known for his talent, but also for his volatile behaviour","Could never fully live up to his potential at the highest level"]},
+{n:"Christian Vieri",c:["Born in Bologna, Italy, grew up in Australia","Was sold to Internazionale for a world-record fee","Known for his heading ability and finishing as a striker","Was top scorer at the 2002 World Cup","Played for a great many different Italian top clubs"]},
+{n:"Alfredo Di Stéfano",c:["Born in Buenos Aires, Argentina, but eventually played for Spain","Won the European Cup five times in a row with Real Madrid","Was top scorer of the Spanish league multiple times","Is regarded as one of football's first true global stars","Was nicknamed 'The Blond Arrow'"]},
+{n:"Xavi Hernández",c:["Born in Terrassa, near Barcelona","Came through FC Barcelona's La Masia youth academy","Formed the heart of the famous Barcelona midfield with Andrés Iniesta","Became world champion with Spain in 2010","Later returned as head coach at his club"]},
+{n:"Andrés Iniesta",c:["Born in Fuentealbilla, a small village in Spain","Like Xavi, came through the La Masia youth academy","Scored the decisive goal in the 2010 World Cup final","Finished second in the Ballon d'Or that year","Is seen as the embodiment of the 'tiki-taka' style of play"]},
+{n:"Raúl González",c:["Born in Madrid, Spain","Was already Real Madrid's top scorer at seventeen","Was for years all-time top scorer of both his club and Spain","Won the Champions League three times","Known for his trademark celebration with thumb and index finger"]},
+{n:"Iker Casillas",c:["Born in Móstoles, Spain","Debuted at just seventeen for Real Madrid","Was a regular goalkeeper in a Champions League final at nineteen","Was Spain's captain during their golden generation","Became world champion in 2010 and a two-time European champion"]},
+{n:"Carles Puyol",c:["Born in La Pobla de Segur, Spain","Known for his long hair and aggressive style of play","Was FC Barcelona's captain for years","Headed Spain into the 2010 World Cup final","Spent his entire career at one club"]},
+{n:"Sergio Ramos",c:["Born in Camas, near Seville, Spain","Was already Real Madrid's captain at a young age","Scored a crucial, late header in the 2014 Champions League final","Won the world title with Spain in 2010","Is known as one of the most-carded players ever with yellow and red cards"]},
+{n:"David Villa",c:["Born in Tuilla, Spain","Is the all-time top scorer of the Spanish national team","Was top scorer at Euro 2008","Won the world title with Spain in 2010","Later also played in the American league at New York City FC"]},
+{n:"Fernando Torres",c:["Born in Fuenlabrada, Spain","Became a fan favourite at Liverpool as a deadly striker","Made a controversial move to rivals Chelsea for a record fee","Won the 2010 World Cup and two European titles with Spain","Returned to his boyhood club Atlético Madrid at an older age"]},
+{n:"Pedri",c:["Born in the Canary Islands, Spain","Broke through at a very young age at FC Barcelona","Was voted best young player of Euro 2020","Known for his composure on the ball in midfield","Is seen as the successor to Xavi and Iniesta in style"]},
+{n:"Rodri",c:["Born in Madrid, Spain","Broke through at Atlético Madrid before moving to Manchester City","Plays as a defensive midfielder and playmaker","Scored the winning goal in a Champions League final for his club","Won the Ballon d'Or in 2024"]},
+{n:"Sergio Busquets",c:["Born in Sabadell, Spain, son of a former goalkeeper","Came through FC Barcelona's La Masia youth academy","Played as a defensive midfielder behind Xavi and Iniesta","Became world champion with Spain in 2010","Moved to the American league at an older age"]},
+{n:"Gerard Piqué",c:["Born in Barcelona, Spain","Played a few years at Manchester United as a youth player","Became a club icon as a defender at FC Barcelona","Won the world title with Spain in 2010","Became known as an entrepreneur and TV personality after his career"]},
+{n:"David Silva",c:["Born in the Canary Islands, Spain","Broke through at Valencia before moving to Manchester City","Known for his subtle passing and ball control","Became world champion with Spain in 2010","Was Manchester City's creative engine for years"]},
+{n:"Diego Costa",c:["Born in Lagarto, Brazil, but chose the Spanish team","Known for his aggressive, confrontational style as a striker","Was English champion twice with Chelsea","Played for Atlético Madrid","Became notorious for his many skirmishes with opponents"]},
+{n:"Marco van Basten",c:["Born in Utrecht, Netherlands","Known for his perfect, classic shooting technique","Scored an impossible volley in the Euro 1988 final","Won the Ballon d'Or three times","Had to end his career early due to persistent ankle injuries"]},
+{n:"Dennis Bergkamp",c:["Born in Amsterdam, Netherlands","Known for his fear of flying","Became a fan favourite at Arsenal for his technique and ball control","Scored a legendary goal against Argentina at the 1998 World Cup","Was nicknamed 'The Non-Flying Dutchman'"]},
+{n:"Ruud Gullit",c:["Born in Amsterdam, Netherlands","Known for his trademark dreadlocks","Won the Ballon d'Or in 1987","Led the Netherlands to the 1988 European title","Later became a coach and TV analyst"]},
+{n:"Frank Rijkaard",c:["Born in Amsterdam, Netherlands","Was part of the golden Dutch team of 1988","Won multiple European Cups as a player at AC Milan","Played in the youth ranks alongside Gullit at Ajax","Later became a successful coach at FC Barcelona"]},
+{n:"Edwin van der Sar",c:["Born in Voorhout, Netherlands","Played for years as a goalkeeper at Ajax before moving to England","Saved the decisive penalty in the 2008 Champions League final","Held a club record for matches without conceding at Manchester United","Later became a director at his old club Ajax"]},
+{n:"Robin van Persie",c:["Born in Rotterdam, Netherlands","Became Premier League top scorer at Arsenal and Manchester United","Scored a spectacular flying header against Spain at the 2014 World Cup","Was nicknamed 'The Flying Dutchman'","Is one of the all-time top scorers of the Dutch national team"]},
+{n:"Arjen Robben",c:["Born in Bedum, Netherlands","Known for his inevitable move inside onto his left foot","Played for years alongside Franck Ribéry at Bayern Munich","Missed a big chance in the 2010 World Cup final","Scored a legendary last-minute goal against Spain in 2014"]},
+{n:"Wesley Sneijder",c:["Born in Utrecht, Netherlands","Won the Champions League, Serie A and Coppa Italia with Internazionale in one calendar year","Known for his precise long-range shots and free kicks","Led the Netherlands to the 2010 World Cup final","Finished in the top three for the Ballon d'Or that tournament"]},
+{n:"Virgil van Dijk",c:["Born in Breda, Netherlands","Was signed by Liverpool for a record fee for a defender","Won the Champions League with Liverpool in 2019","Finished second in the Ballon d'Or that year","Is captain of both Liverpool and the Dutch national team"]},
+{n:"Frenkie de Jong",c:["Born in Arnemuiden, Zeeland, Netherlands","Broke through at Ajax during their sensational 2019 Champions League run","Moved to FC Barcelona","Known for his technique and turning under pressure","Plays as a controlling or attacking midfielder"]},
+{n:"Memphis Depay",c:["Born in Moordrecht, Netherlands","Broke through at PSV Eindhoven","Made a difficult move to Manchester United","Revived his career at Olympique Lyon","Is one of the top scorers of the Dutch national team in the modern era"]},
+{n:"Clarence Seedorf",c:["Born in Paramaribo, Suriname, but played for the Netherlands","Won the Champions League with four different clubs","Is the only player ever to achieve that feat","Played for Ajax, Real Madrid, Internazionale and AC Milan among others","Later also became a coach at Milan"]},
+{n:"Patrick Kluivert",c:["Born in Amsterdam, Netherlands, son of an international","Scored the winning goal in a Champions League final at nineteen","Became all-time top scorer of the Dutch team, until he was overtaken","Played for Ajax, Barcelona and AC Milan among others","Later became national coach of several African countries"]},
+{n:"Edgar Davids",c:["Born in Suriname, but played for the Netherlands","Known for the tinted glasses he always wore","Nicknamed 'Pitbull' for his fierce midfield style","Played for Ajax, AC Milan and Juventus among others","Was suspended after a positive doping test"]},
+{n:"Jaap Stam",c:["Born in Kampen, Netherlands","Was regarded as one of the best centre-backs of his time","Was suddenly sold by Manchester United to everyone's surprise","Played for Lazio and Ajax","Later became a coach at Reading and Feyenoord among others"]},
+{n:"Marek Hamšík",c:["Born in Bánovce nad Bebravou, Slovakia","Became the club legend and all-time top scorer of Napoli","Known for his striking mohawk hairstyle","Moved to the Chinese league at an older age","Was captain of the Slovak national team for years"]},
+{n:"Nemanja Vidić",c:["Born in Užice, in the former Yugoslavia, played for Serbia","Formed a rock-solid defensive duo at Manchester United","Was Manchester United's captain for years","Won the Premier League multiple times","Known for his uncompromising, hard style of play"]},
+{n:"Radamel Falcao",c:["Born in Santa Marta, Colombia","Became known as a deadly finisher at FC Porto and Atlético Madrid","Was nicknamed 'El Tigre'","Missed the 2014 World Cup with a serious knee injury","Later also played for Monaco and Manchester United"]},
+{n:"James Rodríguez",c:["Born in Cúcuta, Colombia","Was top scorer at the 2014 World Cup with a spectacular volley","Moved to Real Madrid for a lot of money","Later also played for Bayern Munich on loan","Known for his technique and left foot"]},
+{n:"Alexis Sánchez",c:["Born in Tocopilla, Chile","Broke through at Udinese before moving to Barcelona","Became a fan favourite at Arsenal for his commitment and goals","Made a controversial move to rivals Manchester United","Is the all-time top scorer of the Chilean national team"]},
+{n:"Arturo Vidal",c:["Born in San Joaquín, Chile","Known for his fierce, energetic style in midfield","Played for Juventus, Bayern Munich and Barcelona among others","Won the Copa América twice in a row with Chile","Was nicknamed 'The King of Chile'"]},
+{n:"Sami Khedira",c:["Born in Stuttgart, Germany, to a Tunisian family","Played as a defensive midfielder at Real Madrid and Juventus","Became world champion with Germany in 2014, despite an injury before the final","Often formed a duo with Toni Kroos in midfield","Was known for his running power and balance"]},
+{n:"Jamie Carragher",c:["Born in Bootle, England","Spent his entire career as a defender at Liverpool","Was part of the historic 2005 Champions League final comeback","Became a respected television analyst after his career","Never played for a club other than his home city"]},
+{n:"Gary Neville",c:["Born in Bury, England","Spent his entire career as a right-back at Manchester United","Was part of the famous 'Class of 92'","Later became a sharp television analyst","Is the brother of footballer Phil Neville"]},
+{n:"Phil Neville",c:["Born in Bury, England","Like his brother, played at Manchester United","Could play both as a defender and midfielder","Later became coach of the England women's team","Is the younger brother of Gary Neville"]},
+{n:"Emile Heskey",c:["Born in Leicester, England","Known for his physical strength as a striker","Played for Leicester City, Liverpool and Birmingham among others","Often formed an attacking duo with Michael Owen for England","Scored relatively few goals despite many caps"]},
+{n:"Kevin Keegan",c:["Born in Armthorpe, England","Won the Ballon d'Or twice at Hamburger SV","Was captain of Liverpool and England for years","Later became manager of the English national team","Known for his energetic, attacking style of play"]},
+{n:"Gordon Banks",c:["Born in Sheffield, England","Made one of the most famous saves ever against Pelé at the 1970 World Cup","Was England's goalkeeper during their 1966 world title","Played for Leicester City and Stoke City among others","Lost the sight in one eye after a car accident"]},
+{n:"Sol Campbell",c:["Born in Newham, London, England","Made a controversial free transfer from Tottenham to rivals Arsenal","Was part of the unbeaten Arsenal season of 2003-2004","Known for his physical strength as a centre-back","Played more than seventy internationals for England"]},
+{n:"Jermain Defoe",c:["Born in Beckton, London, England","Scored five goals in one international against Bulgaria","Played for West Ham, Tottenham and Sunderland among others","Known for his finishing in the box","Built a special friendship with a young fan during the child's illness"]},
+{n:"Jamie Vardy",c:["Born in Sheffield, England","Once played in England's lower amateur divisions","Was a key player in Leicester City's sensational 2016 title","Known for his pace in behind the defence","Became Premier League top scorer at an older age"]},
+{n:"James Milner",c:["Born in Leeds, England","Known for his remarkable versatility in almost any position","Played for Leeds, Newcastle, Aston Villa, Manchester City and Liverpool among others","Won the Champions League with Liverpool in 2019","Remained active at the top level to a very old age"]},
+{n:"Michael Carrick",c:["Born in Wallsend, England","Played as a calm, defensive midfielder at Manchester United","Never became a regular for the English national team despite his quality","Won the Premier League multiple times","Later became assistant and interim head coach at Manchester United"]},
+{n:"Owen Hargreaves",c:["Born in Calgary, Canada, to an English father","Grew up in Germany and broke through at Bayern Munich","Only moved to Manchester United at an older age","Was heavily plagued by injuries during his career","Played in the 2006 World Cup quarter-final for England"]},
+{n:"Joe Cole",c:["Born in Islington, London, England","Was already seen as a great English talent at West Ham as a teenager","Won several trophies as an attacking midfielder at Chelsea","Known for his technique and dribbling","Spent a spell in the French league at Lille"]},
+{n:"Aaron Lennon",c:["Born in Leeds, England","Debuted in the Premier League at sixteen for Leeds United","Played his best years as a fast right winger at Tottenham Hotspur","Played for Everton and Burnley","Was called up several times for the English national team"]},
+{n:"Mehmet Scholl",c:["Born in Karlsruhe, West Germany","Spent his entire career at Bayern Munich","Known for his technique and creativity as an attacking midfielder","Regularly struggled with injuries that limited his career","Became a well-known television analyst after his career"]},
+{n:"Torsten Frings",c:["Born in Wesel, Germany","Played as a defensive midfielder at Werder Bremen and Bayern Munich","Was suspended for the 2006 World Cup semi-final for an elbow","Known for his hard long-range shots","Played more than seventy internationals for Germany"]},
+{n:"Per Mertesacker",c:["Born in Hannover, Germany","Known for his notably tall stature as a centre-back","Won the world title with Germany in 2014","Played his best European years at Arsenal","Became head of Arsenal's youth academy after his career"]},
+{n:"Julian Draxler",c:["Born in Gladbeck, Germany","Broke through young at Schalke 04","Won the world title with Germany in 2014, though he did not play a minute at the tournament itself that summer","Later played for VfL Wolfsburg and Paris Saint-Germain","Known for his technique as an attacking midfielder"]},
+{n:"Mario Gómez",c:["Born in Riedlingen, West Germany, to a Spanish father","Was top scorer of the Bundesliga multiple times","Played his best years at VfB Stuttgart and Bayern Munich","Known for his positioning and heading as a striker","Spent a spell in the Italian league at Fiorentina"]},
+{n:"Antonio Rüdiger",c:["Born in Berlin, Germany, to a Sierra Leonean family","Won the Champions League with Chelsea in 2021","Known for his fierce, physical style as a defender","Later moved to Real Madrid","Became notorious for a biting gesture towards an opponent"]},
+{n:"Leroy Sané",c:["Born in Essen, Germany, son of a former international","Broke through at Schalke 04 before moving to Manchester City","Known for his pace as a winger","Won the Premier League multiple times","Later moved to Bayern Munich"]},
+{n:"Timo Werner",c:["Born in Stuttgart, Germany","Broke through at a young age at VfB Stuttgart","Became known as a fast striker at RB Leipzig","Made a difficult move to Chelsea","Nevertheless won the Champions League with Chelsea in 2021"]},
+{n:"İlkay Gündoğan",c:["Born in Gelsenkirchen, Germany, to a Turkish family","Broke through at Borussia Dortmund","Became a mainstay in Manchester City's midfield","Was Manchester City's captain for years","Later moved to Barcelona"]},
+{n:"Raymond Kopa",c:["Born in France as the son of Polish immigrants","Worked in the coal mines as a child","Won the European Cup three times in a row with Real Madrid","Won the Ballon d'Or in 1958","Is seen as one of the first French football stars"]},
+{n:"Christian Karembeu",c:["Born on the French island of New Caledonia","Played as a defensive midfielder in the 1998 World Cup final","Once refused to sing the French anthem in protest","Played for Real Madrid and Middlesbrough","Won the Champions League with Real Madrid"]},
+{n:"Fabien Barthez",c:["Born in Lavelanet, France","Known for his bald head, which teammates rubbed for luck","Was goalkeeper during France's 1998 world title","Played for Manchester United and Olympique Marseille","Won both the World Cup and the European Championship with France"]},
+{n:"Emmanuel Petit",c:["Born in Dieppe, France","Scored the closing third goal in the 1998 World Cup final","Formed a strong midfield duo with Patrick Vieira at Arsenal","Won the double with Arsenal in 1998","Became world and European champion with France"]},
+{n:"William Gallas",c:["Born in Île-de-France, France, to a Guadeloupean family","Played as a defender for both Chelsea and arch-rivals Arsenal","Was Arsenal's captain during a turbulent period","Played for Olympique Marseille and Tottenham","Played more than eighty internationals for France"]},
+{n:"Samir Nasri",c:["Born in Marseille, France","Broke through at his boyhood club Olympique Marseille","Became a key player at Arsenal before moving to Manchester City","Won the Premier League with Manchester City","Known for his technique as an attacking midfielder"]},
+{n:"Blaise Matuidi",c:["Born in Toulouse, France, to a Congolese and Angolan family","Known for his enormous running power in midfield","Won the world title with France in 2018","Won the Champions League with Juventus","Played for years at Paris Saint-Germain before moving to Juventus"]},
+{n:"Hugo Lloris",c:["Born in Nice, France","Was captain of both Tottenham Hotspur and France for years","Won the world title with France in 2018 as first-choice goalkeeper","Played at Olympique Lyon before his European breakthrough","Known for his reflexes and personal leadership"]},
+{n:"Raphaël Varane",c:["Born in Lille, France","Broke through young at Lens before moving to Real Madrid","Won the Champions League multiple times as a centre-back","Became world champion with France in 2018","Later moved to Manchester United"]},
+{n:"Kingsley Coman",c:["Born in Paris, France","Broke through at Paris Saint-Germain as a teenager","Scored the winning goal in the 2020 Champions League final for Bayern Munich","Became world champion with France in 2018","Also played for Valenciennes as a youth player"]},
+{n:"Theo Hernandez",c:["Born in Marmande, France, into a football family","His brother Lucas also plays international football","Became a key player as a left-back at AC Milan","Won Serie A with Milan in 2022","Known for his pace and attacking contribution"]},
+{n:"Marco Materazzi",c:["Born in Lecco, Italy","Was insulted by Zidane in the 2006 World Cup final, prompting the headbutt","Also scored a goal himself in the 2006 World Cup final","Won the Champions League with Internazionale in 2010","Known for his physical, hard style as a defender"]},
+{n:"Andrea Barzagli",c:["Born in Fiesole, Italy","Formed a strong defensive line with Bonucci and Chiellini at Juventus","Became world champion with Italy in 2006","Played for VfL Wolfsburg in Germany","Known for his calm, reliable style of play"]},
+{n:"Giorgio Chiellini",c:["Born in Pisa, Italy","Played almost his entire career as a centre-back at Juventus","Was captain of Juventus and Italy for years","Won the European title with Italy in 2021","Ended his career in the American league at LAFC"]},
+{n:"Leonardo Bonucci",c:["Born in Viterbo, Italy","Formed a rock-solid defence with Chiellini at Juventus","Known for his precise passing from defence","Won the European title with Italy in 2021","Played briefly for AC Milan"]},
+{n:"Ciro Immobile",c:["Born in Torre Annunziata, Italy","Was top scorer of Serie A multiple times at Lazio","Once broke a goalscoring record in one Serie A season","Played for Borussia Dortmund before moving to Lazio","Won the European title with Italy in 2021"]},
+{n:"Lorenzo Insigne",c:["Born in Frattamaggiore, Italy","Played his best years at his home-region club Napoli","Won the European title with Italy in 2021","Later moved to the Canadian league at Toronto FC","Known for his left foot and dribbling"]},
+{n:"Marco Verratti",c:["Born in Pescara, Italy","Broke through young at his small boyhood club before moving to PSG","Known for his composure and passing in midfield","Was for years seen as one of the best midfielders in Europe","Nevertheless played relatively few major tournaments with Italy"]},
+{n:"Jorginho",c:["Born in Imbituba, Brazil, but played for Italy","Broke through at Napoli under coach Maurizio Sarri","Won the European title with Italy in 2021","Won the Champions League with Chelsea in 2021","Known for his distinctive run-up on penalties"]},
+{n:"Dino Zoff",c:["Born in Mariano del Friuli, Italy","Became the oldest world champion ever as a player, at forty, in 1982","Played his best years at Juventus","Held a long record for minutes without conceding for Italy","Also became national coach of Italy after his career"]},
+{n:"Fabio Grosso",c:["Born in Rome, Italy","Scored the decisive penalty in the 2006 World Cup final","Also made the winning move in the semi-final of that tournament","Played as a left-back for Palermo and Internazionale among others","Became world champion with Italy in 2006"]},
+{n:"Filippo Inzaghi",c:["Born in Piacenza, Italy","Known for his perfect sense of timing in the box","Scored in a Champions League final for AC Milan","Was top scorer of European tournaments multiple times","Also became a coach after his career, including at Milan"]},
+{n:"Daniele De Rossi",c:["Born in Rome, Italy, son of an AS Roma youth coach","Spent his entire career at AS Roma","Became world champion with Italy in 2006","Was AS Roma's captain for years","Known for his fierce, combative style of play"]},
+{n:"Luis Enrique",c:["Born in Gijón, Spain","Played for both Real Madrid and arch-rivals Barcelona","Became a successful coach at Barcelona after his playing career","Won the Champions League as coach of both Barcelona and PSG","Also became national coach of Spain"]},
+{n:"Joaquín",c:["Born in Fuengirola, Spain","Had a remarkably long career well into his forties","Became a club legend at Real Betis","Known for his humour and dribbling as a winger","Played for Valencia and Málaga"]},
+{n:"Santi Cazorla",c:["Born in Llanera, Spain","Played his best years at Villarreal and Arsenal","Known for his technique despite his small stature","Recovered from a serious foot injury that almost ended his career","Returned to the top level at Villarreal after a serious injury"]},
+{n:"Koke",c:["Born in Madrid, Spain","Came through Atlético Madrid's youth academy","Has been Atlético Madrid's captain for years","Became European champion with Spain at youth level before doing so at senior level","Known for his balance between attacking and defending"]},
+{n:"Isco",c:["Born in Benalmádena, Spain","Broke through at Málaga before moving to Real Madrid","Won multiple Champions Leagues with Real Madrid","Known for his technique as an attacking midfielder","Later lost his starting place and eventually left Madrid"]},
+{n:"Marco Asensio",c:["Born in Mallorca, Spain","Broke through at RCD Mallorca before moving to Real Madrid","Scored important goals in finals as a young substitute","Known for his long-range shots","Later moved to Paris Saint-Germain"]},
+{n:"Ansu Fati",c:["Born in Bissau, Guinea-Bissau, but played for Spain","Became the youngest goalscorer ever for FC Barcelona","Became a Spain international at just sixteen","Struggled with long-term injuries after his rapid breakthrough","Was seen as one of the greatest talents of his generation"]},
+{n:"Jordi Alba",c:["Born in L'Hospitalet, near Barcelona, Spain","Was developed into one of the best left-backs in the world at Barcelona","Did not score the second goal in the 2010 World Cup final, but was in the squad","Played for Valencia before moving to FC Barcelona","Known for his pace down the left flank"]},
+{n:"Cesc Fàbregas",c:["Born in Vilassar de Mar, Spain","Moved as a teenager to Arsenal's youth academy","Was already Arsenal's captain at seventeen","Later returned to FC Barcelona","Became world champion with Spain in 2010"]},
+{n:"Xabi Alonso",c:["Born in San Sebastián, Spain, son of a former international","Was part of Liverpool's historic comeback in the 2005 Champions League final","Played for Real Madrid and Bayern Munich","Became world champion with Spain in 2010","Became a sought-after coach after his career, including at Bayer Leverkusen"]},
+{n:"David de Gea",c:["Born in Madrid, Spain","Broke through young as a goalkeeper at Atlético Madrid","Was Manchester United's first-choice goalkeeper for years","Was voted best goalkeeper of the Premier League multiple times","Got relatively few chances in the Spanish national team"]},
+{n:"Nuno Gomes",c:["Born in Amarante, Portugal","Became all-time top scorer of the Portuguese national team, until he was overtaken","Played his best years at Benfica and Fiorentina","Scored important goals at Euro 2000 and 2004","Known for his finishing as a striker"]},
+{n:"Deco",c:["Born in Brazil, but chose to play for Portugal","Broke through at FC Porto under coach José Mourinho","Won the Champions League with Porto in 2004","Moved to FC Barcelona","Was nominated European Footballer of the Year twice"]},
+{n:"Ricardo Carvalho",c:["Born in Amarante, Portugal","Formed strong defensive duos at FC Porto and Chelsea","Won the Champions League with FC Porto in 2004","Played for years alongside John Terry at Chelsea","Later played for Real Madrid and Monaco"]},
+{n:"Nani",c:["Born in Cape Verde, played for Portugal","Broke through at Sporting Lisbon before moving to Manchester United","Known for his dribbling and sometimes erratic decisions","Won the European title with Portugal in 2016","Later also played in the Turkish and American leagues"]},
+{n:"Rúben Dias",c:["Born in Amadora, Portugal","Broke through at Benfica before moving to Manchester City","Quickly became a key player in City's defence after his arrival","Won the Premier League multiple times","Known for his leadership despite his young age"]},
+{n:"Frank de Boer",c:["Born in Hoorn, Netherlands, twin brother of Ronald de Boer","Played for years as a centre-back at Ajax","Won the Champions League with Ajax in 1995","Later became a coach at Ajax and Crystal Palace among others","Was also briefly national coach of the Netherlands"]},
+{n:"Ole Gunnar Solskjær",c:["Born in Kristiansund, Norway","Known as the feared 'super-sub' from the bench at Manchester United","Scored in the very last minute of the 1999 Champions League final","Gave Manchester United a historic treble with his winning goal in 1999","Later also became head coach of Manchester United"]},
+{n:"Vladimír Šmicer",c:["Born in Děčín, Czechoslovakia","Scored as a substitute to close the gap in Liverpool's legendary 2005 comeback","Liverpool's comeback from 0-3 against AC Milan in 2005 is regarded as one of the greatest ever","Also converted his penalty in the decisive shootout of that final","Ended his career at Bordeaux in France"]},
+{n:"Jerzy Dudek",c:["Born in Rybnik, Poland","Stood on the goal line with wobbly legs during the 2005 penalty shootout","Saved Shevchenko's decisive penalty in the 2005 Champions League final","Also made a stunning double save in that same 2005 CL final","Played for Feyenoord and Real Madrid"]},
+{n:"Dietmar Hamann",c:["Born in Waldsassen, West Germany","Was brought on at half-time in Liverpool's legendary 2005 comeback","His tactical substitution is seen as a key moment in that comeback","Also converted his penalty in the decisive shootout","Played for Newcastle United and Manchester City"]},
+{n:"Djimi Traoré",c:["Born in Paris, France, played for Mali","Was one of the lesser-known names in Liverpool's starting eleven in 2005","Still saw out the Champions League final that night in Istanbul","Never became a regular starter at a top club afterwards","Later played for Charlton Athletic among others"]},
+{n:"Milan Baroš",c:["Born in Ostrava, Czech Republic","Was Liverpool's striker during the legendary 2005 comeback","Was top scorer at Euro 2004 with the Czech Republic","Played for Aston Villa and Olympique Lyon","Could never match his Liverpool level afterwards"]},
+{n:"Harry Kewell",c:["Born in Sydney, Australia","Played in the 2005 Champions League final as a winger","Had to be substituted early in that final through injury","Was a key player at Leeds United before moving to Liverpool","Was seen as one of the best Australian footballers ever"]},
+{n:"Sylvain Wiltord",c:["Born in Neuilly-sur-Marne, France","Scored the late equaliser that won France Euro 2000","Scored Arsenal's title-clinching goal at arch-rivals Tottenham in their unbeaten season","Was never seen as a true world star, but as a clutch player","Played for Olympique Lyon and Rennes"]},
+{n:"Freddie Ljungberg",c:["Born in Vittsjö, Sweden","Known for his brightly coloured hair at Arsenal","Was a key player in the unbeaten Arsenal season of 2003-2004","Became the face of a famous underwear campaign","Later also played briefly in the American league"]},
+{n:"Nicklas Bendtner",c:["Born in Copenhagen, Denmark","Known for his confident, sometimes overconfident statements","Played for Arsenal, Juventus and Wolfsburg without ever becoming a true top player","Once revealed sponsored underwear after a goal at the Euros","Was remembered by fans mostly for his image rather than his level"]},
+{n:"Park Ji-sung",c:["Born in Goyang, South Korea","Was valued at Manchester United mainly for his tireless work rate","Scored a famous goal against AC Milan in the 2007 Champions League quarter-final","Was known as one of the few players who could keep Ronaldinho out of a match","Was captain of the South Korean national team"]},
+{n:"Federico Macheda",c:["Born in Rome, Italy","Scored a decisive late winner for Manchester United as a seventeen-year-old debutant","Left Manchester United a few years later without securing a regular place","Never played at the level of his sensational debut moment again","Later played for clubs like Cardiff City and Panathinaikos"]},
+{n:"Robert Green",c:["Born in Chertsey, England","Let a simple shot from Clint Dempsey slip through his hands at the 2010 World Cup","His blunder against the United States at the 2010 World Cup made world news","Played as a goalkeeper for West Ham and Norwich City among others","Was never fully trusted again by England fans as first-choice keeper"]},
+{n:"David James",c:["Born in Welwyn Garden City, England","Played a record number of Premier League matches as a goalkeeper","Known for both spectacular saves and memorable blunders","Was nicknamed 'Calamity James' for those mistakes","Played for Liverpool, Aston Villa and West Ham among others"]},
+{n:"Andy Carroll",c:["Born in Gateshead, England","Was sold from Newcastle to Liverpool for a surprisingly high fee","Could never quite live up to his high transfer fee at Liverpool","Did score a spectacular bicycle kick for England against Sweden at Euro 2012","Known for his heading ability"]},
+{n:"Charlie Adam",c:["Born in Dundee, Scotland","Played as a midfielder for Blackpool and Liverpool among others","Scored one of the most talked-about long-range shots ever, from his own half against Chelsea","His shot from his own half against Chelsea became world-famous, even though the goal did not count","Played for Stoke City"]},
+{n:"Xherdan Shaqiri",c:["Born in Gnjilane, then Yugoslavia, played for Switzerland","Known for his small stature combined with explosive power","Scored a spectacular bicycle kick against Poland at Euro 2016","Played for Bayern Munich, Internazionale and Liverpool among others","Never became an absolute world star, but was a fan favourite"]},
+{n:"Kevin Phillips",c:["Born in Hitchin, England","Became Premier League top scorer at the relatively small Sunderland","Even won the European Golden Boot in 1999-2000 as Europe's top scorer","Was only noticed late for the English national team","Played for Southampton and West Bromwich Albion among others"]},
+{n:"Rickie Lambert",c:["Born in Liverpool, England","Still played in England's lower divisions into his early twenties","Was finally called up for the English national team at thirty-one","Scored on his debut for England straight away","Played his best years at Southampton"]},
+{n:"Wes Morgan",c:["Born in Nottingham, England, to a Jamaican family","Was captain of the defence during Leicester City's sensational 2016 title","Was never seen as a top-level player before that title","Played for years in England's lower divisions before joining Leicester","Stayed loyal to Leicester City for his entire Premier League career"]},
+{n:"Danny Drinkwater",c:["Born in Manchester, England","Was a key midfielder in Leicester City's 2016 title","Was sold to Chelsea for a large fee after that title","Could never match his Leicester level at Chelsea","Was nevertheless still called up for the English national team"]},
+{n:"Christian Fuchs",c:["Born in Vienna, Austria","Played a key role as a left-back in Leicester City's 2016 title","Was active at Schalke 04 in the Bundesliga before moving to Leicester City","Also became active as a content creator and entrepreneur after his career","Was captain of the Austrian national team"]},
+{n:"Marc Albrighton",c:["Born in Tamworth, England","Was released for free by Aston Villa before moving to Leicester","Became a key player in Leicester City's sensational 2016 title","Known for his crosses from the right flank","Stayed loyal to the club for years after that title too"]},
+{n:"Shinji Okazaki",c:["Born in Konan, Japan","Known for his enormous work rate as a striker at Leicester City","Played a key role in Leicester's sensational 2016 title","Played in the Bundesliga for Mainz and Stuttgart before moving to Leicester City","Was captain of the Japanese national team"]},
+{n:"Robert Huth",c:["Born in Berlin, Germany","Won the Premier League twice as a defender at Chelsea before moving to Leicester","Became champion again at Leicester City in their sensational 2016 title","Known for his physical, hard style of play","Never played a major tournament for Germany despite his club successes"]},
+{n:"Mario Balotelli",c:["Born in Palermo, Italy, grew up in a foster family","Known for his erratic behaviour both on and off the pitch","Scored twice in a Euro 2012 semi-final against Germany","Once revealed a shirt reading 'Why always me?' after a goal","Played for Internazionale, Manchester City and AC Milan among others"]},
+{n:"Diego Milito",c:["Born in Bernal, Argentina","Scored both goals in the 2010 Champions League final","Gave Internazionale a historic treble in 2010 under coach Mourinho","Was never seen as an absolute world star, despite that success","Played for Genoa and Zaragoza before moving to Internazionale"]},
+{n:"Simone Zaza",c:["Born in Policoro, Italy","Missed a crucial penalty at Euro 2016 with a bizarre run-up","His failed penalty against Germany at Euro 2016 went viral worldwide","Played for Juventus and West Ham among others","Could never fully restore his reputation after that miss"]},
+{n:"Antonio Di Natale",c:["Born in Naples, Italy","Stayed loyal to the relatively small Udinese for his entire top career","Was still top scorer of Serie A at an older age","Played relatively few major international tournaments for Italy despite his level","Known for his precise finishing as a small, fast striker"]},
+{n:"Fernando Llorente",c:["Born in Pamplona, Spain","Headed a crucial goal against France at Euro 2016","Had earlier won the 2010 world title with Spain without being a starter","Played for Athletic Bilbao, Juventus and Tottenham Hotspur among others","Known for his heading ability as a forward"]},
+{n:"Diego Tristán",c:["Born in Las Palmas de Gran Canaria, Spain","Was the deadly striker of the surprising Deportivo La Coruña around 2000","Helped Deportivo to a historic comeback against AC Milan in the 2004 Champions League","Was never called up for a major tournament with the Spanish national team","Never became an absolute world star despite his level in that period"]},
+{n:"Juan Carlos Valerón",c:["Born in Gran Canaria, Spain","Stayed loyal to the relatively small Deportivo La Coruña for his best years","Known for his technique and vision in midfield","Was regarded by many top players as underrated on the world stage","Played a key role in Deportivo's surprising 2000 league title"]},
+{n:"Ailton",c:["Born in Iguaí, Brazil","Became Bundesliga top scorer with the small Werder Bremen in 2004","Finished as Bundesliga top scorer in 2004, ahead of Bayern Munich's stars","Known for his finishing despite his stocky build","Never became a true world star despite that top-scorer title"]},
+{n:"Naldo",c:["Born in Boa Vista, Brazil","Became known at Werder Bremen and Schalke 04 for his spectacular goals as a defender","Regularly scored long-range or headed goals that went viral","Known for his physical strength","Never became a starter for the Brazilian national team"]},
+{n:"Pauleta",c:["Born in the Azores, Portugal","Became all-time top scorer of the Portuguese national team, until Cristiano Ronaldo overtook him","Played his best years at Paris Saint-Germain","Known for his heading and finishing as a striker","Was never seen as an absolute world star despite his goal tally"]},
+{n:"Roy Makaay",c:["Born in Beverwijk, Netherlands","Once scored the fastest goal ever in the Champions League, within ten seconds","Was brought back by his old club Deportivo La Coruña after his top years at Bayern Munich","Was also top scorer of the Spanish league at Deportivo before moving to Bayern Munich","Never became an absolute world star despite his goal output"]},
+{n:"Esteban Cambiasso",c:["Born in Buenos Aires, Argentina","Scored a famous goal at the 2006 World Cup after a move of more than twenty passes","Won the Champions League with Internazionale in 2010","Surprisingly became champion with Leicester City in 2016 at an old age, though he played little there","Known for his composure as a controlling midfielder"]},
+{n:"Juninho Pernambucano",c:["Born in Recife, Brazil","Known as one of the best free-kick takers ever","Scored dozens of goals directly from free kicks for Olympique Lyon","Never became a starter for the Brazilian national team despite his qualities","Won seven league titles in a row with Lyon"]},
+{n:"Djibril Cissé",c:["Born in Arles, France","Known for his brightly coloured hair and striking tattoos","Scored in the penalty shootout of the 2007 Champions League final","Broke his leg at both Liverpool and earlier Auxerre at different moments","Later played in the Greek league and England's lower divisions"]},
+{n:"Martin Ødegaard",c:["Born in Drammen, Norway","Was signed by Real Madrid at just sixteen, to much fuss","Grew into a regular captain at Arsenal","Plays as an attacking midfielder with a fine left foot","Is one of the youngest debutants ever for the Norwegian national team"]},
+{n:"William Saliba",c:["Born in Bondy, France, the same town as Kylian Mbappé","Broke through at Saint-Étienne before moving to Arsenal","Was first loaned out for a few seasons before becoming a starter","Has formed a strong central defensive duo at Arsenal in recent years","Became world champion with France at youth level"]},
+{n:"Gabriel Magalhães",c:["Born in São Paulo, Brazil","Broke through at Avaí before moving via France to Arsenal","Forms a rock-solid defence at Arsenal alongside William Saliba","Known for his heading in both defence and attack","Never became a starter for the Brazilian national team despite his level at Arsenal"]},
+{n:"Trent Alexander-Arnold",c:["Born in Liverpool, England","Came through Liverpool's entire youth academy","Known for his precise long passes from the right-back position","Won the Champions League with Liverpool in 2019","Was fielded several times as an extra midfielder rather than a pure defender"]},
+{n:"Andrew Robertson",c:["Born in Glasgow, Scotland","Was released by his first club and briefly played in Scotland's lower divisions","Grew into one of the best left-backs in the world at Liverpool","Won the Champions League with Liverpool in 2019","Was captain of the Scottish national team for years"]},
+{n:"Alexis Mac Allister",c:["Born in Santa Rosa, Argentina, into a football family","Broke through at Argentinos Juniors before moving to Brighton","Won the world title with Argentina in 2022","Then moved to Liverpool","Plays as an attacking or controlling midfielder"]},
+{n:"Dominik Szoboszlai",c:["Born in Székesfehérvár, Hungary","Broke through young at Red Bull Salzburg","Became captain of the Hungarian national team at just nineteen","Then played for RB Leipzig before moving to Liverpool","Known for his hard long-range shots"]},
+{n:"Bruno Guimarães",c:["Born in Rio de Janeiro, Brazil","Broke through at Athletico Paranaense and Olympique Lyon","Quickly became club captain after his move to Newcastle United","Known for his composure as a controlling midfielder","Helped Newcastle return to the Champions League"]},
+{n:"Kieran Trippier",c:["Born in Bury, England","Became known for his free kick in the 2018 World Cup semi-final against Croatia","Also played for Tottenham Hotspur and Atlético Madrid","Became a key player on his return to Newcastle United","Known for his precise crosses as a right-back"]},
+{n:"John Stones",c:["Born in Barnsley, England","Was often used at Manchester City as a build-up defender or even midfielder","Won the Premier League and Champions League multiple times","Also played for Everton before moving to City","Known for his ball skills for a defender"]},
+{n:"Ederson",c:["Born in Osasco, Brazil","Became one of the first true 'footballing' goalkeepers at Manchester City","Won the Premier League and Champions League multiple times","Known for his precise long kicks in build-up from the back","Also played earlier for Benfica in Portugal"]},
+{n:"Moises Caicedo",c:["Born in Santo Domingo de los Colorados, Ecuador","Broke through at Independiente del Valle before moving to Brighton","Was sold to Chelsea for a record fee for a midfielder","Known for his running power and ball-winning","Became captain of the Ecuadorian national team at a young age"]},
+{n:"Enzo Fernández",c:["Born in San Martín, Argentina","Broke through at River Plate before moving to Benfica","Was named best young player of the 2022 World Cup","Became world champion with Argentina at that same tournament","Then moved to Chelsea for a record fee"]},
+{n:"Cole Palmer",c:["Born in Manchester, England","Came through Manchester City's youth academy","Got little playing time there despite his talent","Became a standout immediately after his move to Chelsea","Combines many goals with many assists as an attacking midfielder"]},
+{n:"Ollie Watkins",c:["Born in Torquay, England","Once played in England's lower divisions at Exeter City","Became top scorer at Brentford before moving to Aston Villa","Scored a crucial late goal in a Euro semi-final for England in 2024","Became a regular striker at Aston Villa"]},
+{n:"Alexander Isak",c:["Born in Solna, Sweden, to an Eritrean family","Broke through at AIK before moving to Borussia Dortmund","Then played for Real Sociedad in Spain","Became a deadly finisher at Newcastle United","Known for his technique and pace as a striker"]},
+{n:"Diogo Jota",c:["Born in Porto, Portugal","Broke through at Paços de Ferreira and Wolverhampton Wanderers","Was valued at Liverpool for his versatility as a forward","Did not win the Champions League, but won several domestic trophies with Liverpool","Became European champion with Portugal in 2019"]},
+{n:"Darwin Núñez",c:["Born in Artigas, Uruguay","Broke through at Peñarol before moving to Benfica","Was sold to Liverpool for a record fee","Known for his explosiveness, but also for missed chances","Played several major tournaments with Uruguay"]},
+{n:"Luis Díaz",c:["Born in Barrancas, Colombia","Broke through at Junior de Barranquilla and FC Porto","Became a key player on the left wing at Liverpool","Later moved to Bayern Munich","His father was once kidnapped, which became world news"]},
+{n:"Antony",c:["Born in São Paulo, Brazil","Broke through at São Paulo FC and Ajax","Was sold to Manchester United for a large fee","Known for his distinctive, repeating dribble move","Could never match his Ajax level at Manchester United"]},
+{n:"Lisandro Martínez",c:["Born in Gualeguay, Argentina","Broke through at Defensa y Justicia before moving to Ajax","Was valued at Manchester United for his fierceness despite his small stature","Became world champion with Argentina in 2022, though he was not a starter at that tournament","Nicknamed 'The Butcher' for his hard challenges"]},
+{n:"Aurélien Tchouaméni",c:["Born in Rouen, France, to a Cameroonian family","Broke through at AS Monaco","Then moved to Real Madrid for a large fee","Plays as a defensive midfielder","Played in the 2022 World Cup final with France"]},
+{n:"Eduardo Camavinga",c:["Born in a refugee camp in Angola to Congolese parents","Debuted at just sixteen for Stade Rennais","Moved to Real Madrid as a teenager","Won the Champions League there multiple times","Can play both as a defensive midfielder and left-back"]},
+{n:"Dani Carvajal",c:["Born in Madrid, Spain","Came through Real Madrid's youth academy","Became a regular at Real Madrid after a loan spell at Bayer Leverkusen","Won the Champions League a record number of times as a right-back there","Was Real Madrid's captain for years"]},
+{n:"Éder Militão",c:["Born in Sertãozinho, Brazil","Broke through at São Paulo FC and FC Porto","Became a regular centre-back at Real Madrid","Won the Champions League there multiple times","Recovered from a serious knee injury sustained during a league match"]},
+{n:"Jules Koundé",c:["Born in Paris, France","Broke through at Bordeaux and Sevilla","Was converted from right-back to centre-back at FC Barcelona","Played in the 2022 World Cup final with France","Known for his pace as a defender"]},
+{n:"Ronald Araújo",c:["Born in Rivera, Uruguay","Broke through at Boston River before moving to FC Barcelona","Became a key player in Barcelona's defence","Known for his fierce, physical style of play","Was Uruguay's captain at several tournaments"]},
+{n:"Marc-André ter Stegen",c:["Born in Mönchengladbach, Germany","Broke through as a goalkeeper at Borussia Mönchengladbach","Became FC Barcelona's first-choice goalkeeper at just twenty-two","Won the Champions League there multiple times","Was nevertheless long overshadowed by Manuel Neuer in the German team"]},
+{n:"Gavi",c:["Born in Los Palacios y Villafranca, Spain","Debuted at just sixteen for FC Barcelona","Became a Spain international at seventeen","Known for his fierce, energetic style in midfield","Suffered a serious cruciate ligament injury at a young age"]},
+{n:"Nico Williams",c:["Born in Bilbao, Spain, younger brother of Iñaki Williams","Came through Athletic Bilbao's youth academy","Played a key role in Spain's 2024 European title","Was voted man of the match in that Euro final","Known for his pace as a winger"]},
+{n:"Victor Osimhen",c:["Born in Lagos, Nigeria","Broke through at Lille before moving to Napoli","Became Serie A top scorer and helped Napoli to their first league title in decades","Was nominated African Footballer of the Year multiple times","Known for his explosiveness and heading as a striker"]},
+{n:"Khvicha Kvaratskhelia",c:["Born in Tbilisi, Georgia","Broke through at Dinamo Tbilisi and Rubin Kazan","Became a key player in Napoli's league title","Known for his dribbling as a left winger","Later moved to Paris Saint-Germain"]},
+{n:"Rafael Leão",c:["Born in Almada, Portugal","Broke through at Sporting Lisbon and Lille","Became a key player in AC Milan's 2022 league title","Known for his pace and dribbling as a left winger","Became European champion with Portugal at youth level"]},
+{n:"Mike Maignan",c:["Born in Cayenne, French Guiana","Broke through as a goalkeeper at Lille","Became the successor to Gianluigi Donnarumma at AC Milan","Won the 2022 league title with Milan","Known for his reflexes and build-up with the ball at his feet"]},
+{n:"Nicolò Barella",c:["Born in Cagliari, Italy","Broke through at his boyhood club Cagliari","Became a key midfielder at Internazionale","Won the league title with Inter and played in the 2023 Champions League final","Known for his running power and direct style of play"]},
+{n:"Hakan Çalhanoğlu",c:["Born in Mannheim, Germany, to a Turkish family","Broke through at Hamburger SV and Bayer Leverkusen","Was developed into one of the best free-kick takers in Europe at AC Milan","Moved to arch-rivals Internazionale, to the anger of Milan fans","Was converted into a controlling midfielder at Inter"]},
+{n:"Dušan Vlahović",c:["Born in Belgrade, Serbia","Broke through at Fiorentina as a young top scorer","Moved to Juventus for a large fee","Known for his heading and direct style as a striker","Celebrated goals with a distinctive gesture to his ear"]},
+{n:"Paulo Dybala",c:["Born in Laguna Larga, Argentina","Broke through at Instituto and Palermo","Was a key player for years as an attacking midfielder at Juventus","Moved to AS Roma on a free transfer","Known for his trademark 'mask' celebration"]},
+{n:"Florian Wirtz",c:["Born in Cologne, Germany","Debuted at just sixteen for Bayer Leverkusen","Won the first league title in the club's history with Leverkusen, unbeaten","Was seen as one of the greatest German talents of his generation","Later moved to the Premier League"]},
+{n:"Serge Gnabry",c:["Born in Stuttgart, Germany, to an Ivorian father","Played as a youth player at Arsenal before returning to Germany","Became a regular at Bayern Munich","Scored four times in one Champions League match against Tottenham","Won the Bundesliga and Champions League multiple times"]},
+{n:"Alphonso Davies",c:["Born in a refugee camp in Ghana to Liberian parents","Grew up in Canada after his family fled there","Broke through at the Vancouver Whitecaps before moving to Bayern Munich","Became one of the fastest left-backs in the world at Bayern","Won the Bundesliga and Champions League there multiple times"]},
+{n:"Granit Xhaka",c:["Born in Basel, Switzerland, to a Kosovar family","Played for years at Arsenal, often with mixed criticism from fans","Finally became German champion at Bayer Leverkusen","Was captain of both Arsenal and the Swiss national team for years","His brother Taulant once played against him at a Euros"]},
+{n:"Marquinhos",c:["Born in São Paulo, Brazil","Broke through at Corinthians and AS Roma","Became captain of Paris Saint-Germain at a young age","Won a record number of French league titles there","Plays both as a centre-back and defensive midfielder"]},
+{n:"Achraf Hakimi",c:["Born in Madrid, Spain, to Moroccan parents","Came through Real Madrid's youth academy","Became one of the fastest right-backs in the world at Borussia Dortmund and Internazionale","Led Morocco to a historic World Cup semi-final in 2022","Now plays for Paris Saint-Germain"]},
+{n:"Warren Zaïre-Emery",c:["Born in Montreuil, France","Debuted at just sixteen for Paris Saint-Germain","Became a regular in midfield at a young age","Became one of the youngest captains ever for PSG in an official match","Was seen as one of the greatest French talents of his generation"]},
 ];
 
 // --- Leaderboard API ---
-// Pas deze URL aan als je Render-service een andere naam heeft gekregen.
+// Change this URL if your Render service has a different name.
 const API_URL = 'https://spelersdossier-api.onrender.com';
-const CURRENT_MODE = 'normal'; // wordt later 'hardcore' voor de hardcore mode
+
+// --- Game modes ---
+// normal:   three lives, a wrong guess just reveals the next clue.
+// hardcore: one life, a single wrong guess ends the run instantly.
+const MODE_CONFIG = {
+  normal:   { lives: 3, label: 'Normal' },
+  hardcore: { lives: 1, label: 'Hardcore' }
+};
+const MODE_KEY = 'spelersdossier-mode';
+let currentMode = localStorage.getItem(MODE_KEY) || 'normal';
+if(!MODE_CONFIG[currentMode]) currentMode = 'normal';
 
 async function submitScoreToLeaderboard(score){
   try{
     await fetch(`${API_URL}/api/scores`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ player_name: playerName, score, mode: CURRENT_MODE })
+      body: JSON.stringify({ player_name: playerName, score, mode: currentMode })
     });
   }catch(e){
-    // Leaderboard offline of onbereikbaar: het spel blijft gewoon lokaal werken
-    console.warn('Kon score niet naar leaderboard sturen:', e);
+    // Leaderboard offline or unreachable: the game keeps working locally
+    console.warn('Could not send score to leaderboard:', e);
   }
 }
 
-// --- Leaderboard-scherm ---
+// --- Leaderboard screen ---
 const lbOverlay = document.getElementById('lbOverlay');
 const lbContent = document.getElementById('lbContent');
 const lbTabNormal = document.getElementById('lbTabNormal');
@@ -810,14 +874,14 @@ const closeLeaderboardBtn = document.getElementById('closeLeaderboardBtn');
 let activeLbMode = 'normal';
 
 async function loadLeaderboard(mode){
-  lbContent.innerHTML = '<div class="lb-status">Bezig met laden…</div>';
+  lbContent.innerHTML = '<div class="lb-status">Loading…</div>';
   try{
     const res = await fetch(`${API_URL}/api/leaderboard?mode=${mode}&limit=10`);
-    if(!res.ok) throw new Error('Serverfout');
+    if(!res.ok) throw new Error('Server error');
     const scores = await res.json();
 
     if(scores.length === 0){
-      lbContent.innerHTML = '<div class="lb-empty">Nog geen scores in deze mode. Wees de eerste!</div>';
+      lbContent.innerHTML = '<div class="lb-empty">No scores in this mode yet. Be the first!</div>';
       return;
     }
 
@@ -836,7 +900,7 @@ async function loadLeaderboard(mode){
     lbContent.innerHTML = '';
     lbContent.appendChild(list);
   }catch(e){
-    lbContent.innerHTML = '<div class="lb-status">Kon ranglijst niet laden. Probeer het straks opnieuw.</div>';
+    lbContent.innerHTML = '<div class="lb-status">Could not load the leaderboard. Please try again later.</div>';
   }
 }
 
@@ -848,7 +912,7 @@ function escapeHtml(str){
 
 function openLeaderboard(){
   lbOverlay.style.display = 'flex';
-  loadLeaderboard(activeLbMode);
+  switchLbTab(currentMode);
 }
 
 function closeLeaderboard(){
@@ -856,6 +920,7 @@ function closeLeaderboard(){
 }
 
 function switchLbTab(mode){
+  if(!MODE_CONFIG[mode]) mode = 'normal';
   activeLbMode = mode;
   lbTabNormal.classList.toggle('active', mode === 'normal');
   lbTabHardcore.classList.toggle('active', mode === 'hardcore');
@@ -868,7 +933,7 @@ lbOverlay.addEventListener('click', (e)=>{ if(e.target === lbOverlay) closeLeade
 lbTabNormal.addEventListener('click', ()=> switchLbTab('normal'));
 lbTabHardcore.addEventListener('click', ()=> switchLbTab('hardcore'));
 
-// --- Spelersnaam (blijft bewaard tussen bezoeken) ---
+// --- Player name (persists between visits) ---
 const NAME_KEY = 'spelersdossier-naam';
 let playerName = localStorage.getItem(NAME_KEY) || '';
 
@@ -900,11 +965,46 @@ nameForm.addEventListener('submit', (e)=>{
   if(!val) return;
   setPlayerName(val);
   hideNameOverlay();
+  // On first registration, move on to the mode selection.
+  if(!gameStarted){
+    showModeOverlay();
+  }
 });
 
 changeNameBtn.addEventListener('click', ()=>{
   showNameOverlay(playerName);
 });
+
+// --- Mode selection ---
+const modeOverlay = document.getElementById('modeOverlay');
+const modeDisplay = document.getElementById('modeDisplay');
+const modeNormalBtn = document.getElementById('modeNormalBtn');
+const modeHardcoreBtn = document.getElementById('modeHardcoreBtn');
+
+function updateModeDisplay(){
+  if(modeDisplay) modeDisplay.textContent = MODE_CONFIG[currentMode].label;
+}
+
+function showModeOverlay(){
+  modeOverlay.style.display = 'flex';
+}
+
+function hideModeOverlay(){
+  modeOverlay.style.display = 'none';
+}
+
+function chooseMode(mode){
+  if(!MODE_CONFIG[mode]) mode = 'normal';
+  currentMode = mode;
+  localStorage.setItem(MODE_KEY, mode);
+  updateModeDisplay();
+  hideModeOverlay();
+  gameStarted = true;
+  loadStats().then(newGame);
+}
+
+modeNormalBtn.addEventListener('click', ()=> chooseMode('normal'));
+modeHardcoreBtn.addEventListener('click', ()=> chooseMode('hardcore'));
 
 let deck = [];
 let current = null;
@@ -913,9 +1013,9 @@ let clueIndex = 1;
 let lives = 3;
 let streak = 0;
 let best = 0;
-const MAX_LIVES = 3;
 const MAX_CLUES = 5;
 let gameOver = false;
+let gameStarted = false;
 
 const livesEl = document.getElementById('lives');
 const cluesEl = document.getElementById('clues');
@@ -983,19 +1083,20 @@ async function loadStats(){
       const parsed = JSON.parse(raw);
       best = parsed.best || 0;
     }
-  }catch(e){ /* nog geen opgeslagen record */ }
+  }catch(e){ /* no saved record yet */ }
   bestEl.textContent = best;
 }
 
 async function saveBest(){
   try{
     localStorage.setItem('spelersdossier-stats', JSON.stringify({best}));
-  }catch(e){ /* opslaan mislukt, geen probleem voor het spel zelf */ }
+  }catch(e){ /* saving failed, no problem for the game itself */ }
 }
 
 function renderLives(){
   livesEl.innerHTML = '';
-  for(let i=0;i<MAX_LIVES;i++){
+  const max = MODE_CONFIG[currentMode].lives;
+  for(let i=0;i<max;i++){
     const h = document.createElement('span');
     h.className = 'heart' + (i < lives ? '' : ' lost');
     h.textContent = '♥';
@@ -1029,9 +1130,15 @@ function renderLog(){
   logEl.innerHTML = '';
 }
 
+function removeExtraButtons(){
+  const continueBtn = document.getElementById('continueBtn');
+  if(continueBtn) continueBtn.remove();
+  const revealBtn = document.getElementById('revealBtn');
+  if(revealBtn) revealBtn.remove();
+}
+
 function startRound(){
-  const existingBtn = document.getElementById('continueBtn');
-  if(existingBtn) existingBtn.remove();
+  removeExtraButtons();
   refillDeckIfNeeded();
   current = deck.pop();
   clueOrder = shuffle([0,1,2,3,4]);
@@ -1044,13 +1151,40 @@ function startRound(){
   renderLives();
   renderClues();
   renderLog();
+  if(currentMode === 'hardcore') showRevealClueButton();
   inputEl.focus();
 }
 
+function showRevealClueButton(){
+  const existing = document.getElementById('revealBtn');
+  if(existing) existing.remove();
+  if(clueIndex >= MAX_CLUES) return;
+  const btn = document.createElement('button');
+  btn.id = 'revealBtn';
+  btn.type = 'button';
+  btn.className = 'reveal-btn';
+  btn.textContent = `Reveal next clue → (${MAX_CLUES - clueIndex} left)`;
+  btn.addEventListener('click', ()=>{
+    if(gameOver) return;
+    if(clueIndex < MAX_CLUES){
+      clueIndex += 1;
+      renderClues();
+    }
+    if(clueIndex >= MAX_CLUES){
+      btn.remove();
+    } else {
+      btn.textContent = `Reveal next clue → (${MAX_CLUES - clueIndex} left)`;
+    }
+    inputEl.focus();
+  });
+  formEl.insertAdjacentElement('afterend', btn);
+}
+
 function newGame(){
-  lives = MAX_LIVES;
+  lives = MODE_CONFIG[currentMode].lives;
   streak = 0;
   gameOver = false;
+  gameStarted = true;
   streakEl.textContent = streak;
   playArea.style.display = 'block';
   gameOverArea.style.display = 'none';
@@ -1061,6 +1195,7 @@ function endGame(){
   gameOver = true;
   inputEl.disabled = true;
   submitBtn.disabled = true;
+  removeExtraButtons();
   if(streak > best){
     best = streak;
     bestEl.textContent = best;
@@ -1072,12 +1207,14 @@ function endGame(){
   gameOverArea.innerHTML = `
     <div class="gameover">
       <div class="title">Game over</div>
-      <div class="name">Deze speler bleef onbekend: <b>${current.n}</b><br>Eindreeks: <b>${streak}</b></div>
-      <button id="restartBtn">Nieuw spel starten</button>
-      <button type="button" id="viewLbBtn" style="margin-top:8px; background:none; color:var(--ink); border-color:var(--ink);">Bekijk ranglijst</button>
+      <div class="name">This player stayed unknown: <b>${current.n}</b><br>Final streak: <b>${streak}</b><br><span style="font-size:11px;color:var(--ink-soft);">Mode: ${MODE_CONFIG[currentMode].label}</span></div>
+      <button id="restartBtn">Start new game</button>
+      <button type="button" id="changeModeBtn" style="margin-top:8px; background:none; color:var(--ink); border-color:var(--ink);">Change mode</button>
+      <button type="button" id="viewLbBtn" style="margin-top:8px; background:none; color:var(--ink); border-color:var(--ink);">View leaderboard</button>
     </div>
   `;
   document.getElementById('restartBtn').addEventListener('click', newGame);
+  document.getElementById('changeModeBtn').addEventListener('click', showModeOverlay);
   document.getElementById('viewLbBtn').addEventListener('click', openLeaderboard);
 }
 
@@ -1086,7 +1223,7 @@ function showContinueButton(){
   if(existing) existing.remove();
   const btn = document.createElement('button');
   btn.id = 'continueBtn';
-  btn.textContent = 'Volgende speler →';
+  btn.textContent = 'Next player →';
   btn.style.width = '100%';
   btn.style.marginTop = '6px';
   btn.addEventListener('click', ()=>{
@@ -1114,53 +1251,66 @@ formEl.addEventListener('submit', (e)=>{
   if(correct){
     streak += 1;
     streakEl.textContent = streak;
-    feedbackEl.textContent = '✓ Correct! Op naar de volgende speler…';
+    feedbackEl.textContent = '✓ Correct! On to the next player…';
     feedbackEl.className = 'feedback win';
     inputEl.disabled = true;
     submitBtn.disabled = true;
+    removeExtraButtons();
     setTimeout(startRound, 850);
-  } else {
+    return;
+  }
+
+  // Wrong guess
+  if(currentMode === 'hardcore'){
+    // One mistake and you're out
+    lives = 0;
+    renderLives();
     inputEl.value = '';
-    if(clueIndex < MAX_CLUES){
-      clueIndex += 1;
-      renderClues();
-      feedbackEl.textContent = `✕ "${raw}" is niet juist — volgende aanwijzing erbij.`;
+    inputEl.disabled = true;
+    submitBtn.disabled = true;
+    removeExtraButtons();
+    feedbackEl.innerHTML = `✕ Wrong — it was <b>${current.n}</b>. Game over!`;
+    feedbackEl.className = 'feedback wrong';
+    setTimeout(endGame, 1600);
+    return;
+  }
+
+  // Normal mode: a wrong guess reveals another clue
+  inputEl.value = '';
+  if(clueIndex < MAX_CLUES){
+    clueIndex += 1;
+    renderClues();
+    feedbackEl.textContent = `✕ "${raw}" is not correct — here's another clue.`;
+    feedbackEl.className = 'feedback wrong';
+  } else {
+    // All clues are used up and the player was not guessed: lose one life
+    lives -= 1;
+    renderLives();
+    inputEl.disabled = true;
+    submitBtn.disabled = true;
+    if(lives <= 0){
+      feedbackEl.innerHTML = `✕ Not guessed — it was <b>${current.n}</b>. No lives left.`;
       feedbackEl.className = 'feedback wrong';
+      setTimeout(endGame, 1600);
     } else {
-      // Alle aanwijzingen zijn op en de speler is niet geraden: 1 hartje kwijt
-      lives -= 1;
-      renderLives();
-      inputEl.disabled = true;
-      submitBtn.disabled = true;
-      if(lives <= 0){
-        feedbackEl.innerHTML = `✕ Niet geraden — het was <b>${current.n}</b>. Geen levens meer over.`;
-        feedbackEl.className = 'feedback wrong';
-        setTimeout(endGame, 1600);
-      } else {
-        feedbackEl.innerHTML = `✕ Niet geraden — het was <b>${current.n}</b>. Je verliest een hartje.`;
-        feedbackEl.className = 'feedback wrong';
-        showContinueButton();
-      }
+      feedbackEl.innerHTML = `✕ Not guessed — it was <b>${current.n}</b>. You lose a life.`;
+      feedbackEl.className = 'feedback wrong';
+      showContinueButton();
     }
   }
 });
 
 function initGame(){
+  updateModeDisplay();
   if(playerName){
     currentNameDisplay.textContent = playerName;
     hideNameOverlay();
-    loadStats().then(newGame);
+    // A name is known, but the mode is chosen fresh each time the app opens.
+    showModeOverlay();
   } else {
     showNameOverlay();
   }
 }
-
-// Zodra een naam voor het eerst wordt ingevuld, start het spel meteen daarna
-nameForm.addEventListener('submit', ()=>{
-  if(!gameOver && current === null){
-    loadStats().then(newGame);
-  }
-}, { once: false });
 
 initGame();
 </script>
