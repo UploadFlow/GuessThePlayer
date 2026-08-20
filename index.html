@@ -297,15 +297,6 @@
   .mode-name{font-family:'Special Elite', monospace; font-size:15px;}
   .mode-desc{font-size:11.5px; color:var(--ink-soft); font-weight:400; line-height:1.45;}
 
-  .reveal-btn{
-    width:100%;
-    margin-top:6px;
-    background:none;
-    color:var(--ink);
-    border-color:var(--ink);
-  }
-  .reveal-btn:hover:not(:disabled){background:var(--ink); color:var(--paper);}
-
   .player-tag{
     font-size:11px;
     color:var(--ink-soft);
@@ -462,7 +453,7 @@
       </button>
       <button type="button" class="mode-btn hardcore" id="modeHardcoreBtn">
         <span class="mode-name">Hardcore</span>
-        <span class="mode-desc">One life. A single wrong guess ends your run instantly.</span>
+        <span class="mode-desc">Just one life. Same five clues per player, but miss a single one and it's game over.</span>
       </button>
     </div>
   </div>
@@ -1133,8 +1124,6 @@ function renderLog(){
 function removeExtraButtons(){
   const continueBtn = document.getElementById('continueBtn');
   if(continueBtn) continueBtn.remove();
-  const revealBtn = document.getElementById('revealBtn');
-  if(revealBtn) revealBtn.remove();
 }
 
 function startRound(){
@@ -1151,33 +1140,7 @@ function startRound(){
   renderLives();
   renderClues();
   renderLog();
-  if(currentMode === 'hardcore') showRevealClueButton();
   inputEl.focus();
-}
-
-function showRevealClueButton(){
-  const existing = document.getElementById('revealBtn');
-  if(existing) existing.remove();
-  if(clueIndex >= MAX_CLUES) return;
-  const btn = document.createElement('button');
-  btn.id = 'revealBtn';
-  btn.type = 'button';
-  btn.className = 'reveal-btn';
-  btn.textContent = `Reveal next clue → (${MAX_CLUES - clueIndex} left)`;
-  btn.addEventListener('click', ()=>{
-    if(gameOver) return;
-    if(clueIndex < MAX_CLUES){
-      clueIndex += 1;
-      renderClues();
-    }
-    if(clueIndex >= MAX_CLUES){
-      btn.remove();
-    } else {
-      btn.textContent = `Reveal next clue → (${MAX_CLUES - clueIndex} left)`;
-    }
-    inputEl.focus();
-  });
-  formEl.insertAdjacentElement('afterend', btn);
 }
 
 function newGame(){
@@ -1260,22 +1223,9 @@ formEl.addEventListener('submit', (e)=>{
     return;
   }
 
-  // Wrong guess
-  if(currentMode === 'hardcore'){
-    // One mistake and you're out
-    lives = 0;
-    renderLives();
-    inputEl.value = '';
-    inputEl.disabled = true;
-    submitBtn.disabled = true;
-    removeExtraButtons();
-    feedbackEl.innerHTML = `✕ Wrong — it was <b>${current.n}</b>. Game over!`;
-    feedbackEl.className = 'feedback wrong';
-    setTimeout(endGame, 1600);
-    return;
-  }
-
-  // Normal mode: a wrong guess reveals another clue
+  // Wrong guess: reveal another clue (both modes work the same way here;
+  // hardcore only differs in having a single life, so failing one player
+  // after all five clues ends the run).
   inputEl.value = '';
   if(clueIndex < MAX_CLUES){
     clueIndex += 1;
