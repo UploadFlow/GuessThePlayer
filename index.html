@@ -557,6 +557,30 @@
     color:var(--text-soft);
     padding:20px 0;
   }
+
+  /* Advertisement slots — hidden until AdSense is configured (see the script) */
+  .ad-slot{
+    display:none;
+    margin:14px 0 0;
+    padding:8px;
+    background:var(--board);
+    border:1px solid var(--line-soft);
+    border-radius:8px;
+    text-align:center;
+    overflow:hidden;
+  }
+  #adTop{margin:0 0 14px;}
+  .ad-label{
+    display:block;
+    font-family:'Oswald',sans-serif;
+    font-size:8.5px;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    color:var(--text-dim);
+    margin-bottom:6px;
+  }
+  .ad-slot .adsbygoogle{display:block; width:100%;}
+  .gameover-ad{margin-top:16px;}
 </style>
 </head>
 <body>
@@ -608,6 +632,10 @@
 </div>
 
 <div class="wrap">
+  <div class="ad-slot" id="adTop">
+    <span class="ad-label">Advertisement</span>
+    <ins class="adsbygoogle" style="display:block" data-ad-format="auto" data-full-width-responsive="true"></ins>
+  </div>
   <div class="tab">SCOUTING REPORT</div>
   <div class="file">
     <header class="top">
@@ -639,6 +667,10 @@
       150+ players from the biggest leagues and football nations, past and present.<br>
       Playing as <b id="currentNameDisplay"></b> — <button type="button" class="player-tag" id="changeNameBtn">not you? change name</button>
     </footer>
+  </div>
+  <div class="ad-slot" id="adBottom">
+    <span class="ad-label">Advertisement</span>
+    <ins class="adsbygoogle" style="display:block" data-ad-format="auto" data-full-width-responsive="true"></ins>
   </div>
 </div>
 
@@ -962,6 +994,46 @@ const PLAYERS = [
 // --- Leaderboard API ---
 // Change this URL if your Render service has a different name.
 const API_URL = 'https://spelersdossier-api.onrender.com';
+
+// --- Advertisements (Google AdSense) ---
+// SETUP (you must do this once yourself — it needs your own AdSense account):
+//  1) Create a Google AdSense account and add this site (uploadflow.github.io).
+//  2) Wait for AdSense to approve the site.
+//  3) Create three "display" ad units and copy their slot IDs into ADSENSE_SLOTS.
+//  4) Put your publisher ID (starts with 'ca-pub-') into ADSENSE_CLIENT.
+//  5) In AdSense > Privacy & messaging, enable a GDPR consent message
+//     (legally required for visitors in the Netherlands / EU).
+// Until ADSENSE_CLIENT holds a real 'ca-pub-...' ID, no ad script loads and the
+// three ad slots stay hidden — so the game stays clean while you set this up.
+const ADSENSE_CLIENT = 'ca-pub-XXXXXXXXXXXXXXXX';
+const ADSENSE_SLOTS = {
+  top: '0000000000',       // slot ID for the banner above the game
+  bottom: '0000000000',    // slot ID for the banner below the game
+  gameover: '0000000000'   // slot ID for the game over screen
+};
+const ADS_ENABLED = /^ca-pub-\d{10,}$/.test(ADSENSE_CLIENT);
+
+function setupAdSlot(container, slotId){
+  if(!container) return;
+  const ins = container.querySelector('ins.adsbygoogle');
+  if(ins){
+    ins.setAttribute('data-ad-client', ADSENSE_CLIENT);
+    ins.setAttribute('data-ad-slot', slotId);
+  }
+  container.style.display = 'block';
+  try{ (window.adsbygoogle = window.adsbygoogle || []).push({}); }catch(e){}
+}
+
+function initAds(){
+  if(!ADS_ENABLED) return;
+  const loader = document.createElement('script');
+  loader.async = true;
+  loader.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_CLIENT;
+  loader.crossOrigin = 'anonymous';
+  document.head.appendChild(loader);
+  setupAdSlot(document.getElementById('adTop'), ADSENSE_SLOTS.top);
+  setupAdSlot(document.getElementById('adBottom'), ADSENSE_SLOTS.bottom);
+}
 
 // --- Game modes ---
 // normal:   three lives, a wrong guess just reveals the next clue.
@@ -1301,15 +1373,20 @@ function endGame(){
   gameOverArea.innerHTML = `
     <div class="gameover">
       <div class="title">Game over</div>
-      <div class="name">This player stayed unknown: <b>${current.n}</b><br>Final streak: <b>${streak}</b><br><span style="font-size:11px;color:var(--ink-soft);">Mode: ${MODE_CONFIG[currentMode].label}</span></div>
+      <div class="name">This player stayed unknown: <b>${current.n}</b><br>Final streak: <b>${streak}</b><br><span style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;">Mode: ${MODE_CONFIG[currentMode].label}</span></div>
       <button id="restartBtn">Start new game</button>
-      <button type="button" id="changeModeBtn" style="margin-top:8px; background:none; color:var(--ink); border-color:var(--ink);">Change mode</button>
-      <button type="button" id="viewLbBtn" style="margin-top:8px; background:none; color:var(--ink); border-color:var(--ink);">View leaderboard</button>
+      <button type="button" id="changeModeBtn" style="margin-top:8px; background:none; color:var(--text); border-color:var(--line);">Change mode</button>
+      <button type="button" id="viewLbBtn" style="margin-top:8px; background:none; color:var(--text); border-color:var(--line);">View leaderboard</button>
+    </div>
+    <div class="ad-slot gameover-ad" id="adGameover">
+      <span class="ad-label">Advertisement</span>
+      <ins class="adsbygoogle" style="display:block" data-ad-format="auto" data-full-width-responsive="true"></ins>
     </div>
   `;
   document.getElementById('restartBtn').addEventListener('click', newGame);
   document.getElementById('changeModeBtn').addEventListener('click', showModeOverlay);
   document.getElementById('viewLbBtn').addEventListener('click', openLeaderboard);
+  if(ADS_ENABLED) setupAdSlot(document.getElementById('adGameover'), ADSENSE_SLOTS.gameover);
 }
 
 function showContinueButton(){
@@ -1394,6 +1471,7 @@ function initGame(){
 }
 
 initGame();
+initAds();
 </script>
 </body>
 </html>
