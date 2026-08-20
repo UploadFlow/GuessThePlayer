@@ -558,29 +558,27 @@
     padding:20px 0;
   }
 
-  /* Advertisement slots — hidden until AdSense is configured (see the script) */
-  .ad-slot{
-    display:none;
-    margin:14px 0 0;
-    padding:8px;
-    background:var(--board);
-    border:1px solid var(--line-soft);
-    border-radius:8px;
-    text-align:center;
-    overflow:hidden;
+  /* Rewarded "watch a video for an extra life" prompt (normal mode) */
+  .revive-actions{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    margin-top:6px;
   }
-  #adTop{margin:0 0 14px;}
-  .ad-label{
-    display:block;
-    font-family:'Oswald',sans-serif;
-    font-size:8.5px;
-    letter-spacing:1.5px;
-    text-transform:uppercase;
-    color:var(--text-dim);
-    margin-bottom:6px;
+  .reward-btn{
+    width:100%;
+    background:var(--led);
+    color:#191200;
+    border-color:var(--led);
   }
-  .ad-slot .adsbygoogle{display:block; width:100%;}
-  .gameover-ad{margin-top:16px;}
+  .reward-btn:hover:not(:disabled){background:#ffd83a; border-color:#ffd83a; box-shadow:0 0 18px var(--led-glow);}
+  .end-btn{
+    width:100%;
+    background:none;
+    color:var(--text);
+    border-color:var(--line);
+  }
+  .end-btn:hover:not(:disabled){background:none; color:var(--red); border-color:var(--red); box-shadow:none;}
 </style>
 </head>
 <body>
@@ -632,10 +630,6 @@
 </div>
 
 <div class="wrap">
-  <div class="ad-slot" id="adTop">
-    <span class="ad-label">Advertisement</span>
-    <ins class="adsbygoogle" style="display:block" data-ad-format="auto" data-full-width-responsive="true"></ins>
-  </div>
   <div class="tab">SCOUTING REPORT</div>
   <div class="file">
     <header class="top">
@@ -667,10 +661,6 @@
       150+ players from the biggest leagues and football nations, past and present.<br>
       Playing as <b id="currentNameDisplay"></b> — <button type="button" class="player-tag" id="changeNameBtn">not you? change name</button>
     </footer>
-  </div>
-  <div class="ad-slot" id="adBottom">
-    <span class="ad-label">Advertisement</span>
-    <ins class="adsbygoogle" style="display:block" data-ad-format="auto" data-full-width-responsive="true"></ins>
   </div>
 </div>
 
@@ -995,33 +985,35 @@ const PLAYERS = [
 // Change this URL if your Render service has a different name.
 const API_URL = 'https://spelersdossier-api.onrender.com';
 
-// --- Advertisements (Google AdSense) ---
+// --- Video ads (Google H5 Games Ads, via the adBreak API) ---
+// The game shows ONLY video ads: an interstitial between games, and an
+// optional "watch a video to win back a life" reward in normal mode.
 // SETUP (you must do this once yourself — it needs your own AdSense account):
 //  1) Create a Google AdSense account and add this site (uploadflow.github.io).
-//  2) Wait for AdSense to approve the site.
-//  3) Create three "display" ad units and copy their slot IDs into ADSENSE_SLOTS.
-//  4) Put your publisher ID (starts with 'ca-pub-') into ADSENSE_CLIENT.
+//  2) In AdSense turn on "H5 Games Ads" and wait for it to be approved.
+//  3) Put your publisher ID (starts with 'ca-pub-') into ADSENSE_CLIENT below.
+//  4) To try it before going live, set ADSENSE_TEST = true — Google then shows
+//     its own TEST videos (still needs a real ca-pub ID). Set back to false for real ads.
 //  5) In AdSense > Privacy & messaging, enable a GDPR consent message
 //     (legally required for visitors in the Netherlands / EU).
-// Until ADSENSE_CLIENT holds a real 'ca-pub-...' ID, no ad script loads and the
-// three ad slots stay hidden — so the game stays clean while you set this up.
+// Until ADSENSE_CLIENT holds a real 'ca-pub-...' ID, no ad script loads: the
+// interstitial is skipped and the "win back a life" option does not appear.
 const ADSENSE_CLIENT = 'ca-pub-XXXXXXXXXXXXXXXX';
-const ADSENSE_SLOTS = {
-  top: '0000000000',       // slot ID for the banner above the game
-  bottom: '0000000000',    // slot ID for the banner below the game
-  gameover: '0000000000'   // slot ID for the game over screen
-};
+const ADSENSE_TEST = false; // true = show Google's TEST videos while developing
 const ADS_ENABLED = /^ca-pub-\d{10,}$/.test(ADSENSE_CLIENT);
 
-function setupAdSlot(container, slotId){
-  if(!container) return;
-  const ins = container.querySelector('ins.adsbygoogle');
-  if(ins){
-    ins.setAttribute('data-ad-client', ADSENSE_CLIENT);
-    ins.setAttribute('data-ad-slot', slotId);
+// adBreak()/adConfig() are the H5 Games Ads entry points. When ads are not
+// configured, adBreak still calls adBreakDone so the game flow continues.
+window.adsbygoogle = window.adsbygoogle || [];
+function adBreak(o){
+  if(ADS_ENABLED){
+    try{ window.adsbygoogle.push(o); return; }catch(e){}
   }
-  container.style.display = 'block';
-  try{ (window.adsbygoogle = window.adsbygoogle || []).push({}); }catch(e){}
+  if(typeof o.adBreakDone === 'function') o.adBreakDone({ breakStatus: 'notReady' });
+}
+function adConfig(o){
+  if(!ADS_ENABLED) return;
+  try{ window.adsbygoogle.push(o); }catch(e){}
 }
 
 function initAds(){
@@ -1030,9 +1022,37 @@ function initAds(){
   loader.async = true;
   loader.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_CLIENT;
   loader.crossOrigin = 'anonymous';
+  if(ADSENSE_TEST) loader.setAttribute('data-adbreak-test', 'on');
   document.head.appendChild(loader);
-  setupAdSlot(document.getElementById('adTop'), ADSENSE_SLOTS.top);
-  setupAdSlot(document.getElementById('adBottom'), ADSENSE_SLOTS.bottom);
+  adConfig({ preloadAdBreaks: 'on', sound: 'on', onReady(){} });
+}
+
+// Interstitial video shown between games. Runs `after` once the break is done,
+// whether or not an ad actually played.
+function showInterstitial(after){
+  if(!ADS_ENABLED){ after(); return; }
+  let done = false;
+  const finish = ()=>{ if(!done){ done = true; after(); } };
+  adBreak({ type: 'next', name: 'between-games', adBreakDone: finish });
+  setTimeout(finish, 8000); // safety net if the callback never fires (ad blocker etc.)
+}
+
+// Rewarded video: hand back one life. Calls onGranted() only if the player
+// watches the whole video; onFailed() if they skip it or no ad is available.
+function watchVideoForLife(onGranted, onFailed){
+  if(!ADS_ENABLED){ onFailed(); return; }
+  let resolved = false;
+  const grant = ()=>{ if(!resolved){ resolved = true; onGranted(); } };
+  const fail  = ()=>{ if(!resolved){ resolved = true; onFailed(); } };
+  adBreak({
+    type: 'reward',
+    name: 'extra-life',
+    beforeReward(showAdFn){ showAdFn(); },
+    adViewed: grant,
+    adDismissed: fail,
+    adBreakDone(){ fail(); }
+  });
+  setTimeout(fail, 15000); // safety net if the ad never loads
 }
 
 // --- Game modes ---
@@ -1211,6 +1231,7 @@ let best = 0;
 const MAX_CLUES = 5;
 let gameOver = false;
 let gameStarted = false;
+let rewardUsed = false; // "watch a video for a life" can be used once per game
 
 const livesEl = document.getElementById('lives');
 const cluesEl = document.getElementById('clues');
@@ -1327,6 +1348,8 @@ function renderLog(){
 function removeExtraButtons(){
   const continueBtn = document.getElementById('continueBtn');
   if(continueBtn) continueBtn.remove();
+  const reviveBox = document.getElementById('reviveBox');
+  if(reviveBox) reviveBox.remove();
 }
 
 function startRound(){
@@ -1351,6 +1374,7 @@ function newGame(){
   streak = 0;
   gameOver = false;
   gameStarted = true;
+  rewardUsed = false;
   streakEl.textContent = streak;
   playArea.style.display = 'block';
   gameOverArea.style.display = 'none';
@@ -1378,15 +1402,11 @@ function endGame(){
       <button type="button" id="changeModeBtn" style="margin-top:8px; background:none; color:var(--text); border-color:var(--line);">Change mode</button>
       <button type="button" id="viewLbBtn" style="margin-top:8px; background:none; color:var(--text); border-color:var(--line);">View leaderboard</button>
     </div>
-    <div class="ad-slot gameover-ad" id="adGameover">
-      <span class="ad-label">Advertisement</span>
-      <ins class="adsbygoogle" style="display:block" data-ad-format="auto" data-full-width-responsive="true"></ins>
-    </div>
   `;
-  document.getElementById('restartBtn').addEventListener('click', newGame);
+  // Between games we show an interstitial video (if ads are configured).
+  document.getElementById('restartBtn').addEventListener('click', ()=> showInterstitial(newGame));
   document.getElementById('changeModeBtn').addEventListener('click', showModeOverlay);
   document.getElementById('viewLbBtn').addEventListener('click', openLeaderboard);
-  if(ADS_ENABLED) setupAdSlot(document.getElementById('adGameover'), ADSENSE_SLOTS.gameover);
 }
 
 function showContinueButton(){
@@ -1402,6 +1422,54 @@ function showContinueButton(){
     startRound();
   });
   playArea.appendChild(btn);
+}
+
+// Normal mode only: when the last life is gone, offer one video to win a
+// life back (once per game). Watching restores a life and continues; ending
+// or a missing video finishes the game.
+function offerRevive(){
+  removeExtraButtons();
+  const box = document.createElement('div');
+  box.id = 'reviveBox';
+  box.className = 'revive-actions';
+
+  const watch = document.createElement('button');
+  watch.type = 'button';
+  watch.className = 'reward-btn';
+  watch.textContent = 'Watch a video for +1 life';
+
+  const end = document.createElement('button');
+  end.type = 'button';
+  end.className = 'end-btn';
+  end.textContent = 'End game';
+
+  watch.addEventListener('click', ()=>{
+    watch.disabled = true;
+    end.disabled = true;
+    watch.textContent = 'Loading video…';
+    watchVideoForLife(
+      ()=>{ // watched fully: reward the life
+        rewardUsed = true;
+        box.remove();
+        lives += 1;
+        renderLives();
+        feedbackEl.innerHTML = 'Life restored — back in the game!';
+        feedbackEl.className = 'feedback win';
+        setTimeout(startRound, 900);
+      },
+      ()=>{ // skipped or no video available
+        box.remove();
+        feedbackEl.innerHTML = 'No video available right now. Thanks for playing!';
+        feedbackEl.className = 'feedback wrong';
+        setTimeout(endGame, 1400);
+      }
+    );
+  });
+  end.addEventListener('click', ()=>{ box.remove(); endGame(); });
+
+  box.appendChild(watch);
+  box.appendChild(end);
+  playArea.appendChild(box);
 }
 
 formEl.addEventListener('submit', (e)=>{
@@ -1447,9 +1515,16 @@ formEl.addEventListener('submit', (e)=>{
     inputEl.disabled = true;
     submitBtn.disabled = true;
     if(lives <= 0){
-      feedbackEl.innerHTML = `Not guessed — it was <b>${current.n}</b>. No lives left.`;
-      feedbackEl.className = 'feedback wrong';
-      setTimeout(endGame, 1600);
+      if(currentMode === 'normal' && ADS_ENABLED && !rewardUsed){
+        // Offer one video to win a life back
+        feedbackEl.innerHTML = `Not guessed — it was <b>${current.n}</b>. Out of lives — watch a video to win one back?`;
+        feedbackEl.className = 'feedback wrong';
+        offerRevive();
+      } else {
+        feedbackEl.innerHTML = `Not guessed — it was <b>${current.n}</b>. No lives left.`;
+        feedbackEl.className = 'feedback wrong';
+        setTimeout(endGame, 1600);
+      }
     } else {
       feedbackEl.innerHTML = `Not guessed — it was <b>${current.n}</b>. You lose a life.`;
       feedbackEl.className = 'feedback wrong';
