@@ -1,0 +1,25 @@
+- generic [ref=e3]:
+  - generic [ref=e4]:
+    - generic [ref=e5]: "1000000000000"
+    - generic [ref=e11]:
+      - generic [ref=e12]: "999"
+      - button "Sound" [ref=e17] [cursor=pointer]
+      - button "Map" [ref=e21] [cursor=pointer]
+  - generic [ref=e25]:
+    - text: Location 1 · My Garden
+    - generic [ref=e26]: My Garden
+  - generic [ref=e36]:
+    - generic [ref=e37] [cursor=pointer]: Empty pot
+    - generic [ref=e47] [cursor=pointer]: Empty pot
+    - generic [ref=e57] [cursor=pointer]: Empty pot
+  - generic [ref=e67]: Storage 0/2
+  - generic [ref=e87]:
+    - button "Seeds" [ref=e88] [cursor=pointer]
+    - button "Staff" [ref=e93] [cursor=pointer]
+    - button "Machines" [ref=e97] [cursor=pointer]
+    - button "Decor" [ref=e101] [cursor=pointer]
+  - generic [ref=e105]:
+    - heading "Name your place" [level=3] [ref=e106]
+    - generic [ref=e107]: Location 1 · My Garden — give it your own name!
+    - textbox "e.g. Green Heaven" [active] [ref=e108]
+    - button "Save name" [ref=e109] [cursor=pointer]

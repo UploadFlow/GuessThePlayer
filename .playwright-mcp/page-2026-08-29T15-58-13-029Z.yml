@@ -1,0 +1,30 @@
+- generic [ref=f2e3]:
+  - generic [ref=f2e4]:
+    - generic [ref=f2e5]: "999999999960"
+    - generic [ref=f2e11]:
+      - button "Free coins" [ref=f2e12] [cursor=pointer]
+      - button "Sound" [ref=f2e20] [cursor=pointer]
+      - button "Map" [ref=f2e24] [cursor=pointer]
+  - generic [ref=f2e28]:
+    - text: Location 1 · My Garden
+    - generic [ref=f2e29]: My Garden
+  - generic [ref=f2e39]:
+    - generic [ref=f2e40] [cursor=pointer]: Empty pot
+    - generic [ref=f2e50] [cursor=pointer]: Empty pot
+    - generic [ref=f2e60] [cursor=pointer]: Empty pot
+  - generic [ref=f2e70]:
+    - generic [ref=f2e72]:
+      - generic [ref=f2e73] [cursor=pointer]: Pilea
+      - generic [ref=f2e89] [cursor=pointer]: Monstera
+      - generic [ref=f2e105] [cursor=pointer]: Calathea
+    - generic [ref=f2e121]: Storage 0/4
+  - generic [ref=f2e150]:
+    - button "Seeds" [ref=f2e151] [cursor=pointer]
+    - button "Staff" [ref=f2e156] [cursor=pointer]
+    - button "Machines" [ref=f2e160] [cursor=pointer]
+    - button "Decor" [ref=f2e164] [cursor=pointer]
+  - generic [ref=f2e168]:
+    - heading "Name your place" [level=3] [ref=f2e169]
+    - generic [ref=f2e170]: Location 1 · My Garden — give it your own name!
+    - textbox "e.g. Green Heaven" [ref=f2e171]
+    - button "Save name" [ref=f2e172] [cursor=pointer]

@@ -1,0 +1,30 @@
+- generic [ref=f5e3]:
+  - generic [ref=f5e4]:
+    - generic [ref=f5e5]: "999999979750"
+    - generic [ref=f5e11]:
+      - button "Free coins" [ref=f5e12] [cursor=pointer]
+      - button "Sound" [ref=f5e20] [cursor=pointer]
+      - button "Map" [ref=f5e24] [cursor=pointer]
+  - generic [ref=f5e111]:
+    - generic [ref=f5e112] [cursor=pointer]:
+      - generic [ref=f5e113]: Revive?
+      - generic [ref=f5e128]: Pink Princess
+    - generic [ref=f5e129] [cursor=pointer]:
+      - generic [ref=f5e130]: Ready
+      - generic [ref=f5e145]: Fiddle-Leaf Fig
+    - generic [ref=f5e146] [cursor=pointer]:
+      - generic [ref=f5e147]: Revive?
+      - generic [ref=f5e159]: Alocasia
+  - generic [ref=f5e160]:
+    - generic [ref=f5e162]:
+      - generic [ref=f5e163] [cursor=pointer]: Pink Princess
+      - generic [ref=f5e181] [cursor=pointer]: Fiddle-Leaf Fig
+      - generic [ref=f5e197] [cursor=pointer]: Alocasia
+      - generic [ref=f5e213] [cursor=pointer]: Pink Princess
+      - generic [ref=f5e231] [cursor=pointer]: Alocasia
+    - generic [ref=f5e247]: Storage 0/4
+  - generic [ref=f5e276]:
+    - button "Seeds" [ref=f5e277] [cursor=pointer]
+    - button "Staff" [ref=f5e282] [cursor=pointer]
+    - button "Machines" [ref=f5e286] [cursor=pointer]
+    - button "Decor" [ref=f5e290] [cursor=pointer]

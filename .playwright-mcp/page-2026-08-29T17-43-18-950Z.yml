@@ -1,0 +1,28 @@
+- generic [ref=f6e3]:
+  - generic [ref=f6e4]:
+    - generic [ref=f6e5]: "1000000000000"
+    - generic [ref=f6e11]:
+      - button "Free coins" [ref=f6e12] [cursor=pointer]
+      - button "Sound" [ref=f6e20] [cursor=pointer]
+      - button "Map" [ref=f6e24] [cursor=pointer]
+  - generic [ref=f6e28]: Tap an empty pot to plant your first seed
+  - generic [ref=f6e112]:
+    - generic [ref=f6e113] [cursor=pointer]:
+      - generic [ref=f6e114]: Revive?
+      - generic [ref=f6e129]: Pink Princess
+    - generic [ref=f6e130] [cursor=pointer]:
+      - generic [ref=f6e131]: Ready
+      - generic [ref=f6e146]: Fiddle-Leaf Fig
+    - generic [ref=f6e147] [cursor=pointer]: Empty pot
+  - generic [ref=f6e157]:
+    - generic [ref=f6e159]:
+      - generic [ref=f6e160] [cursor=pointer]: Alocasia
+      - generic [ref=f6e176] [cursor=pointer]: Fiddle-Leaf Fig
+      - generic [ref=f6e192] [cursor=pointer]: Pink Princess
+      - generic [ref=f6e210] [cursor=pointer]: Fiddle-Leaf Fig
+    - generic [ref=f6e226]: Storage 0/4
+  - generic [ref=f6e255]:
+    - button "Seeds" [ref=f6e256] [cursor=pointer]
+    - button "Staff" [ref=f6e261] [cursor=pointer]
+    - button "Machines" [ref=f6e265] [cursor=pointer]
+    - button "Decor" [ref=f6e269] [cursor=pointer]

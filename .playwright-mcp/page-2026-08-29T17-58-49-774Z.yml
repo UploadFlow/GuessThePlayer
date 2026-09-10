@@ -1,0 +1,22 @@
+- generic [ref=f9e3]:
+  - generic [ref=f9e4]:
+    - generic [ref=f9e5]: "1000000000007"
+    - generic [ref=f9e11]:
+      - button "Free coins" [ref=f9e12] [cursor=pointer]
+      - button "Sound" [ref=f9e20] [cursor=pointer]
+      - button "Map" [ref=f9e24] [cursor=pointer]
+  - generic [ref=f9e37]:
+    - generic [ref=f9e38] [cursor=pointer]: Empty pot
+    - generic [ref=f9e48] [cursor=pointer]: Empty pot
+    - generic [ref=f9e58] [cursor=pointer]: Empty pot
+  - generic [ref=f9e68]:
+    - generic [ref=f9e70]:
+      - generic [ref=f9e71] [cursor=pointer]: Pilea
+      - generic [ref=f9e87] [cursor=pointer]: Monstera
+      - generic [ref=f9e103] [cursor=pointer]: Calathea
+    - generic [ref=f9e119]: Storage 0/2
+  - generic [ref=f9e137]:
+    - button "Seeds" [ref=f9e138] [cursor=pointer]
+    - button "Staff" [ref=f9e143] [cursor=pointer]
+    - button "Machines" [ref=f9e147] [cursor=pointer]
+    - button "Decor" [ref=f9e151] [cursor=pointer]
