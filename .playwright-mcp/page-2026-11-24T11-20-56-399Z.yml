@@ -1,0 +1,176 @@
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - generic [ref=e5]:
+      - link [ref=e7] [cursor=pointer]:
+        - /url: /
+        - img "Logo lopersproject + olympys 70" [ref=e8]
+      - navigation [ref=e11]:
+        - list [ref=e12]:
+          - listitem [ref=e13]:
+            - generic [ref=e14]: Loopafstanden & Trainingen
+          - listitem [ref=e15]:
+            - link "Nieuws" [ref=e16] [cursor=pointer]:
+              - /url: /nieuws/
+          - listitem [ref=e17]:
+            - link "Sponsoren" [ref=e18] [cursor=pointer]:
+              - /url: /sponsoren/
+          - listitem [ref=e19]:
+            - link "Over ons" [ref=e20] [cursor=pointer]:
+              - /url: /over-ons/
+        - link "Inschrijven" [ref=e21] [cursor=pointer]:
+          - /url: https://s16.mach3cart.io/checkout/2301/UsU6XTwiCAyarzjxGSWJrdLdOSMt8Hus1Z5jBiL8
+  - generic [ref=e27]:
+    - generic [ref=e28]:
+      - generic:
+        - article [ref=e29]:
+          - img "250906 142007 PF5 2702" [ref=e31]
+        - article [ref=e35]:
+          - img "250906 144257 PF5 2837" [ref=e37]
+        - article [ref=e41]:
+          - img "Header foto 2" [ref=e43]
+    - button [ref=e47] [cursor=pointer]
+  - generic [ref=e54]:
+    - generic [ref=e55]: Lopersproject Ter Heijde
+    - paragraph [ref=e58]: zaterdag 5 september 2026 om 14:00 uur
+  - generic [ref=e67]:
+    - generic [ref=e68]: Wil jij met de beste begeleiding (leren) hardlopen? Kom voor verantwoorde trainingen naar het Lopersproject.
+    - generic [ref=e69]:
+      - paragraph [ref=e70]: Het Lopersproject is een jaarlijks terugkerend initiatief onder de vlag van de Westlandse Atletiekvereniging Olympus ’70 in Naaldwijk.
+      - paragraph [ref=e71]:
+        - text: Het lopersproject start ieder jaar in januari en september. De editie van januari heeft als vertreklocatie sporthal Verburch.
+        - strong [ref=e72]: In september is de vertreklocatie Sporthal de Wielepet in Ter Heijde.
+      - paragraph [ref=e73]: Er kan getraind worden voor diverse onderdelen onder begeleiding van professionele trainers. Zo zijn er groepen voor de starters (5km), 5 km, 10km, halve marathon, maar ook wandelgroepen 5 en 10km.
+  - generic [ref=e76]:
+    - generic [ref=e77]:
+      - generic [ref=e78]: Zet die stap en schrijf je in voor een van deze trainingen
+      - generic [ref=e86]:
+        - article [ref=e87]:
+          - link "Starten met hardlopen" [ref=e88] [cursor=pointer]:
+            - /url: /trainingen-ter-heijde/starten-met-hardlopen/
+        - article [ref=e89]:
+          - link "10 km - Actief wandelen" [ref=e90] [cursor=pointer]:
+            - /url: /trainingen-ter-heijde/10-km-actief-wandelen/
+        - article [ref=e91]:
+          - link "5 km - Hardlopen" [ref=e92] [cursor=pointer]:
+            - /url: /trainingen-ter-heijde/5-km-hardlopen/
+        - article [ref=e93]:
+          - link "10 km - Hardlopen" [ref=e94] [cursor=pointer]:
+            - /url: /trainingen-ter-heijde/10-km-hardlopen/
+        - article [ref=e95]:
+          - link "Halve marathon" [ref=e96] [cursor=pointer]:
+            - /url: /trainingen-ter-heijde/halve-marathon/
+        - article [ref=e97]:
+          - link "Marathon \"The Road to The Hague\"" [ref=e98] [cursor=pointer]:
+            - /url: /trainingen-ter-heijde/the-road-to-the-hague-marathontraining/
+    - generic [ref=e100]:
+      - heading [level=1]
+      - generic [ref=e101]:
+        - generic [ref=e102]:
+          - img "250906 144257 PF5 2837" [ref=e104]
+          - img "250906 140425 PF8 9156" [ref=e106]
+        - img "250906 142038 PF8 9204" [ref=e109]
+  - generic [ref=e114]:
+    - heading "Het laatste nieuws" [level=2] [ref=e115]
+    - link "Bekijk alle nieuwsitems" [ref=e116] [cursor=pointer]:
+      - /url: /nieuws/
+  - generic [ref=e119]:
+    - article [ref=e120]:
+      - generic [ref=e121]:
+        - link [ref=e124] [cursor=pointer]:
+          - /url: /nieuws/losse-inschrijving-marathon-duurlopen/
+          - img "Marathon groep" [ref=e126]
+        - heading [level=3] [ref=e127]:
+          - link "Losse inschrijving Marathon duurlopen" [ref=e128] [cursor=pointer]:
+            - /url: /nieuws/losse-inschrijving-marathon-duurlopen/
+        - link "Lees het artikel" [ref=e129] [cursor=pointer]:
+          - /url: /nieuws/losse-inschrijving-marathon-duurlopen/
+    - article [ref=e130]:
+      - generic [ref=e131]:
+        - link [ref=e134] [cursor=pointer]:
+          - /url: /nieuws/lopersproject-ter-heijde-2026-is-gestart-inschrijven-kan-nog-net/
+          - img "De hele groep" [ref=e136]
+        - heading [level=3] [ref=e137]:
+          - link "Lopersproject Ter Heijde 2026 is gestart! Inschrijven kan nog (net)" [ref=e138] [cursor=pointer]:
+            - /url: /nieuws/lopersproject-ter-heijde-2026-is-gestart-inschrijven-kan-nog-net/
+        - link "Artikel lezen" [ref=e139] [cursor=pointer]:
+          - /url: /nieuws/lopersproject-ter-heijde-2026-is-gestart-inschrijven-kan-nog-net/
+  - heading "Sponsoren van het Lopersproject Ter Heijde" [level=2] [ref=e144]
+  - generic [ref=e147]:
+    - article [ref=e148]:
+      - link [ref=e150] [cursor=pointer]:
+        - /url: https://koendijkshoorn.nl/
+        - img "Logo koendijkshoorn" [ref=e151]
+    - article [ref=e152]:
+      - link [ref=e154] [cursor=pointer]:
+        - /url: https://www.hoflandvangeest.nl/
+        - img "Hofland van Geest logo" [ref=e155]
+    - article [ref=e156]:
+      - img "Flip Vreugdenhil BV logo" [ref=e159]
+    - article [ref=e160]:
+      - link [ref=e162] [cursor=pointer]:
+        - /url: https://act-westland.nl/
+        - img "ACT Westland met payoff" [ref=e163]
+    - article [ref=e164]:
+      - link [ref=e166] [cursor=pointer]:
+        - /url: https://www.degezondheidondernemer.nl/
+        - img "Logo gezondheidondernemer taupe" [ref=e167]
+    - article [ref=e168]:
+      - link [ref=e170] [cursor=pointer]:
+        - /url: https://westlandworkwear.nl/
+        - img "Logo WestlandWorkwear diap" [ref=e171]
+    - article [ref=e172]:
+      - link [ref=e174] [cursor=pointer]:
+        - /url: https://www.flynth.nl/
+        - img "Flynth logo" [ref=e175]
+    - article [ref=e176]:
+      - link [ref=e178] [cursor=pointer]:
+        - /url: https://www.bictgroep.nl/
+        - img "Logo bict groep zwarte letters" [ref=e179]
+    - article [ref=e180]:
+      - link [ref=e182] [cursor=pointer]:
+        - /url: https://cees.nl/
+        - img "Logo cees" [ref=e183]
+    - article [ref=e184]:
+      - link [ref=e186] [cursor=pointer]:
+        - /url: https://loperscompany.nl/
+        - img "Loperscompany Westland" [ref=e187]
+    - article [ref=e188]:
+      - link [ref=e190] [cursor=pointer]:
+        - /url: https://qualitypack.nl/
+        - img "Quality pack logo open graph" [ref=e191]
+  - contentinfo [ref=e192]:
+    - generic [ref=e193]:
+      - generic [ref=e194]:
+        - generic [ref=e195]:
+          - heading "Vragen? Neem gerust contact met ons op" [level=3] [ref=e196]
+          - paragraph [ref=e198]:
+            - text: Voor algemene vragen over het Lopersproject en vragen over een inschrijving kan je mailen met
+            - link "info@lopersproject.nl" [ref=e199] [cursor=pointer]:
+              - /url: mailto:info@lopersproject.nl
+        - generic [ref=e200]:
+          - paragraph [ref=e202]: Volg ons ook op de socials!
+          - img "Pijl" [ref=e204]
+          - generic [ref=e205]:
+            - link [ref=e206] [cursor=pointer]:
+              - /url: https://www.instagram.com/lopersprojectterheijde/
+            - link [ref=e209] [cursor=pointer]:
+              - /url: https://www.facebook.com/LopersprojectTerHeijde
+      - generic [ref=e213]:
+        - img "Olympus 70 logo transparant website" [ref=e215]
+        - paragraph [ref=e217]: Het Lopersproject is een jaarlijks terugkerend initiatief van Westlandse Atletiekvereniging Olympus ’70
+  - contentinfo [ref=e218]:
+    - generic [ref=e220]:
+      - paragraph [ref=e223]: © Lopersproject
+      - paragraph [ref=e226]:
+        - text: "Fotografie:"
+        - link "Peter Voogd" [ref=e227] [cursor=pointer]:
+          - /url: https://pevofotografie.nl/2023/09/04/lopersproject-ter-heijde-2023-09/
+        - text: en
+        - link "Sharon Schouten Fotografie" [ref=e228] [cursor=pointer]:
+          - /url: https://sharonschouten.com/
+        - text: "|"
+        - link:
+          - /url: https://pevofotografie.nl/2023/09/04/lopersproject-ter-heijde-2023-09/
+        - text: "Website:"
+        - link "Studio 0174" [ref=e229] [cursor=pointer]:
+          - /url: https://www.studio0174.cc/
